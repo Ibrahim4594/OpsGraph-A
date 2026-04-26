@@ -1,0 +1,1 @@
+LoadResult(total=50, success=40, errors=10, p50_ms=222.92, p95_ms=288.23)
