@@ -1,0 +1,42 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Node (reserved for the deferred UI milestone)
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+playwright-report/
+test-results/
+.playwright/
+.playwright-cli/
+
+# Claude Code (machine-local)
+.claude/settings.local.json
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Tooling caches
+.coverage
+htmlcov/
