@@ -24,6 +24,7 @@ from opentelemetry.sdk.metrics.export import MetricReader
 from opentelemetry.sdk.trace.export import SpanExporter
 
 from repopulse import __version__
+from repopulse.api.events import router as events_router
 from repopulse.api.health import router as health_router
 from repopulse.config import Settings
 from repopulse.telemetry import init_telemetry
@@ -71,6 +72,7 @@ def create_app(
     fastapi_app.state.tracer_provider = tracer_provider
     fastapi_app.state.meter_provider = meter_provider
     fastapi_app.include_router(health_router)
+    fastapi_app.include_router(events_router)
     return fastapi_app
 
 
