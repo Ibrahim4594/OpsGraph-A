@@ -18,12 +18,10 @@ from opentelemetry.sdk.metrics.export import (
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import (
-    BatchSpanProcessor,
     ConsoleSpanExporter,
     SimpleSpanProcessor,
     SpanExporter,
 )
-from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from repopulse import __version__
 from repopulse.config import Settings
@@ -55,9 +53,11 @@ def init_telemetry(
     - ``metric_reader`` defaults to a ``PeriodicExportingMetricReader`` over
       the console metric exporter (60 s interval). Tests should pass an
       ``InMemoryMetricReader``.
-    - Span processor selection: ``SimpleSpanProcessor`` for in-memory
-      exporters (so tests see spans synchronously), ``BatchSpanProcessor``
-      for any other exporter (production-friendly batching).
+    - All exporters use ``SimpleSpanProcessor`` (synchronous export).
+      This is intentional for the AIOps service's expected throughput and
+      avoids background-thread teardown races (notably the
+      ``BatchSpanProcessor`` writing to a closed stdout during pytest
+      shutdown). Switch to ``BatchSpanProcessor`` if/when M3+ load demands.
     """
     resource = _build_resource(settings)
 
@@ -65,10 +65,7 @@ def init_telemetry(
         span_exporter = ConsoleSpanExporter()
 
     tracer_provider = TracerProvider(resource=resource)
-    if isinstance(span_exporter, InMemorySpanExporter):
-        tracer_provider.add_span_processor(SimpleSpanProcessor(span_exporter))
-    else:
-        tracer_provider.add_span_processor(BatchSpanProcessor(span_exporter))
+    tracer_provider.add_span_processor(SimpleSpanProcessor(span_exporter))
 
     if metric_reader is None:
         metric_reader = PeriodicExportingMetricReader(

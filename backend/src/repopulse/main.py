@@ -1,11 +1,77 @@
-"""FastAPI application entry point."""
+"""FastAPI application entry point.
+
+Exposes a ``create_app`` factory so tests can inject in-memory exporters.
+The module-level ``app`` is the production instance and uses the default
+console exporter from :func:`repopulse.telemetry.init_telemetry`.
+
+Note on instrumentation order: ``FastAPIInstrumentor.instrument_app``
+patches ``app.build_middleware_stack``. Starlette caches the result of
+``build_middleware_stack`` on the first ``__call__`` (which is the lifespan
+startup). If we instrumented inside the lifespan, the patch would land
+*after* the middleware stack had already been cached — and the OTel
+middleware would never run. We therefore instrument eagerly inside
+``create_app`` (before the app handles any request) and use the lifespan
+solely for graceful shutdown.
+"""
+from __future__ import annotations
+
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.sdk.metrics.export import MetricReader
+from opentelemetry.sdk.trace.export import SpanExporter
 
 from repopulse import __version__
 from repopulse.api.health import router as health_router
+from repopulse.config import Settings
+from repopulse.telemetry import init_telemetry
 
-app = FastAPI(
-    title="RepoPulse AIOps",
-    version=__version__,
-)
-app.include_router(health_router)
+
+def create_app(
+    *,
+    span_exporter: SpanExporter | None = None,
+    metric_reader: MetricReader | None = None,
+) -> FastAPI:
+    """Build a FastAPI app with telemetry wired in eagerly.
+
+    Tests pass ``InMemorySpanExporter`` / ``InMemoryMetricReader``;
+    production callers leave the kwargs ``None`` to get console defaults
+    from :func:`init_telemetry`. The active providers are stored on
+    ``app.state`` so callers (and tests) can call ``force_flush()``.
+    """
+    settings = Settings()
+    tracer_provider, meter_provider = init_telemetry(
+        settings,
+        span_exporter=span_exporter,
+        metric_reader=metric_reader,
+    )
+
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+        try:
+            yield
+        finally:
+            FastAPIInstrumentor.uninstrument_app(_app)
+            tracer_provider.force_flush()
+            tracer_provider.shutdown()
+            meter_provider.shutdown()
+
+    fastapi_app = FastAPI(
+        title="RepoPulse AIOps",
+        version=__version__,
+        lifespan=lifespan,
+    )
+    FastAPIInstrumentor.instrument_app(
+        fastapi_app,
+        tracer_provider=tracer_provider,
+        meter_provider=meter_provider,
+    )
+    fastapi_app.state.tracer_provider = tracer_provider
+    fastapi_app.state.meter_provider = meter_provider
+    fastapi_app.include_router(health_router)
+    return fastapi_app
+
+
+app = create_app()
