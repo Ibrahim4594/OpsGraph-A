@@ -63,7 +63,7 @@ export function RecCard({ rec }: { rec: Recommendation }) {
             href={runbook}
             target="_blank"
             rel="noreferrer noopener"
-            className="inline-flex items-center gap-1 text-xs text-[color:var(--color-primary)] hover:underline"
+            className="inline-flex items-center gap-1 text-xs text-[color:var(--color-link)] hover:underline"
           >
             <ExternalLink size={12} aria-hidden /> Open runbook for{" "}
             {rec.action_category}

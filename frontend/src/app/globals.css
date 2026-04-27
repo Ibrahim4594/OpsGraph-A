@@ -19,7 +19,15 @@
   --color-fg-dim: #71717a;
   --color-primary: #0c5cab;
   --color-primary-hover: #0a4a8a;
-  --color-primary-soft: rgba(12, 92, 171, 0.12);
+  --color-primary-soft: rgba(12, 92, 171, 0.18);
+  /*
+   * --color-link is a brighter blue (Tailwind blue-400) used for body-text
+   * hyperlinks, where --color-primary's deep blue would fall below the WCAG
+   * 4.5:1 ratio against --color-bg. Buttons keep --color-primary because
+   * white text on it gives 6.42:1.
+   */
+  --color-link: #60a5fa;
+  --color-link-hover: #93bdfd;
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;

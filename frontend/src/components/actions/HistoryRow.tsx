@@ -34,7 +34,7 @@ export function HistoryRow({
         {entry.recommendation_id ? (
           <Link
             href={`/recommendations#${entry.recommendation_id}`}
-            className="text-[color:var(--color-primary)] hover:underline"
+            className="text-[color:var(--color-link)] hover:underline"
           >
             {entry.recommendation_id.slice(0, 8)}…
             <span className="sr-only"> {entry.recommendation_id}</span>

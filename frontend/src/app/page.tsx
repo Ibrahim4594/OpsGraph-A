@@ -2,6 +2,7 @@ import { ServerCrash } from "lucide-react";
 
 import { BurnRateBadge } from "@/components/slo/BurnRateBadge";
 import { SloCard } from "@/components/slo/SloCard";
+import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getSlo, type SloResponse } from "@/lib/api";
 
@@ -55,14 +56,42 @@ export default async function HomePage() {
           target={1 - slo.target}
           hint="remaining of allowed errors"
         />
-        <SloCard
-          label="Burn rate"
-          value={slo.total_events === 0 ? null : Math.min(slo.burn_rate / 100, 1)}
-          target={1 / 100}
-          hint={`${slo.burn_rate.toFixed(2)}× actual`}
+        <ThroughputCard
+          totalEvents={slo.total_events}
+          errorEvents={slo.error_events}
         />
       </div>
     </PageHeader>
+  );
+}
+
+function ThroughputCard({
+  totalEvents,
+  errorEvents,
+}: {
+  totalEvents: number;
+  errorEvents: number;
+}) {
+  const empty = totalEvents === 0;
+  return (
+    <Card role="status" aria-label="Throughput">
+      <CardHeader>
+        <CardTitle>Throughput</CardTitle>
+      </CardHeader>
+      <CardBody>
+        <div className="text-[32px] font-semibold leading-tight tabular-nums">
+          {empty ? "—" : totalEvents.toLocaleString()}
+        </div>
+        <div className="mt-2 text-xs text-[color:var(--color-fg-muted)]">
+          events ingested
+          {empty ? null : (
+            <span className="ml-2 opacity-80">
+              · {errorEvents.toLocaleString()} errors
+            </span>
+          )}
+        </div>
+      </CardBody>
+    </Card>
   );
 }
 
