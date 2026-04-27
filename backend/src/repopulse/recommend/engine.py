@@ -15,6 +15,7 @@ from repopulse.correlation.engine import Incident
 
 ActionCategory = Literal["observe", "triage", "escalate", "rollback"]
 RiskLevel = Literal["low", "medium", "high"]
+State = Literal["pending", "approved", "rejected", "observed"]
 
 
 @dataclass(frozen=True)
@@ -25,6 +26,7 @@ class Recommendation:
     confidence: float
     risk_level: RiskLevel
     evidence_trace: tuple[str, ...]
+    state: State = "pending"
 
 
 @dataclass(frozen=True)
@@ -125,6 +127,7 @@ def recommend(incident: Incident) -> Recommendation:
         primary = _r1_fallback(incident)
         evidence = [primary.explanation]
 
+    state: State = "observed" if primary.category == "observe" else "pending"
     return Recommendation(
         recommendation_id=uuid4(),
         incident_id=incident.incident_id,
@@ -132,4 +135,5 @@ def recommend(incident: Incident) -> Recommendation:
         confidence=primary.confidence,
         risk_level=primary.risk,
         evidence_trace=tuple(evidence),
+        state=state,
     )

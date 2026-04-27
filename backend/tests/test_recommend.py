@@ -174,3 +174,46 @@ def test_recommend_confidence_in_unit_interval() -> None:
     ]:
         r = recommend(inc)
         assert 0.0 <= r.confidence <= 1.0
+
+
+# --- M4: state field on emission ---
+
+
+def test_recommend_observe_starts_observed() -> None:
+    """R1 (observe) auto-transitions to ``observed`` so the operator inbox
+    isn't drowned in no-op recommendations."""
+    inc = _incident(anomalies=[], events=[])
+    r = recommend(inc)
+    assert r.action_category == "observe"
+    assert r.state == "observed"
+
+
+def test_recommend_triage_starts_pending() -> None:
+    """R2 (triage) requires a human approval, so it starts pending."""
+    inc = _incident(anomalies=[_anomaly(severity="warning")], events=[])
+    r = recommend(inc)
+    assert r.action_category == "triage"
+    assert r.state == "pending"
+
+
+def test_recommend_escalate_starts_pending() -> None:
+    inc = _incident(
+        anomalies=[
+            _anomaly(severity="warning"),
+            _anomaly(severity="warning"),
+        ],
+        events=[],
+    )
+    r = recommend(inc)
+    assert r.action_category == "escalate"
+    assert r.state == "pending"
+
+
+def test_recommend_rollback_starts_pending() -> None:
+    inc = _incident(
+        anomalies=[_anomaly(severity="critical", source="otel-metrics")],
+        events=[_event(source="github", severity="critical")],
+    )
+    r = recommend(inc)
+    assert r.action_category == "rollback"
+    assert r.state == "pending"
