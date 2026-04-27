@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/toast";
 import {
   approveRecommendation,
   rejectRecommendation,
@@ -38,6 +39,7 @@ export function ApprovalActions({
   const [rejectOpen, setRejectOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [pending, startTransition] = useTransition();
+  const toast = useToast();
 
   function onApprove() {
     setError(null);
@@ -45,8 +47,11 @@ export function ApprovalActions({
       try {
         const out = await approveRecommendation(id, operator);
         setState(out.state);
+        toast.success("Recommendation approved", `${id.slice(0, 8)}… by ${operator}`);
       } catch (exc) {
-        setError(exc instanceof Error ? exc.message : String(exc));
+        const msg = exc instanceof Error ? exc.message : String(exc);
+        setError(msg);
+        toast.error("Approve failed", msg);
       }
     });
   }
@@ -59,8 +64,11 @@ export function ApprovalActions({
         setState(out.state);
         setRejectOpen(false);
         setReason("");
+        toast.success("Recommendation rejected", `${id.slice(0, 8)}… by ${operator}`);
       } catch (exc) {
-        setError(exc instanceof Error ? exc.message : String(exc));
+        const msg = exc instanceof Error ? exc.message : String(exc);
+        setError(msg);
+        toast.error("Reject failed", msg);
       }
     });
   }
