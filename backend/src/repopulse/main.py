@@ -26,7 +26,9 @@ from opentelemetry.sdk.trace.export import SpanExporter
 from repopulse import __version__
 from repopulse.api.events import router as events_router
 from repopulse.api.health import router as health_router
+from repopulse.api.recommendations import router as recommendations_router
 from repopulse.config import Settings
+from repopulse.pipeline.orchestrator import PipelineOrchestrator
 from repopulse.telemetry import init_telemetry
 
 
@@ -34,13 +36,15 @@ def create_app(
     *,
     span_exporter: SpanExporter | None = None,
     metric_reader: MetricReader | None = None,
+    orchestrator: PipelineOrchestrator | None = None,
 ) -> FastAPI:
-    """Build a FastAPI app with telemetry wired in eagerly.
+    """Build a FastAPI app with telemetry + AIOps pipeline wired in eagerly.
 
-    Tests pass ``InMemorySpanExporter`` / ``InMemoryMetricReader``;
-    production callers leave the kwargs ``None`` to get console defaults
-    from :func:`init_telemetry`. The active providers are stored on
-    ``app.state`` so callers (and tests) can call ``force_flush()``.
+    Tests pass ``InMemorySpanExporter`` / ``InMemoryMetricReader`` and may
+    inject a pre-populated ``PipelineOrchestrator``; production callers
+    leave the kwargs ``None`` to get console exporters and a fresh
+    orchestrator. Active providers + orchestrator are stored on
+    ``app.state`` so handlers and tests can reach them via the request.
     """
     settings = Settings()
     tracer_provider, meter_provider = init_telemetry(
@@ -48,6 +52,8 @@ def create_app(
         span_exporter=span_exporter,
         metric_reader=metric_reader,
     )
+    if orchestrator is None:
+        orchestrator = PipelineOrchestrator()
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
@@ -71,8 +77,10 @@ def create_app(
     )
     fastapi_app.state.tracer_provider = tracer_provider
     fastapi_app.state.meter_provider = meter_provider
+    fastapi_app.state.orchestrator = orchestrator
     fastapi_app.include_router(health_router)
     fastapi_app.include_router(events_router)
+    fastapi_app.include_router(recommendations_router)
     return fastapi_app
 
 
