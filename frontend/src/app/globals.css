@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/*
+ * RepoPulse Operator Dashboard tokens.
+ * Sourced from .claude/skills/design-system/SKILL.md (typeui.sh `dashboard`):
+ * - Cloud-platform aesthetic, dark theme.
+ * - IBM Plex Sans (loaded via next/font in layout.tsx).
+ * - Primary #0C5CAB · surface #09090b · text #fafafa · 8pt grid.
+ * Locked here as semantic CSS custom properties so components reference
+ * roles (--color-bg, --color-fg-muted) rather than raw hex values.
+ */
+
+:root {
+  --color-bg: #09090b;
+  --color-bg-elev: #111114;
+  --color-bg-elev-2: #18181b;
+  --color-fg: #fafafa;
+  --color-fg-muted: #a1a1aa;
+  --color-fg-dim: #71717a;
+  --color-primary: #0c5cab;
+  --color-primary-hover: #0a4a8a;
+  --color-primary-soft: rgba(12, 92, 171, 0.12);
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-border: #1f1f23;
+  --color-border-strong: #27272a;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --grid: 8px;
+}
+
+@theme inline {
+  --font-sans: var(--font-ibm-plex), "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-fg);
+  --color-card: var(--color-bg-elev);
+  --color-card-foreground: var(--color-fg);
+  --color-border: var(--color-border);
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-fg);
+  --color-muted: var(--color-bg-elev);
+  --color-muted-foreground: var(--color-fg-muted);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
