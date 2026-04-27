@@ -1,0 +1,2 @@
+{"detail":"invalid agentic token"}
+HTTP 401

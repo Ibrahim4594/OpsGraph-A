@@ -1,0 +1,2 @@
+{"detail":"file_contents['x.md'] exceeds 262144 byte cap"}
+HTTP 413

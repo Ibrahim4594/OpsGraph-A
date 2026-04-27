@@ -1,0 +1,1 @@
+{"workflow_run_id":12345,"head_sha":"abc123","head_branch":"feat/x","failed_jobs":[["backend","Test (pytest)"]],"likely_cause":"test-failure","next_action":"investigate-test","evidence_trace":["test-failure: \\b(AssertionError|FAILED|test .* failed)\\b matched in job 'backend'"]}

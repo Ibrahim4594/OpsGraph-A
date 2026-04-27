@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        {
+            "recommendation_id": "de4f2969-d316-4e27-a128-22a49bc220f2",
+            "incident_id": "d40f0b71-94e9-4646-b31d-8fd6d191a184",
+            "action_category": "observe",
+            "confidence": 0.5,
+            "risk_level": "low",
+            "evidence_trace": [
+                "R1: no higher-priority rule fired \u00e2\u2020\u2019 observe (anomalies=0, events=1, sources=['agentic-workflow'], fired=True)"
+            ]
+        }
+    ],
+    "count": 1
+}

@@ -1,0 +1,2 @@
+{"disabled":true,"reason":"REPOPULSE_AGENTIC_ENABLED=false"}
+HTTP 202

@@ -1,0 +1,2684 @@
+{
+    "name": "POST /api/v1/github/triage http receive",
+    "context": {
+        "trace_id": "0x26a0eb2e477fc50c424226cd335bc126",
+        "span_id": "0xf841facb645e9e26",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xd414952b8827e2e9",
+    "start_time": "2026-04-27T08:01:01.393347Z",
+    "end_time": "2026-04-27T08:01:01.393378Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http send",
+    "context": {
+        "trace_id": "0x26a0eb2e477fc50c424226cd335bc126",
+        "span_id": "0x1a24e41d2f751b03",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xd414952b8827e2e9",
+    "start_time": "2026-04-27T08:01:01.405121Z",
+    "end_time": "2026-04-27T08:01:01.405198Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http send",
+    "context": {
+        "trace_id": "0x26a0eb2e477fc50c424226cd335bc126",
+        "span_id": "0xc601372c5cf5ff0c",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xd414952b8827e2e9",
+    "start_time": "2026-04-27T08:01:01.405921Z",
+    "end_time": "2026-04-27T08:01:01.405954Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage",
+    "context": {
+        "trace_id": "0x26a0eb2e477fc50c424226cd335bc126",
+        "span_id": "0xd414952b8827e2e9",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T08:01:01.392373Z",
+    "end_time": "2026-04-27T08:01:01.406230Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8010",
+        "net.host.port": 8010,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/github/triage",
+        "http.url": "http://127.0.0.1:8010/api/v1/github/triage",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8010",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 52308,
+        "http.route": "/api/v1/github/triage",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http receive",
+    "context": {
+        "trace_id": "0xc8b47631ded84b647bcc982388a65066",
+        "span_id": "0x2d177ddc2906a9a0",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x2674e1aafb681ea4",
+    "start_time": "2026-04-27T08:01:01.592026Z",
+    "end_time": "2026-04-27T08:01:01.592042Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http send",
+    "context": {
+        "trace_id": "0xc8b47631ded84b647bcc982388a65066",
+        "span_id": "0x779d6f0d58595797",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x2674e1aafb681ea4",
+    "start_time": "2026-04-27T08:01:01.593513Z",
+    "end_time": "2026-04-27T08:01:01.593535Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http send",
+    "context": {
+        "trace_id": "0xc8b47631ded84b647bcc982388a65066",
+        "span_id": "0xf8784a11467d230b",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x2674e1aafb681ea4",
+    "start_time": "2026-04-27T08:01:01.593760Z",
+    "end_time": "2026-04-27T08:01:01.593768Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage",
+    "context": {
+        "trace_id": "0xc8b47631ded84b647bcc982388a65066",
+        "span_id": "0x2674e1aafb681ea4",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T08:01:01.591880Z",
+    "end_time": "2026-04-27T08:01:01.593874Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8010",
+        "net.host.port": 8010,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/github/triage",
+        "http.url": "http://127.0.0.1:8010/api/v1/github/triage",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8010",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 52309,
+        "http.route": "/api/v1/github/triage",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http receive",
+    "context": {
+        "trace_id": "0xe20321cab4b891c7c2850dc2bcee2a48",
+        "span_id": "0xc16de11c271238c0",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x448747425f3735ff",
+    "start_time": "2026-04-27T08:01:01.774406Z",
+    "end_time": "2026-04-27T08:01:01.774421Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http send",
+    "context": {
+        "trace_id": "0xe20321cab4b891c7c2850dc2bcee2a48",
+        "span_id": "0x39c4e3517cb5ccf8",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x448747425f3735ff",
+    "start_time": "2026-04-27T08:01:01.776489Z",
+    "end_time": "2026-04-27T08:01:01.776516Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http send",
+    "context": {
+        "trace_id": "0xe20321cab4b891c7c2850dc2bcee2a48",
+        "span_id": "0x9aefb1265ec76560",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x448747425f3735ff",
+    "start_time": "2026-04-27T08:01:01.776855Z",
+    "end_time": "2026-04-27T08:01:01.776867Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage",
+    "context": {
+        "trace_id": "0xe20321cab4b891c7c2850dc2bcee2a48",
+        "span_id": "0x448747425f3735ff",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T08:01:01.774253Z",
+    "end_time": "2026-04-27T08:01:01.776993Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8010",
+        "net.host.port": 8010,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/github/triage",
+        "http.url": "http://127.0.0.1:8010/api/v1/github/triage",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8010",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 52310,
+        "http.route": "/api/v1/github/triage",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http receive",
+    "context": {
+        "trace_id": "0x4a180664aa17c677795c80a44cae6525",
+        "span_id": "0x6402cb813711218f",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x0d7adef861d7bf66",
+    "start_time": "2026-04-27T08:01:16.225627Z",
+    "end_time": "2026-04-27T08:01:16.225646Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http send",
+    "context": {
+        "trace_id": "0x4a180664aa17c677795c80a44cae6525",
+        "span_id": "0x9e7274d532761f41",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x0d7adef861d7bf66",
+    "start_time": "2026-04-27T08:01:16.227484Z",
+    "end_time": "2026-04-27T08:01:16.227509Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 401
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage http send",
+    "context": {
+        "trace_id": "0x4a180664aa17c677795c80a44cae6525",
+        "span_id": "0x7805b694ee11bb8d",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x0d7adef861d7bf66",
+    "start_time": "2026-04-27T08:01:16.227766Z",
+    "end_time": "2026-04-27T08:01:16.227777Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/triage",
+    "context": {
+        "trace_id": "0x4a180664aa17c677795c80a44cae6525",
+        "span_id": "0x0d7adef861d7bf66",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T08:01:16.225447Z",
+    "end_time": "2026-04-27T08:01:16.227877Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8010",
+        "net.host.port": 8010,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/github/triage",
+        "http.url": "http://127.0.0.1:8010/api/v1/github/triage",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8010",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58330,
+        "http.route": "/api/v1/github/triage",
+        "http.status_code": 401
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/doc-drift http receive",
+    "context": {
+        "trace_id": "0xd8bbc5e5fc2714c7358fa7dd5949eb85",
+        "span_id": "0x157d3c6c3b133b01",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x7713fce5df8d7466",
+    "start_time": "2026-04-27T08:01:16.406244Z",
+    "end_time": "2026-04-27T08:01:16.406275Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/doc-drift http receive",
+    "context": {
+        "trace_id": "0xd8bbc5e5fc2714c7358fa7dd5949eb85",
+        "span_id": "0x565ec696d219ac11",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x7713fce5df8d7466",
+    "start_time": "2026-04-27T08:01:16.406501Z",
+    "end_time": "2026-04-27T08:01:16.406739Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/doc-drift http receive",
+    "context": {
+        "trace_id": "0xd8bbc5e5fc2714c7358fa7dd5949eb85",
+        "span_id": "0xf14050629b959dae",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x7713fce5df8d7466",
+    "start_time": "2026-04-27T08:01:16.407101Z",
+    "end_time": "2026-04-27T08:01:16.407246Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/doc-drift http send",
+    "context": {
+        "trace_id": "0xd8bbc5e5fc2714c7358fa7dd5949eb85",
+        "span_id": "0xed14fcadf1667c56",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x7713fce5df8d7466",
+    "start_time": "2026-04-27T08:01:16.411294Z",
+    "end_time": "2026-04-27T08:01:16.411341Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 413
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/doc-drift http send",
+    "context": {
+        "trace_id": "0xd8bbc5e5fc2714c7358fa7dd5949eb85",
+        "span_id": "0xfc38b2ea4657e26c",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x7713fce5df8d7466",
+    "start_time": "2026-04-27T08:01:16.411843Z",
+    "end_time": "2026-04-27T08:01:16.411866Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/github/doc-drift",
+    "context": {
+        "trace_id": "0xd8bbc5e5fc2714c7358fa7dd5949eb85",
+        "span_id": "0x7713fce5df8d7466",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T08:01:16.405798Z",
+    "end_time": "2026-04-27T08:01:16.412101Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8010",
+        "net.host.port": 8010,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/github/doc-drift",
+        "http.url": "http://127.0.0.1:8010/api/v1/github/doc-drift",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8010",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58331,
+        "http.route": "/api/v1/github/doc-drift",
+        "http.status_code": 413
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.4.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "resource_metrics": [
+        {
+            "resource": {
+                "attributes": {
+                    "telemetry.sdk.language": "python",
+                    "telemetry.sdk.name": "opentelemetry",
+                    "telemetry.sdk.version": "1.41.1",
+                    "service.name": "repopulse-backend",
+                    "service.version": "0.4.0",
+                    "deployment.environment": "development"
+                },
+                "schema_url": ""
+            },
+            "scope_metrics": [
+                {
+                    "scope": {
+                        "name": "opentelemetry.instrumentation.fastapi",
+                        "version": "0.62b1",
+                        "schema_url": "https://opentelemetry.io/schemas/1.11.0",
+                        "attributes": null
+                    },
+                    "metrics": [
+                        {
+                            "name": "http.server.active_requests",
+                            "description": "Number of active HTTP server requests.",
+                            "unit": "{request}",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010"
+                                        },
+                                        "start_time_unix_nano": 1777276861392480000,
+                                        "time_unix_nano": 1777276918986070700,
+                                        "value": 0,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2,
+                                "is_monotonic": false
+                            }
+                        },
+                        {
+                            "name": "http.server.duration",
+                            "description": "Measures the duration of inbound HTTP requests.",
+                            "unit": "ms",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 200,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276861406821800,
+                                        "time_unix_nano": 1777276918986070700,
+                                        "count": 3,
+                                        "sum": 20,
+                                        "bucket_counts": [
+                                            0,
+                                            2,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 2,
+                                        "max": 15,
+                                        "exemplars": [
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 3,
+                                                "time_unix_nano": 1777276861777126200,
+                                                "span_id": 4937993866825905663,
+                                                "trace_id": 300421789317502772692376086718184303176
+                                            },
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 15,
+                                                "time_unix_nano": 1777276861406670600,
+                                                "span_id": 15282003449775383273,
+                                                "trace_id": 51346201370072609198357737817409044774
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 401,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276876228033600,
+                                        "time_unix_nano": 1777276918986070700,
+                                        "count": 1,
+                                        "sum": 3,
+                                        "bucket_counts": [
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 3,
+                                        "max": 3,
+                                        "exemplars": [
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 3,
+                                                "time_unix_nano": 1777276876228024700,
+                                                "span_id": 971333828026548070,
+                                                "trace_id": 98487616482603677990373714545565656357
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 413,
+                                            "http.target": "/api/v1/github/doc-drift"
+                                        },
+                                        "start_time_unix_nano": 1777276876412351500,
+                                        "time_unix_nano": 1777276918986070700,
+                                        "count": 1,
+                                        "sum": 7,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 7,
+                                        "max": 7,
+                                        "exemplars": [
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 7,
+                                                "time_unix_nano": 1777276876412334100,
+                                                "span_id": 8580479779299226726,
+                                                "trace_id": 288088220458066445163399498256557403013
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        },
+                        {
+                            "name": "http.server.response.size",
+                            "description": "measures the size of HTTP response messages (compressed).",
+                            "unit": "By",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 200,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276861406993100,
+                                        "time_unix_nano": 1777276918986070700,
+                                        "count": 3,
+                                        "sum": 897,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            2,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 204,
+                                        "max": 347,
+                                        "exemplars": [
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 204,
+                                                "time_unix_nano": 1777276861594025600,
+                                                "span_id": 2771087795218292388,
+                                                "trace_id": 266782609866999793838416129247915954278
+                                            },
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 346,
+                                                "time_unix_nano": 1777276861777156300,
+                                                "span_id": 4937993866825905663,
+                                                "trace_id": 300421789317502772692376086718184303176
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 401,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276876228070000,
+                                        "time_unix_nano": 1777276918986070700,
+                                        "count": 1,
+                                        "sum": 34,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 34,
+                                        "max": 34,
+                                        "exemplars": [
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 34,
+                                                "time_unix_nano": 1777276876228066800,
+                                                "span_id": 971333828026548070,
+                                                "trace_id": 98487616482603677990373714545565656357
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 413,
+                                            "http.target": "/api/v1/github/doc-drift"
+                                        },
+                                        "start_time_unix_nano": 1777276876412424200,
+                                        "time_unix_nano": 1777276918986070700,
+                                        "count": 1,
+                                        "sum": 58,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 58,
+                                        "max": 58,
+                                        "exemplars": [
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 58,
+                                                "time_unix_nano": 1777276876412414500,
+                                                "span_id": 8580479779299226726,
+                                                "trace_id": 288088220458066445163399498256557403013
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        },
+                        {
+                            "name": "http.server.request.size",
+                            "description": "Measures the size of HTTP request messages (compressed).",
+                            "unit": "By",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 200,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276861407102500,
+                                        "time_unix_nano": 1777276918986070700,
+                                        "count": 3,
+                                        "sum": 529,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            3,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 148,
+                                        "max": 213,
+                                        "exemplars": [
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 148,
+                                                "time_unix_nano": 1777276861777170600,
+                                                "span_id": 4937993866825905663,
+                                                "trace_id": 300421789317502772692376086718184303176
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 401,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276876228086700,
+                                        "time_unix_nano": 1777276918986070700,
+                                        "count": 1,
+                                        "sum": 128,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 128,
+                                        "max": 128,
+                                        "exemplars": [
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 128,
+                                                "time_unix_nano": 1777276876228082900,
+                                                "span_id": 971333828026548070,
+                                                "trace_id": 98487616482603677990373714545565656357
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 413,
+                                            "http.target": "/api/v1/github/doc-drift"
+                                        },
+                                        "start_time_unix_nano": 1777276876412466900,
+                                        "time_unix_nano": 1777276918986070700,
+                                        "count": 1,
+                                        "sum": 262227,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 262227,
+                                        "max": 262227,
+                                        "exemplars": [
+                                            {
+                                                "filtered_attributes": {},
+                                                "value": 262227,
+                                                "time_unix_nano": 1777276876412456400,
+                                                "span_id": 8580479779299226726,
+                                                "trace_id": 288088220458066445163399498256557403013
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        }
+                    ],
+                    "schema_url": "https://opentelemetry.io/schemas/1.11.0"
+                }
+            ],
+            "schema_url": ""
+        }
+    ]
+}
+{
+    "resource_metrics": [
+        {
+            "resource": {
+                "attributes": {
+                    "telemetry.sdk.language": "python",
+                    "telemetry.sdk.name": "opentelemetry",
+                    "telemetry.sdk.version": "1.41.1",
+                    "service.name": "repopulse-backend",
+                    "service.version": "0.4.0",
+                    "deployment.environment": "development"
+                },
+                "schema_url": ""
+            },
+            "scope_metrics": [
+                {
+                    "scope": {
+                        "name": "opentelemetry.instrumentation.fastapi",
+                        "version": "0.62b1",
+                        "schema_url": "https://opentelemetry.io/schemas/1.11.0",
+                        "attributes": null
+                    },
+                    "metrics": [
+                        {
+                            "name": "http.server.active_requests",
+                            "description": "Number of active HTTP server requests.",
+                            "unit": "{request}",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010"
+                                        },
+                                        "start_time_unix_nano": 1777276861392480000,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "value": 0,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2,
+                                "is_monotonic": false
+                            }
+                        },
+                        {
+                            "name": "http.server.duration",
+                            "description": "Measures the duration of inbound HTTP requests.",
+                            "unit": "ms",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 200,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276861406821800,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "count": 3,
+                                        "sum": 20,
+                                        "bucket_counts": [
+                                            0,
+                                            2,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 2,
+                                        "max": 15,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 401,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276876228033600,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "count": 1,
+                                        "sum": 3,
+                                        "bucket_counts": [
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 3,
+                                        "max": 3,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 413,
+                                            "http.target": "/api/v1/github/doc-drift"
+                                        },
+                                        "start_time_unix_nano": 1777276876412351500,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "count": 1,
+                                        "sum": 7,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 7,
+                                        "max": 7,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        },
+                        {
+                            "name": "http.server.response.size",
+                            "description": "measures the size of HTTP response messages (compressed).",
+                            "unit": "By",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 200,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276861406993100,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "count": 3,
+                                        "sum": 897,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            2,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 204,
+                                        "max": 347,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 401,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276876228070000,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "count": 1,
+                                        "sum": 34,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 34,
+                                        "max": 34,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 413,
+                                            "http.target": "/api/v1/github/doc-drift"
+                                        },
+                                        "start_time_unix_nano": 1777276876412424200,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "count": 1,
+                                        "sum": 58,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 58,
+                                        "max": 58,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        },
+                        {
+                            "name": "http.server.request.size",
+                            "description": "Measures the size of HTTP request messages (compressed).",
+                            "unit": "By",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 200,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276861407102500,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "count": 3,
+                                        "sum": 529,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            3,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 148,
+                                        "max": 213,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 401,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276876228086700,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "count": 1,
+                                        "sum": 128,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 128,
+                                        "max": 128,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 413,
+                                            "http.target": "/api/v1/github/doc-drift"
+                                        },
+                                        "start_time_unix_nano": 1777276876412466900,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "count": 1,
+                                        "sum": 262227,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 262227,
+                                        "max": 262227,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        }
+                    ],
+                    "schema_url": "https://opentelemetry.io/schemas/1.11.0"
+                },
+                {
+                    "scope": {
+                        "name": "opentelemetry-sdk",
+                        "version": null,
+                        "schema_url": "",
+                        "attributes": null
+                    },
+                    "metrics": [
+                        {
+                            "name": "otel.sdk.metric_reader.collection.duration",
+                            "description": "The duration of the collect operation of the metric reader.",
+                            "unit": "s",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "otel.component.type": "periodic_metric_reader",
+                                            "otel.component.name": "periodic_metric_reader/1"
+                                        },
+                                        "start_time_unix_nano": 1777276918986333200,
+                                        "time_unix_nano": 1777276979000144100,
+                                        "count": 1,
+                                        "sum": 0.00026429997524246573,
+                                        "bucket_counts": [
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 0.00026429997524246573,
+                                        "max": 0.00026429997524246573,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        }
+                    ],
+                    "schema_url": ""
+                }
+            ],
+            "schema_url": ""
+        }
+    ]
+}
+{
+    "resource_metrics": [
+        {
+            "resource": {
+                "attributes": {
+                    "telemetry.sdk.language": "python",
+                    "telemetry.sdk.name": "opentelemetry",
+                    "telemetry.sdk.version": "1.41.1",
+                    "service.name": "repopulse-backend",
+                    "service.version": "0.4.0",
+                    "deployment.environment": "development"
+                },
+                "schema_url": ""
+            },
+            "scope_metrics": [
+                {
+                    "scope": {
+                        "name": "opentelemetry.instrumentation.fastapi",
+                        "version": "0.62b1",
+                        "schema_url": "https://opentelemetry.io/schemas/1.11.0",
+                        "attributes": null
+                    },
+                    "metrics": [
+                        {
+                            "name": "http.server.active_requests",
+                            "description": "Number of active HTTP server requests.",
+                            "unit": "{request}",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010"
+                                        },
+                                        "start_time_unix_nano": 1777276861392480000,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "value": 0,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2,
+                                "is_monotonic": false
+                            }
+                        },
+                        {
+                            "name": "http.server.duration",
+                            "description": "Measures the duration of inbound HTTP requests.",
+                            "unit": "ms",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 200,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276861406821800,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "count": 3,
+                                        "sum": 20,
+                                        "bucket_counts": [
+                                            0,
+                                            2,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 2,
+                                        "max": 15,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 401,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276876228033600,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "count": 1,
+                                        "sum": 3,
+                                        "bucket_counts": [
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 3,
+                                        "max": 3,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 413,
+                                            "http.target": "/api/v1/github/doc-drift"
+                                        },
+                                        "start_time_unix_nano": 1777276876412351500,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "count": 1,
+                                        "sum": 7,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 7,
+                                        "max": 7,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        },
+                        {
+                            "name": "http.server.response.size",
+                            "description": "measures the size of HTTP response messages (compressed).",
+                            "unit": "By",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 200,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276861406993100,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "count": 3,
+                                        "sum": 897,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            2,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 204,
+                                        "max": 347,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 401,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276876228070000,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "count": 1,
+                                        "sum": 34,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 34,
+                                        "max": 34,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 413,
+                                            "http.target": "/api/v1/github/doc-drift"
+                                        },
+                                        "start_time_unix_nano": 1777276876412424200,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "count": 1,
+                                        "sum": 58,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 58,
+                                        "max": 58,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        },
+                        {
+                            "name": "http.server.request.size",
+                            "description": "Measures the size of HTTP request messages (compressed).",
+                            "unit": "By",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 200,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276861407102500,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "count": 3,
+                                        "sum": 529,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            3,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 148,
+                                        "max": 213,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 401,
+                                            "http.target": "/api/v1/github/triage"
+                                        },
+                                        "start_time_unix_nano": 1777276876228086700,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "count": 1,
+                                        "sum": 128,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 128,
+                                        "max": 128,
+                                        "exemplars": []
+                                    },
+                                    {
+                                        "attributes": {
+                                            "http.scheme": "http",
+                                            "http.host": "127.0.0.1:8010",
+                                            "net.host.port": 8010,
+                                            "http.flavor": "1.1",
+                                            "http.method": "POST",
+                                            "http.server_name": "127.0.0.1:8010",
+                                            "http.status_code": 413,
+                                            "http.target": "/api/v1/github/doc-drift"
+                                        },
+                                        "start_time_unix_nano": 1777276876412466900,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "count": 1,
+                                        "sum": 262227,
+                                        "bucket_counts": [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            1
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 262227,
+                                        "max": 262227,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        }
+                    ],
+                    "schema_url": "https://opentelemetry.io/schemas/1.11.0"
+                },
+                {
+                    "scope": {
+                        "name": "opentelemetry-sdk",
+                        "version": null,
+                        "schema_url": "",
+                        "attributes": null
+                    },
+                    "metrics": [
+                        {
+                            "name": "otel.sdk.metric_reader.collection.duration",
+                            "description": "The duration of the collect operation of the metric reader.",
+                            "unit": "s",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "otel.component.type": "periodic_metric_reader",
+                                            "otel.component.name": "periodic_metric_reader/1"
+                                        },
+                                        "start_time_unix_nano": 1777276918986333200,
+                                        "time_unix_nano": 1777277039014292000,
+                                        "count": 2,
+                                        "sum": 0.0016872999258339405,
+                                        "bucket_counts": [
+                                            0,
+                                            2,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        "explicit_bounds": [
+                                            0.0,
+                                            5.0,
+                                            10.0,
+                                            25.0,
+                                            50.0,
+                                            75.0,
+                                            100.0,
+                                            250.0,
+                                            500.0,
+                                            750.0,
+                                            1000.0,
+                                            2500.0,
+                                            5000.0,
+                                            7500.0,
+                                            10000.0
+                                        ],
+                                        "min": 0.00026429997524246573,
+                                        "max": 0.0014229999505914748,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2
+                            }
+                        }
+                    ],
+                    "schema_url": ""
+                }
+            ],
+            "schema_url": ""
+        }
+    ]
+}

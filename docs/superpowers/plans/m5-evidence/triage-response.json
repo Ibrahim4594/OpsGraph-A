@@ -1,0 +1,1 @@
+{"issue_number":42,"severity":"critical","category":"uncategorized","suggested_labels":["severity:critical","triage"],"confidence":0.9,"evidence_trace":["T1: critical signal matched (\\b(crash|outage|production|sev[\\s-]?1)\\b) → severity=critical"]}
