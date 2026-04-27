@@ -1,0 +1,65 @@
+name: agentic-issue-triage
+
+# Calls into the RepoPulse backend with the issue payload, then posts a
+# triage summary as a comment. Read-only by default — no labels added,
+# no issues closed. See docs/agentic-workflows.md for the trust model.
+
+on:
+  issues:
+    types: [opened, reopened, edited]
+
+permissions:
+  issues: write
+  contents: read
+
+env:
+  REPOPULSE_BACKEND_URL: ${{ vars.REPOPULSE_BACKEND_URL }}
+  REPOPULSE_AGENTIC_TOKEN: ${{ secrets.REPOPULSE_AGENTIC_TOKEN }}
+
+jobs:
+  triage:
+    if: ${{ vars.REPOPULSE_AGENTIC_ENABLED != 'false' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Call backend triage
+        id: triage
+        run: python .github/workflows/scripts/agentic_call.py triage
+
+      - name: Post triage comment
+        if: ${{ vars.REPOPULSE_AGENTIC_DRYRUN != 'true' }}
+        uses: actions/github-script@v7
+        env:
+          RESULT_JSON: ${{ steps.triage.outputs.result_json }}
+        with:
+          script: |
+            const result = JSON.parse(process.env.RESULT_JSON);
+            if (result.disabled) {
+              core.info('Agentic disabled at backend; no comment posted.');
+              return;
+            }
+            const body = [
+              `🤖 **RepoPulse Triage** (read-only suggestion)`,
+              ``,
+              `- **Severity:** \`${result.severity}\``,
+              `- **Category:** \`${result.category}\``,
+              `- **Suggested labels:** ${result.suggested_labels.map(l => '`' + l + '`').join(', ') || '_none_'}`,
+              `- **Confidence:** ${result.confidence}`,
+              ``,
+              `<details><summary>Evidence trace</summary>`,
+              ``,
+              ...result.evidence_trace.map(line => `- ${line}`),
+              ``,
+              `</details>`,
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body,
+            });

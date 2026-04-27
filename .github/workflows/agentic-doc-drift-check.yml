@@ -1,0 +1,133 @@
+name: agentic-doc-drift-check
+
+# Runs on pull requests. Collects the changed markdown files from the PR,
+# reads them at the head SHA, posts to the backend, and comments on the PR
+# with any broken markdown refs. Never blocks the merge — comment only.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "**/*.md"
+      - "docs/**"
+      - "adr/**"
+
+permissions:
+  pull-requests: write
+  contents: read
+
+env:
+  REPOPULSE_BACKEND_URL: ${{ vars.REPOPULSE_BACKEND_URL }}
+  REPOPULSE_AGENTIC_TOKEN: ${{ secrets.REPOPULSE_AGENTIC_TOKEN }}
+
+jobs:
+  drift:
+    if: ${{ vars.REPOPULSE_AGENTIC_ENABLED != 'false' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Compute drift body
+        id: payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          # Changed markdown files in the PR (head tree).
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- '*.md' | sort -u)
+          # All paths present at HEAD — used to validate references.
+          REPO_PATHS=$(git ls-tree -r --name-only "$HEAD" | sort -u)
+
+          python - <<'PY' "$CHANGED" "$REPO_PATHS"
+          import json, os, sys
+          changed = [p for p in sys.argv[1].splitlines() if p.strip()]
+          repo_paths = [p for p in sys.argv[2].splitlines() if p.strip()]
+          contents = {}
+          for path in changed:
+              try:
+                  with open(path, 'r', encoding='utf-8') as fh:
+                      contents[path] = fh.read()
+              except OSError:
+                  pass
+          body = {
+              "changed_files": changed,
+              "repo_paths": repo_paths,
+              "file_contents": contents,
+          }
+          out = os.environ.get("GITHUB_OUTPUT")
+          if out:
+              with open(out, 'a', encoding='utf-8') as fh:
+                  fh.write("body<<EOF\n")
+                  fh.write(json.dumps(body))
+                  fh.write("\nEOF\n")
+          PY
+
+      - name: Call backend doc-drift
+        id: drift
+        env:
+          REQUEST_BODY: ${{ steps.payload.outputs.body }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, urllib.request
+          url = os.environ['REPOPULSE_BACKEND_URL'].rstrip('/') + '/api/v1/github/doc-drift'
+          token = os.environ['REPOPULSE_AGENTIC_TOKEN']
+          body = os.environ['REQUEST_BODY']
+          req = urllib.request.Request(
+              url,
+              data=body.encode('utf-8'),
+              headers={
+                  'Authorization': f'Bearer {token}',
+                  'Content-Type': 'application/json',
+              },
+              method='POST',
+          )
+          with urllib.request.urlopen(req, timeout=30) as resp:
+              result = json.loads(resp.read().decode('utf-8'))
+          out = os.environ.get('GITHUB_OUTPUT')
+          if out:
+              with open(out, 'a', encoding='utf-8') as fh:
+                  fh.write('result_json<<EOF\n')
+                  fh.write(json.dumps(result))
+                  fh.write('\nEOF\n')
+          print(json.dumps(result, indent=2))
+          PY
+
+      - name: Comment broken refs
+        if: ${{ vars.REPOPULSE_AGENTIC_DRYRUN != 'true' }}
+        uses: actions/github-script@v7
+        env:
+          RESULT_JSON: ${{ steps.drift.outputs.result_json }}
+        with:
+          script: |
+            const result = JSON.parse(process.env.RESULT_JSON);
+            if (result.disabled) {
+              core.info('Agentic disabled at backend; no comment posted.');
+              return;
+            }
+            if (!result.broken_refs || result.broken_refs.length === 0) {
+              core.info('No broken markdown refs detected.');
+              return;
+            }
+            const lines = result.broken_refs.map(([file, target, line]) =>
+              `- \`${file}:${line}\` → broken target \`${target}\``);
+            const body = [
+              `🤖 **RepoPulse Doc-Drift** (read-only suggestion)`,
+              ``,
+              `Found ${result.broken_refs.length} broken markdown reference(s) in this PR:`,
+              ``,
+              ...lines,
+              ``,
+              `_This check does not block merge. See \`docs/agentic-workflows.md\` for kill-switch._`,
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });
