@@ -1,0 +1,24 @@
+{
+  "name": "multi-source-critical",
+  "expected_action_category": "rollback",
+  "events": [
+    {"offset_seconds": 0, "source": "github", "kind": "push", "payload": {}},
+    {
+      "offset_seconds": 15,
+      "source": "otel-logs",
+      "kind": "error-log",
+      "payload": {"severity": "error"}
+    }
+  ],
+  "anomalies": [
+    {
+      "offset_seconds": 10,
+      "value": 300.0,
+      "baseline_median": 10.0,
+      "baseline_mad": 1.0,
+      "score": 20.0,
+      "severity": "critical",
+      "series_name": "otel-metrics"
+    }
+  ]
+}

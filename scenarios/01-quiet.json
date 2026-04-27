@@ -1,0 +1,8 @@
+{
+  "name": "quiet",
+  "expected_action_category": "observe",
+  "events": [
+    {"offset_seconds": 0, "source": "github", "kind": "push", "payload": {}}
+  ],
+  "anomalies": []
+}

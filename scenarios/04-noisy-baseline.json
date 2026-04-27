@@ -1,0 +1,27 @@
+{
+  "name": "noisy-baseline",
+  "expected_action_category": "escalate",
+  "events": [
+    {"offset_seconds": 0, "source": "github", "kind": "push", "payload": {}}
+  ],
+  "anomalies": [
+    {
+      "offset_seconds": 10,
+      "value": 50.0,
+      "baseline_median": 10.0,
+      "baseline_mad": 2.0,
+      "score": 13.5,
+      "severity": "warning",
+      "series_name": "otel-metrics"
+    },
+    {
+      "offset_seconds": 20,
+      "value": 55.0,
+      "baseline_median": 10.0,
+      "baseline_mad": 2.0,
+      "score": 15.2,
+      "severity": "warning",
+      "series_name": "otel-metrics"
+    }
+  ]
+}
