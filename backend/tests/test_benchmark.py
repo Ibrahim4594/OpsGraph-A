@@ -135,3 +135,43 @@ def test_summarize_handles_empty_input() -> None:
     assert summary["scenarios"] == 0
     assert summary["false_positive_rate"] == 0.0
     assert summary["mttr_seconds_avg"] is None
+
+
+# Regression — Phase 1 root cause: anomaly timestamps loaded by scenarios.py
+# were anchored to _T_BASE while events ingested by run_scenario used `now`.
+# 300s correlation window split them into separate incidents → every
+# anomaly-bearing scenario fell back to R1 (observe). Fix: re-anchor
+# anomaly timestamps to `now` inside run_scenario.
+
+
+def test_run_scenario_loaded_fixture_with_anomalies_does_not_observe() -> None:
+    """Loading a real fixture from disk and running it should produce the
+    expected category — not R1 observe — proving anomalies and events
+    land in the same incident regardless of when ``now`` happens to be."""
+    from pathlib import Path
+
+    from repopulse.scripts.scenarios import load_scenario
+
+    fixtures_dir = Path(__file__).resolve().parents[2] / "scenarios"
+    scenario = load_scenario(fixtures_dir / "03-multi-source-critical.json")
+    # `now` deliberately differs from the scenario's _T_BASE anchor.
+    result = run_scenario(scenario, now=_T0 + timedelta(days=180))
+    assert result.action_category != "observe", (
+        f"expected non-observe (rollback) but got {result.action_category!r} — "
+        "the fix must re-anchor anomaly timestamps to `now`"
+    )
+
+
+def test_run_scenario_mttr_is_within_scenario_seconds() -> None:
+    """After the anchor fix MTTR should be the intra-scenario delta in
+    seconds, not the wall-clock delta from _T_BASE to now."""
+    from pathlib import Path
+
+    from repopulse.scripts.scenarios import load_scenario
+
+    fixtures_dir = Path(__file__).resolve().parents[2] / "scenarios"
+    scenario = load_scenario(fixtures_dir / "03-multi-source-critical.json")
+    result = run_scenario(scenario, now=_T0 + timedelta(days=180))
+    assert result.mttr_seconds is not None
+    # Scenario events span 0–15 s and anomaly is at 10 s; MTTR must be ≤ 30 s.
+    assert 0.0 <= result.mttr_seconds <= 30.0

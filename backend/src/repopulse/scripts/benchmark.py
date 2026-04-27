@@ -20,8 +20,8 @@ from __future__ import annotations
 
 import argparse
 import json
-from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from dataclasses import asdict, dataclass, field, replace
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Literal
 
@@ -30,6 +30,12 @@ from repopulse.api.events import EventEnvelope
 from repopulse.api.slo import _classify_event
 from repopulse.pipeline.orchestrator import PipelineOrchestrator
 from repopulse.slo import SLO, availability_sli, burn_rate
+
+# Anchor that ``scenarios.load_scenario`` uses when materialising anomaly
+# timestamps from ``offset_seconds`` in the JSON file. Kept in sync here
+# because the harness re-anchors anomalies onto the runtime ``now`` so
+# correlate() groups them with events ingested at the same ``now`` clock.
+_SCENARIO_ANCHOR = datetime(2026, 4, 27, 12, 0, tzinfo=UTC)
 
 ActionCategory = Literal["observe", "triage", "escalate", "rollback"]
 
@@ -65,8 +71,15 @@ def run_scenario(scenario: Scenario, *, now: datetime) -> BenchmarkResult:
             event.envelope,
             received_at=now + timedelta(seconds=event.offset_seconds),
         )
-    if scenario.anomalies:
-        orch.record_anomalies(scenario.anomalies)
+    # Re-anchor anomaly timestamps to ``now`` so they share the correlation
+    # window with the events. The fixture's offset (relative to
+    # ``_SCENARIO_ANCHOR``) is preserved.
+    rebased_anomalies = [
+        replace(anomaly, timestamp=now + (anomaly.timestamp - _SCENARIO_ANCHOR))
+        for anomaly in scenario.anomalies
+    ]
+    if rebased_anomalies:
+        orch.record_anomalies(rebased_anomalies)
     orch.evaluate(window_seconds=300.0)
 
     recs = orch.latest_recommendations(limit=1)
@@ -83,14 +96,19 @@ def run_scenario(scenario: Scenario, *, now: datetime) -> BenchmarkResult:
     rec = recs[0]
 
     mttr_seconds: float | None
-    if scenario.anomalies:
-        first_anomaly_ts = min(anomaly.timestamp for anomaly in scenario.anomalies)
+    if rebased_anomalies:
+        first_anomaly_ts = min(anomaly.timestamp for anomaly in rebased_anomalies)
+        last_anomaly_ts = max(anomaly.timestamp for anomaly in rebased_anomalies)
         last_event_ts = (
             now + timedelta(seconds=scenario.events[-1].offset_seconds)
             if scenario.events
             else first_anomaly_ts
         )
-        mttr_seconds = max(0.0, (last_event_ts - first_anomaly_ts).total_seconds())
+        # MTTR is "earliest moment a streaming pipeline could emit the
+        # recommendation" minus "first anomaly", which is the later of
+        # last event arrival and last anomaly arrival.
+        trigger_ts = max(last_event_ts, last_anomaly_ts)
+        mttr_seconds = max(0.0, (trigger_ts - first_anomaly_ts).total_seconds())
     else:
         mttr_seconds = None
 

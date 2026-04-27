@@ -1,0 +1,44 @@
+{
+  "summary": {
+    "scenarios": 4,
+    "false_positives": 0,
+    "false_positive_rate": 0.0,
+    "mttr_seconds_avg": 5.0,
+    "mttr_seconds_max": 10.0,
+    "burn_lead_seconds_avg": 0.0
+  },
+  "results": [
+    {
+      "scenario_name": "quiet",
+      "action_category": "observe",
+      "expected_action_category": "observe",
+      "false_positive": false,
+      "mttr_seconds": null,
+      "burn_rate_lead_seconds": null
+    },
+    {
+      "scenario_name": "single-anomaly",
+      "action_category": "triage",
+      "expected_action_category": "triage",
+      "false_positive": false,
+      "mttr_seconds": 0.0,
+      "burn_rate_lead_seconds": null
+    },
+    {
+      "scenario_name": "multi-source-critical",
+      "action_category": "rollback",
+      "expected_action_category": "rollback",
+      "false_positive": false,
+      "mttr_seconds": 5.0,
+      "burn_rate_lead_seconds": 0.0
+    },
+    {
+      "scenario_name": "noisy-baseline",
+      "action_category": "escalate",
+      "expected_action_category": "escalate",
+      "false_positive": false,
+      "mttr_seconds": 10.0,
+      "burn_rate_lead_seconds": null
+    }
+  ]
+}
