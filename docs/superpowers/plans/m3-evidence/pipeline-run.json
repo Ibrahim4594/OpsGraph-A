@@ -1,0 +1,23 @@
+snapshot: {"events": 6, "anomalies": 3, "incidents": 1, "recommendations": 1}
+new recommendations: 1
+{
+  "snapshot": {
+    "events": 6,
+    "anomalies": 3,
+    "incidents": 1,
+    "recommendations": 1
+  },
+  "recommendations": [
+    {
+      "recommendation_id": "b4faa8bd-5c92-4957-a639-e4ccf45afe90",
+      "incident_id": "9378dfe8-df4d-49de-b28a-6075af8ffc76",
+      "action_category": "rollback",
+      "confidence": 0.9,
+      "risk_level": "high",
+      "evidence_trace": [
+        "R4: multi-source (3) AND \u22651 critical \u2192 rollback (sources=['github', 'otel-logs', 'otel-metrics'], fired=True)",
+        "R3: \u22652 anomalies OR \u22651 critical \u2192 escalate (anomalies=3, any_critical=True, fired=True)"
+      ]
+    }
+  ]
+}

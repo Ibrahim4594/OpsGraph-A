@@ -1,0 +1,1950 @@
+INFO:     Started server process [832]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8006 (Press CTRL+C to quit)
+{
+    "name": "GET /healthz http send",
+    "context": {
+        "trace_id": "0x40fb05244a6b44183002731cd6e87e36",
+        "span_id": "0x616deb660cffa45d",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xb56da245c15112e1",
+    "start_time": "2026-04-27T06:29:09.001469Z",
+    "end_time": "2026-04-27T06:29:09.001504Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58721 - "GET /healthz HTTP/1.1" 200 OK
+{
+    "name": "GET /healthz http send",
+    "context": {
+        "trace_id": "0x40fb05244a6b44183002731cd6e87e36",
+        "span_id": "0x2dd1b69de991d5f2",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xb56da245c15112e1",
+    "start_time": "2026-04-27T06:29:09.002054Z",
+    "end_time": "2026-04-27T06:29:09.002067Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "GET /healthz",
+    "context": {
+        "trace_id": "0x40fb05244a6b44183002731cd6e87e36",
+        "span_id": "0xb56da245c15112e1",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:08.987911Z",
+    "end_time": "2026-04-27T06:29:09.002198Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/healthz",
+        "http.url": "http://127.0.0.1:8006/healthz",
+        "http.method": "GET",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58721,
+        "http.route": "/healthz",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "GET /api/v1/recommendations http send",
+    "context": {
+        "trace_id": "0x630ec92b95f3f6eaadbe90c170e64026",
+        "span_id": "0x995ae9b62e535187",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xcd73c6af746424a4",
+    "start_time": "2026-04-27T06:29:09.042341Z",
+    "end_time": "2026-04-27T06:29:09.042374Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58722 - "GET /api/v1/recommendations HTTP/1.1" 200 OK
+{
+    "name": "GET /api/v1/recommendations http send",
+    "context": {
+        "trace_id": "0x630ec92b95f3f6eaadbe90c170e64026",
+        "span_id": "0xe211fb42a267f984",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xcd73c6af746424a4",
+    "start_time": "2026-04-27T06:29:09.042938Z",
+    "end_time": "2026-04-27T06:29:09.042955Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "GET /api/v1/recommendations",
+    "context": {
+        "trace_id": "0x630ec92b95f3f6eaadbe90c170e64026",
+        "span_id": "0xcd73c6af746424a4",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.040707Z",
+    "end_time": "2026-04-27T06:29:09.043145Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/recommendations",
+        "http.url": "http://127.0.0.1:8006/api/v1/recommendations",
+        "http.method": "GET",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58722,
+        "http.route": "/api/v1/recommendations",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0x06ec4ffca9235d2a9c962b4a62eb9b2b",
+        "span_id": "0x6476cd75d0201cc6",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x9cc1f0bc7142b7df",
+    "start_time": "2026-04-27T06:29:09.108793Z",
+    "end_time": "2026-04-27T06:29:09.108819Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x06ec4ffca9235d2a9c962b4a62eb9b2b",
+        "span_id": "0x78cdd3e0a6da8eac",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x9cc1f0bc7142b7df",
+    "start_time": "2026-04-27T06:29:09.110420Z",
+    "end_time": "2026-04-27T06:29:09.110507Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58723 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x06ec4ffca9235d2a9c962b4a62eb9b2b",
+        "span_id": "0x25613b029c90a9a5",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x9cc1f0bc7142b7df",
+    "start_time": "2026-04-27T06:29:09.111887Z",
+    "end_time": "2026-04-27T06:29:09.111926Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0x06ec4ffca9235d2a9c962b4a62eb9b2b",
+        "span_id": "0x9cc1f0bc7142b7df",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.108097Z",
+    "end_time": "2026-04-27T06:29:09.112322Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58723,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0x345704cac96b046a447726902577344b",
+        "span_id": "0x89194abc1cecd2a4",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x19861f8bdc2cc7ee",
+    "start_time": "2026-04-27T06:29:09.157831Z",
+    "end_time": "2026-04-27T06:29:09.157848Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x345704cac96b046a447726902577344b",
+        "span_id": "0x3e37f43fd39be9f6",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x19861f8bdc2cc7ee",
+    "start_time": "2026-04-27T06:29:09.159195Z",
+    "end_time": "2026-04-27T06:29:09.159231Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58724 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x345704cac96b046a447726902577344b",
+        "span_id": "0xe95d40e4dc6e92d7",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x19861f8bdc2cc7ee",
+    "start_time": "2026-04-27T06:29:09.159659Z",
+    "end_time": "2026-04-27T06:29:09.159675Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0x345704cac96b046a447726902577344b",
+        "span_id": "0x19861f8bdc2cc7ee",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.157694Z",
+    "end_time": "2026-04-27T06:29:09.159824Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58724,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0x983ddba1626dbe5ea5dc41e27586ca53",
+        "span_id": "0xccbb2d08bb644879",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x5e96fb7875db31df",
+    "start_time": "2026-04-27T06:29:09.203818Z",
+    "end_time": "2026-04-27T06:29:09.203837Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x983ddba1626dbe5ea5dc41e27586ca53",
+        "span_id": "0xb1dd6cb4b49d257f",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x5e96fb7875db31df",
+    "start_time": "2026-04-27T06:29:09.205256Z",
+    "end_time": "2026-04-27T06:29:09.205275Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58725 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x983ddba1626dbe5ea5dc41e27586ca53",
+        "span_id": "0x8316b2a67fc8fe2a",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x5e96fb7875db31df",
+    "start_time": "2026-04-27T06:29:09.205657Z",
+    "end_time": "2026-04-27T06:29:09.205666Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0x983ddba1626dbe5ea5dc41e27586ca53",
+        "span_id": "0x5e96fb7875db31df",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.203623Z",
+    "end_time": "2026-04-27T06:29:09.205755Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58725,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0x846eb21d9dd0c105d89c7df732c8518c",
+        "span_id": "0xacd8fd871b21ad60",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x5bcd7254672ef3fd",
+    "start_time": "2026-04-27T06:29:09.245816Z",
+    "end_time": "2026-04-27T06:29:09.245837Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x846eb21d9dd0c105d89c7df732c8518c",
+        "span_id": "0xc87e6b12b96c2b29",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x5bcd7254672ef3fd",
+    "start_time": "2026-04-27T06:29:09.246969Z",
+    "end_time": "2026-04-27T06:29:09.247102Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58726 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x846eb21d9dd0c105d89c7df732c8518c",
+        "span_id": "0x5dea56cfb6a1da72",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x5bcd7254672ef3fd",
+    "start_time": "2026-04-27T06:29:09.247563Z",
+    "end_time": "2026-04-27T06:29:09.247578Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0x846eb21d9dd0c105d89c7df732c8518c",
+        "span_id": "0x5bcd7254672ef3fd",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.245623Z",
+    "end_time": "2026-04-27T06:29:09.247728Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58726,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0x97be0a4894fea4dc8c463941ed1a7054",
+        "span_id": "0x0f71ca5a8eccb725",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x53fd798b60c3b1f9",
+    "start_time": "2026-04-27T06:29:09.288994Z",
+    "end_time": "2026-04-27T06:29:09.289006Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x97be0a4894fea4dc8c463941ed1a7054",
+        "span_id": "0xdd9f532ec5d290cb",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x53fd798b60c3b1f9",
+    "start_time": "2026-04-27T06:29:09.289835Z",
+    "end_time": "2026-04-27T06:29:09.289858Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58727 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x97be0a4894fea4dc8c463941ed1a7054",
+        "span_id": "0xa1766e5dd68da067",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x53fd798b60c3b1f9",
+    "start_time": "2026-04-27T06:29:09.290210Z",
+    "end_time": "2026-04-27T06:29:09.290221Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0x97be0a4894fea4dc8c463941ed1a7054",
+        "span_id": "0x53fd798b60c3b1f9",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.288870Z",
+    "end_time": "2026-04-27T06:29:09.290336Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58727,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0x7ad4e4a378704829425dcc586cee405a",
+        "span_id": "0x6ff5f3020a438279",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x6b5959138dc58ff6",
+    "start_time": "2026-04-27T06:29:09.332398Z",
+    "end_time": "2026-04-27T06:29:09.332417Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x7ad4e4a378704829425dcc586cee405a",
+        "span_id": "0xf7ae46ff2b3697c1",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x6b5959138dc58ff6",
+    "start_time": "2026-04-27T06:29:09.333438Z",
+    "end_time": "2026-04-27T06:29:09.333460Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58728 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x7ad4e4a378704829425dcc586cee405a",
+        "span_id": "0xea3abe7db32870af",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x6b5959138dc58ff6",
+    "start_time": "2026-04-27T06:29:09.333803Z",
+    "end_time": "2026-04-27T06:29:09.333813Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0x7ad4e4a378704829425dcc586cee405a",
+        "span_id": "0x6b5959138dc58ff6",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.332220Z",
+    "end_time": "2026-04-27T06:29:09.333916Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58728,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "GET /api/v1/recommendations http send",
+    "context": {
+        "trace_id": "0x898eb8b995ef4a00e303a45398b83324",
+        "span_id": "0xee611b2d74ec2a9c",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xd31f7073bad6d0ec",
+    "start_time": "2026-04-27T06:29:09.375166Z",
+    "end_time": "2026-04-27T06:29:09.375198Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58729 - "GET /api/v1/recommendations HTTP/1.1" 200 OK
+{
+    "name": "GET /api/v1/recommendations http send",
+    "context": {
+        "trace_id": "0x898eb8b995ef4a00e303a45398b83324",
+        "span_id": "0x6a17828d8aeee01e",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xd31f7073bad6d0ec",
+    "start_time": "2026-04-27T06:29:09.375676Z",
+    "end_time": "2026-04-27T06:29:09.375692Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "GET /api/v1/recommendations",
+    "context": {
+        "trace_id": "0x898eb8b995ef4a00e303a45398b83324",
+        "span_id": "0xd31f7073bad6d0ec",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.374267Z",
+    "end_time": "2026-04-27T06:29:09.375857Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/recommendations",
+        "http.url": "http://127.0.0.1:8006/api/v1/recommendations",
+        "http.method": "GET",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58729,
+        "http.route": "/api/v1/recommendations",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0x5c6932c021b7b154f5ab4ff08c4b1982",
+        "span_id": "0x74e57c088601d45d",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x7d947c038dec880f",
+    "start_time": "2026-04-27T06:29:09.442117Z",
+    "end_time": "2026-04-27T06:29:09.442129Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x5c6932c021b7b154f5ab4ff08c4b1982",
+        "span_id": "0xae2010c5058a1548",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x7d947c038dec880f",
+    "start_time": "2026-04-27T06:29:09.443156Z",
+    "end_time": "2026-04-27T06:29:09.443188Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58730 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x5c6932c021b7b154f5ab4ff08c4b1982",
+        "span_id": "0xf1f9d465c4d8e67e",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x7d947c038dec880f",
+    "start_time": "2026-04-27T06:29:09.443623Z",
+    "end_time": "2026-04-27T06:29:09.443636Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0x5c6932c021b7b154f5ab4ff08c4b1982",
+        "span_id": "0x7d947c038dec880f",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.441998Z",
+    "end_time": "2026-04-27T06:29:09.443775Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58730,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0x21b22a2cc875bc41eb493fc3694e8ce8",
+        "span_id": "0x2ba7f3b0e0252601",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x80342cdd600b3c43",
+    "start_time": "2026-04-27T06:29:09.489091Z",
+    "end_time": "2026-04-27T06:29:09.489107Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x21b22a2cc875bc41eb493fc3694e8ce8",
+        "span_id": "0x6c1b27614c46ac2d",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x80342cdd600b3c43",
+    "start_time": "2026-04-27T06:29:09.490492Z",
+    "end_time": "2026-04-27T06:29:09.490512Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58731 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x21b22a2cc875bc41eb493fc3694e8ce8",
+        "span_id": "0x1471475dd0a596f4",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x80342cdd600b3c43",
+    "start_time": "2026-04-27T06:29:09.490809Z",
+    "end_time": "2026-04-27T06:29:09.490818Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0x21b22a2cc875bc41eb493fc3694e8ce8",
+        "span_id": "0x80342cdd600b3c43",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.488941Z",
+    "end_time": "2026-04-27T06:29:09.490908Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58731,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0xd42567ff1aad2320336c0256da450ba0",
+        "span_id": "0xb9f6c6702168beb5",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x845ad2718e555ad3",
+    "start_time": "2026-04-27T06:29:09.551197Z",
+    "end_time": "2026-04-27T06:29:09.551208Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0xd42567ff1aad2320336c0256da450ba0",
+        "span_id": "0xec544b2896e596fb",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x845ad2718e555ad3",
+    "start_time": "2026-04-27T06:29:09.552295Z",
+    "end_time": "2026-04-27T06:29:09.552326Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58732 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0xd42567ff1aad2320336c0256da450ba0",
+        "span_id": "0x063ddf37e33c9a30",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x845ad2718e555ad3",
+    "start_time": "2026-04-27T06:29:09.552779Z",
+    "end_time": "2026-04-27T06:29:09.552794Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0xd42567ff1aad2320336c0256da450ba0",
+        "span_id": "0x845ad2718e555ad3",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.551080Z",
+    "end_time": "2026-04-27T06:29:09.552950Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58732,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0x27ba65ef57db76e4bbda42ed6e564b65",
+        "span_id": "0x624beb5763adf600",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xe5a71b380ef43d48",
+    "start_time": "2026-04-27T06:29:09.596569Z",
+    "end_time": "2026-04-27T06:29:09.596586Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x27ba65ef57db76e4bbda42ed6e564b65",
+        "span_id": "0x355425e47a79e069",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xe5a71b380ef43d48",
+    "start_time": "2026-04-27T06:29:09.597638Z",
+    "end_time": "2026-04-27T06:29:09.597668Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58733 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0x27ba65ef57db76e4bbda42ed6e564b65",
+        "span_id": "0x347de5832975b0cc",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xe5a71b380ef43d48",
+    "start_time": "2026-04-27T06:29:09.598134Z",
+    "end_time": "2026-04-27T06:29:09.598149Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0x27ba65ef57db76e4bbda42ed6e564b65",
+        "span_id": "0xe5a71b380ef43d48",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.596409Z",
+    "end_time": "2026-04-27T06:29:09.598323Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58733,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http receive",
+    "context": {
+        "trace_id": "0xc498109885ad0858eb09c12a777e2428",
+        "span_id": "0x8809f4ee3cd3e8c5",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xb1cb2cb3d4bfb913",
+    "start_time": "2026-04-27T06:29:09.652282Z",
+    "end_time": "2026-04-27T06:29:09.652304Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.request"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0xc498109885ad0858eb09c12a777e2428",
+        "span_id": "0x218c27f4fb97f80a",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xb1cb2cb3d4bfb913",
+    "start_time": "2026-04-27T06:29:09.653902Z",
+    "end_time": "2026-04-27T06:29:09.653936Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58734 - "POST /api/v1/events HTTP/1.1" 202 Accepted
+{
+    "name": "POST /api/v1/events http send",
+    "context": {
+        "trace_id": "0xc498109885ad0858eb09c12a777e2428",
+        "span_id": "0x49b082dbaf0b8aa6",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xb1cb2cb3d4bfb913",
+    "start_time": "2026-04-27T06:29:09.654623Z",
+    "end_time": "2026-04-27T06:29:09.654635Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "POST /api/v1/events",
+    "context": {
+        "trace_id": "0xc498109885ad0858eb09c12a777e2428",
+        "span_id": "0xb1cb2cb3d4bfb913",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.652128Z",
+    "end_time": "2026-04-27T06:29:09.654752Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/events",
+        "http.url": "http://127.0.0.1:8006/api/v1/events",
+        "http.method": "POST",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58734,
+        "http.route": "/api/v1/events",
+        "http.status_code": 202
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "GET /api/v1/recommendations http send",
+    "context": {
+        "trace_id": "0x14e3ce460aef3bbf0cb562ae2a249fee",
+        "span_id": "0x5eae721a1e79dbc9",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xc06385787754168f",
+    "start_time": "2026-04-27T06:29:09.695567Z",
+    "end_time": "2026-04-27T06:29:09.695614Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.start",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+INFO:     127.0.0.1:58735 - "GET /api/v1/recommendations HTTP/1.1" 200 OK
+{
+    "name": "GET /api/v1/recommendations http send",
+    "context": {
+        "trace_id": "0x14e3ce460aef3bbf0cb562ae2a249fee",
+        "span_id": "0xa2dfc62c6c304299",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xc06385787754168f",
+    "start_time": "2026-04-27T06:29:09.696229Z",
+    "end_time": "2026-04-27T06:29:09.696247Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "asgi.event.type": "http.response.body"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
+{
+    "name": "GET /api/v1/recommendations",
+    "context": {
+        "trace_id": "0x14e3ce460aef3bbf0cb562ae2a249fee",
+        "span_id": "0xc06385787754168f",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": "2026-04-27T06:29:09.694563Z",
+    "end_time": "2026-04-27T06:29:09.696414Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "http.scheme": "http",
+        "http.host": "127.0.0.1:8006",
+        "net.host.port": 8006,
+        "http.flavor": "1.1",
+        "http.target": "/api/v1/recommendations",
+        "http.url": "http://127.0.0.1:8006/api/v1/recommendations",
+        "http.method": "GET",
+        "http.server_name": "127.0.0.1:8006",
+        "http.user_agent": "curl/8.18.0",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 58735,
+        "http.route": "/api/v1/recommendations",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.41.1",
+            "service.name": "repopulse-backend",
+            "service.version": "0.3.0",
+            "deployment.environment": "development"
+        },
+        "schema_url": ""
+    }
+}
