@@ -92,6 +92,33 @@ def test_detect_seasonal_baseline_does_register_off_phase_spike() -> None:
     assert any(a.value == 500.0 for a in anomalies)
 
 
+def test_detect_seasonal_baseline_with_noisy_baseline_uses_modified_zscore() -> None:
+    """M3 review I4 follow-up: the off-phase test above passes via the MAD=0
+    branch (baseline is perfectly silent). This test exercises the actual
+    modified-z-score formula by introducing baseline noise so MAD > 0 at the
+    seasonal phase, while still detecting an off-phase spike."""
+    values: list[float] = []
+    rng = [0.0, 0.3, -0.2, 0.1, -0.1, 0.2, -0.3, 0.0]
+    # Per-cycle phase shift makes same-phase samples differ across cycles, so
+    # the seasonal baseline window has nonzero MAD.
+    for cycle in range(5):
+        cycle_values = [
+            10.0 + rng[(i + cycle) % len(rng)] for i in range(23)
+        ] + [100.0]
+        values.extend(cycle_values)
+    # Off-phase spike during cycle 4, position 5.
+    values[24 * 4 + 5] = 500.0
+    anomalies = detect_zscore(
+        _series(values), window=4, threshold=3.5, seasonal_period=24
+    )
+    spike_anomalies = [a for a in anomalies if a.value == 500.0]
+    assert spike_anomalies, "expected the off-phase 500.0 spike to be detected"
+    # The detection must come from the real modified-z-score path, not the
+    # MAD=0 inf shortcut: baseline_mad must be strictly positive.
+    assert spike_anomalies[0].baseline_mad > 0.0
+    assert spike_anomalies[0].score != float("inf")
+
+
 def test_detect_returns_anomaly_dataclass_with_baseline_fields() -> None:
     values = [10.0] * 30 + [200.0]
     a = detect_zscore(_series(values), window=10)[0]

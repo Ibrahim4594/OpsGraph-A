@@ -70,7 +70,9 @@ The interface is intentionally Redis-Streams-shaped — swapping the deques for 
 
 ### `api.recommendations` — [source](../backend/src/repopulse/api/recommendations.py)
 
-`GET /api/v1/recommendations?limit=10` returns the latest N recommendations (newest first). Schema:
+`GET /api/v1/recommendations?limit=10` returns the latest N recommendations (newest first). The endpoint is a pure read of the orchestrator's recommendation deque; it does **not** trigger evaluation. The pipeline is driven by ingest: every successful `POST /api/v1/events` (see [`api/events.py`](../backend/src/repopulse/api/events.py)) calls `orchestrator.ingest(...)` followed by `orchestrator.evaluate(...)`, so the GET endpoint reflects the latest state without an extra trigger call. Repeat ingests of identical content do not re-emit duplicate recommendations — `evaluate()` dedupes incidents by content signature.
+
+Schema:
 
 ```json
 {

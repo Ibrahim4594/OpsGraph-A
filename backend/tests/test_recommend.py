@@ -152,6 +152,17 @@ def test_recommend_returns_dataclass_with_unique_id_per_call() -> None:
     assert r1.incident_id == inc.incident_id
 
 
+def test_recommend_non_empty_incident_with_no_rule_fires_falls_back_to_r1() -> None:
+    """Regression for M3 review I3: an incident with 1 info event and 0 anomalies
+    triggers no R2-R4 predicate; R1 must explicitly fire as the fallback so the
+    evidence trace is honest (no 'fired=False' rows)."""
+    inc = _incident(anomalies=[], events=[_event(severity="info")])
+    r = recommend(inc)
+    assert r.action_category == "observe"
+    assert any("R1" in line and "fired=True" in line for line in r.evidence_trace)
+    assert all("fired=False" not in line for line in r.evidence_trace)
+
+
 def test_recommend_confidence_in_unit_interval() -> None:
     for inc in [
         _incident(anomalies=[], events=[]),

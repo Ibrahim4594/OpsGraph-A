@@ -65,3 +65,18 @@ def test_post_event_simulate_error_default_false(client: TestClient) -> None:
     envelope = _valid_envelope()
     r = client.post("/api/v1/events", json=envelope)
     assert r.status_code == 202
+
+
+def test_post_event_forwards_to_orchestrator() -> None:
+    """A successful POST must reach app.state.orchestrator. Without this wiring,
+    the recommendations endpoint can never produce non-empty output from real HTTP
+    traffic — regression guard for the M3 review C1 finding."""
+    from repopulse.main import create_app
+    from repopulse.pipeline.orchestrator import PipelineOrchestrator
+
+    orch = PipelineOrchestrator()
+    app = create_app(orchestrator=orch)
+    with TestClient(app, raise_server_exceptions=False) as c:
+        r = c.post("/api/v1/events", json=_valid_envelope())
+        assert r.status_code == 202
+    assert orch.snapshot()["events"] == 1

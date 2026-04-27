@@ -14,7 +14,12 @@ Milestone 3 must deliver a working AIOps pipeline (normalize → detect → corr
 
 ### Anomaly detector — modified z-score (Iglewicz & Hoaglin, 1993) with optional seasonal-baseline sampling
 
-For each point at index `i ≥ window`, build a baseline window (either the previous `window` points, or the `window` points at multiples of `seasonal_period` strides back). Compute median `M` and median absolute deviation `MAD`. The modified z-score is `0.6745 × (xᵢ − M) / MAD`. Emit an `Anomaly` when `|score| ≥ threshold` (default 3.5, the standard recommendation in the literature). `severity = "critical"` when `|score| ≥ 2 × threshold`, else `"warning"`. When `MAD = 0` (perfectly silent series), emit nothing — there's no signal to be anomalous about.
+For each point at index `i ≥ window`, build a baseline window (either the previous `window` points, or the `window` points at multiples of `seasonal_period` strides back). Compute median `M` and median absolute deviation `MAD`. The modified z-score is `0.6745 × (xᵢ − M) / MAD`. Emit an `Anomaly` when `|score| ≥ threshold` (default 3.5, the standard recommendation in the literature). `severity = "critical"` when `|score| ≥ 2 × threshold`, else `"warning"`.
+
+**Special case — `MAD = 0`:**
+
+- If `xᵢ == M` (truly silent: baseline is flat, value matches baseline): emit nothing. There is no signal.
+- If `xᵢ != M` (flat baseline followed by a deviation, e.g. an idle queue suddenly spiking): emit a `critical` anomaly with `score = ±inf`. A perfectly silent baseline followed by any deviation is the strongest possible signal, not the weakest. The original draft of this ADR said "emit nothing" for any `MAD = 0` case; that simplification was rejected during M3 implementation when the failing test `test_detect_finds_single_spike` (baseline `[10.0]*30`, value `200.0`) showed it would silently swallow real anomalies. See the M3 handoff "systematic-debugging" section for the trace.
 
 ### Correlation — time-window proximity over a unified anomaly+event timeline
 

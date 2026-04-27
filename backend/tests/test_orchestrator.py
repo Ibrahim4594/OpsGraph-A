@@ -114,3 +114,34 @@ def test_orchestrator_bounded_deque_drops_oldest_recommendations() -> None:
         orch.record_anomalies([_anomaly(at=_T0 + timedelta(hours=i, seconds=10))])
         orch.evaluate()
     assert orch.snapshot()["recommendations"] == 2
+
+
+def test_orchestrator_evaluate_twice_with_no_new_data_does_not_duplicate() -> None:
+    """Idempotence regression guard for M3 review C2 — without dedup, every
+    evaluate() re-emits a fresh-UUID recommendation for already-seen incidents."""
+    orch = PipelineOrchestrator()
+    orch.ingest(_envelope(source="github"), received_at=_T0)
+    orch.record_anomalies([_anomaly(at=_T0 + timedelta(seconds=30))])
+
+    first = orch.evaluate(window_seconds=300.0)
+    second = orch.evaluate(window_seconds=300.0)
+
+    assert len(first) == 1
+    assert second == []
+    assert orch.snapshot()["recommendations"] == 1
+
+
+def test_orchestrator_evaluate_picks_up_only_genuinely_new_incidents() -> None:
+    orch = PipelineOrchestrator()
+    orch.ingest(_envelope(source="github"), received_at=_T0)
+    orch.record_anomalies([_anomaly(at=_T0 + timedelta(seconds=30))])
+    first = orch.evaluate(window_seconds=300.0)
+    assert len(first) == 1
+
+    # Add a SECOND incident, far in the future so it doesn't merge.
+    later = _T0 + timedelta(hours=2)
+    orch.ingest(_envelope(source="github"), received_at=later)
+    orch.record_anomalies([_anomaly(at=later + timedelta(seconds=30))])
+    second = orch.evaluate(window_seconds=300.0)
+    assert len(second) == 1
+    assert second[0].recommendation_id != first[0].recommendation_id

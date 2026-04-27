@@ -1,9 +1,9 @@
 """Rule-based recommendation engine with explicit evidence trace.
 
-Rules are evaluated in priority order high → low. The highest-priority
-firing rule sets ``action_category``, ``confidence``, and ``risk_level``;
-every firing rule contributes a one-line entry to ``evidence_trace`` so
-operators can audit the decision.
+R2–R4 are evaluated in priority order high → low; the highest-priority
+firing rule sets ``action_category``, ``confidence``, and ``risk_level``.
+R1 is the explicit fallback — it fires whenever none of R2–R4 fire — so
+the evidence trace never reports a misleading "fired=False" line.
 """
 from __future__ import annotations
 
@@ -41,19 +41,6 @@ def _has_critical(incident: Incident) -> bool:
     if any(a.severity == "critical" for a in incident.anomalies):
         return True
     return any(e.severity == "critical" for e in incident.events)
-
-
-def _r1(incident: Incident) -> _RuleOutcome:
-    """Empty incident → observe."""
-    fired = not incident.anomalies and not incident.events
-    return _RuleOutcome(
-        rule_id="R1",
-        fired=fired,
-        explanation=f"R1: incident has 0 anomalies + 0 events → observe (fired={fired})",
-        category="observe",
-        confidence=0.50,
-        risk="low",
-    )
 
 
 def _r2(incident: Incident) -> _RuleOutcome:
@@ -108,16 +95,35 @@ def _r4(incident: Incident) -> _RuleOutcome:
     )
 
 
-# Priority order: R4 > R3 > R2 > R1.
-_RULES_HIGH_TO_LOW = (_r4, _r3, _r2, _r1)
+# Priority order high-to-low for the actionable rules.
+_PRIORITY_RULES = (_r4, _r3, _r2)
+
+
+def _r1_fallback(incident: Incident) -> _RuleOutcome:
+    """Synthesised explanation for the implicit fallback (R1)."""
+    explanation = (
+        f"R1: no higher-priority rule fired → observe "
+        f"(anomalies={len(incident.anomalies)}, events={len(incident.events)}, "
+        f"sources={list(incident.sources)}, fired=True)"
+    )
+    return _RuleOutcome(
+        rule_id="R1",
+        fired=True,
+        explanation=explanation,
+        category="observe",
+        confidence=0.50,
+        risk="low",
+    )
 
 
 def recommend(incident: Incident) -> Recommendation:
-    outcomes = [rule(incident) for rule in _RULES_HIGH_TO_LOW]
-    fired = [o for o in outcomes if o.fired]
-    primary = fired[0] if fired else outcomes[-1]  # R1 is the fallback default
-
-    evidence: list[str] = [o.explanation for o in fired] or [outcomes[-1].explanation]
+    higher_fired = [out for rule in _PRIORITY_RULES if (out := rule(incident)).fired]
+    if higher_fired:
+        primary = higher_fired[0]
+        evidence: list[str] = [out.explanation for out in higher_fired]
+    else:
+        primary = _r1_fallback(incident)
+        evidence = [primary.explanation]
 
     return Recommendation(
         recommendation_id=uuid4(),
