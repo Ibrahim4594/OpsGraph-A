@@ -27,6 +27,7 @@ from repopulse import __version__
 from repopulse.api.events import router as events_router
 from repopulse.api.github_workflows import router as github_workflows_router
 from repopulse.api.health import router as health_router
+from repopulse.api.incidents import router as incidents_router
 from repopulse.api.recommendations import router as recommendations_router
 from repopulse.config import Settings
 from repopulse.pipeline.orchestrator import PipelineOrchestrator
@@ -83,6 +84,7 @@ def create_app(
     fastapi_app.include_router(health_router)
     fastapi_app.include_router(events_router)
     fastapi_app.include_router(recommendations_router)
+    fastapi_app.include_router(incidents_router)
     fastapi_app.include_router(github_workflows_router)
     return fastapi_app
 

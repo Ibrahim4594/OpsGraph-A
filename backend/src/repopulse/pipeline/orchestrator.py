@@ -131,6 +131,11 @@ class PipelineOrchestrator:
             raise ValueError(f"limit must be >= 0, got {limit!r}")
         return list(self._recommendations)[:limit]
 
+    def latest_incidents(self, limit: int = 50) -> list[Incident]:
+        if limit < 0:
+            raise ValueError(f"limit must be >= 0, got {limit!r}")
+        return list(self._incidents)[-limit:][::-1] if limit else []
+
     def snapshot(self) -> dict[str, int]:
         return {
             "events": len(self._events),
