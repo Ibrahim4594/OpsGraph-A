@@ -17,3 +17,5 @@ class Settings(BaseSettings):
     app_name: str = "RepoPulse"
     environment: str = "development"
     log_level: str = "INFO"
+    agentic_enabled: bool = True
+    agentic_shared_secret: str | None = None

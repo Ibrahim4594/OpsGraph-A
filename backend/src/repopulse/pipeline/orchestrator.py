@@ -77,6 +77,15 @@ class PipelineOrchestrator:
         for anomaly in anomalies:
             self._anomalies.append(anomaly)
 
+    def record_normalized(self, event: NormalizedEvent) -> None:
+        """Append an already-normalized event to the store.
+
+        Used by callers that produce a :class:`NormalizedEvent` directly
+        (for example, the agentic-workflow usage endpoint), bypassing the
+        ``EventEnvelope -> normalize`` step that :meth:`ingest` runs.
+        """
+        self._events.append(event)
+
     def _register_key(self, key: _IncidentKey) -> bool:
         """Return True iff ``key`` is new. Maintains the bounded LRU set."""
         if key in self._seen_keys_set:

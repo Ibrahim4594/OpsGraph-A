@@ -145,3 +145,21 @@ def test_orchestrator_evaluate_picks_up_only_genuinely_new_incidents() -> None:
     second = orch.evaluate(window_seconds=300.0)
     assert len(second) == 1
     assert second[0].recommendation_id != first[0].recommendation_id
+
+
+def test_orchestrator_record_normalized_appends_event_directly() -> None:
+    """``record_normalized`` is for callers that already hold a
+    NormalizedEvent (e.g. the agentic-workflow usage endpoint).
+    """
+    orch = PipelineOrchestrator()
+    event = NormalizedEvent(
+        event_id=uuid4(),
+        received_at=_T0,
+        occurred_at=_T0,
+        source="agentic-workflow",
+        kind="workflow-failure",
+        severity="warning",
+        attributes={"workflow.name": "ci"},
+    )
+    orch.record_normalized(event)
+    assert orch.snapshot()["events"] == 1
