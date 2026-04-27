@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
+import pytest
 from fastapi.testclient import TestClient
 
 from repopulse.anomaly.detector import Anomaly
@@ -88,3 +89,32 @@ def test_actions_endpoint_respects_limit_zero() -> None:
     with TestClient(app) as client:
         r = client.get("/api/v1/actions?limit=0")
     assert r.json() == {"actions": [], "count": 0}
+
+
+def test_actions_endpoint_includes_workflow_run_entries(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Regression for M4 C2: the /usage endpoint records a
+    ``kind='workflow-run'`` ActionHistoryEntry per ADR-004 §3 so the
+    dashboard's workflow-run filter chip is not dead."""
+    monkeypatch.setenv("REPOPULSE_AGENTIC_ENABLED", "true")
+    monkeypatch.setenv("REPOPULSE_AGENTIC_SHARED_SECRET", "test-secret")
+    app = create_app()
+    with TestClient(app) as client:
+        client.post(
+            "/api/v1/github/usage",
+            json={
+                "workflow_name": "agentic-issue-triage",
+                "run_id": 12345,
+                "duration_seconds": 18.4,
+                "conclusion": "success",
+                "repository": "x/y",
+                "runner": "linux",
+            },
+            headers={"Authorization": "Bearer test-secret"},
+        )
+        body = client.get("/api/v1/actions").json()
+    kinds = [entry["kind"] for entry in body["actions"]]
+    actors = [entry["actor"] for entry in body["actions"]]
+    assert "workflow-run" in kinds
+    assert "agentic-issue-triage" in actors

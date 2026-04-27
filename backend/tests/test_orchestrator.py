@@ -163,3 +163,26 @@ def test_orchestrator_record_normalized_appends_event_directly() -> None:
     )
     orch.record_normalized(event)
     assert orch.snapshot()["events"] == 1
+
+
+def test_orchestrator_rec_state_cleaned_when_recommendation_deque_evicts() -> None:
+    """Regression for M4 I2: when the bounded ``_recommendations`` deque
+    drops its oldest entry, the corresponding ``_rec_state`` overlay key
+    must drop too — otherwise the dict grows unboundedly while the deque
+    is capped, breaking the orchestrator's "predictable memory" promise."""
+    orch = PipelineOrchestrator(max_recommendations=3)
+    # Generate 5 distinct incidents → 5 recs, deque holds last 3.
+    for i in range(5):
+        orch.ingest(
+            _envelope(source="github"),
+            received_at=_T0 + timedelta(hours=i),
+        )
+        orch.record_anomalies([_anomaly(at=_T0 + timedelta(hours=i, seconds=10))])
+        orch.evaluate(window_seconds=300.0)
+
+    rec_ids_in_deque = {r.recommendation_id for r in orch.latest_recommendations(limit=10)}
+    rec_state_keys = set(orch._rec_state.keys())  # noqa: SLF001 — invariant probe
+    # Every key in _rec_state must correspond to a recommendation still
+    # in the bounded deque. No orphaned entries from evicted recs.
+    assert rec_state_keys == rec_ids_in_deque
+    assert len(rec_state_keys) <= 3

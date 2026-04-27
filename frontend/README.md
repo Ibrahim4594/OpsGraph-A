@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RepoPulse Operator Dashboard
 
-## Getting Started
+Next.js 15 + Tailwind 4 frontend for the RepoPulse AIOps backend. Renders the SLO board, incidents timeline, recommendations inbox (with approval gate), and action history.
 
-First, run the development server:
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# install
+npm install
+
+# point at the backend (default: http://localhost:8000)
+export NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:8000
+
+# dev
+npm run dev          # http://localhost:3000
+
+# production
+npm run build && npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script | Purpose |
+|---|---|
+| `npm run dev` | Next.js dev server (App Router) |
+| `npm run build` | Production build |
+| `npm run start` | Serve the production build |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | `eslint` |
+| `npm test` | `vitest run` (49 unit specs) |
+| `npm run test:watch` | `vitest` watch mode |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Pages
 
-## Learn More
+- `/` — SLO board (availability, error budget, throughput) with burn-rate badge
+- `/incidents` — time-windowed incident timeline
+- `/recommendations` — operator inbox with approve/reject + per-category runbook links
+- `/actions` — chronological action history with kind filter (approve/reject/observe/workflow-run)
 
-To learn more about Next.js, take a look at the following resources:
+## Design system
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The dashboard applies the typeui.sh `dashboard` skill — see [`docs/ui-design-system.md`](../docs/ui-design-system.md) for the token table, state matrix, accessibility requirements, and anti-patterns. Tokens live in [`src/app/globals.css`](src/app/globals.css) as semantic CSS custom properties.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Security posture (M4)
 
-## Deploy on Vercel
+**This dashboard ships without authentication.** The four GET endpoints and the two POST approval endpoints are unauthenticated by design — the operator UI is meant to run **local-only or behind a reverse proxy**. Do not expose port 3000 (or your reverse proxy's listening port) directly to the public internet.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The kill-switch indicator in the StatusBar reflects `REPOPULSE_AGENTIC_ENABLED` at the backend (read fresh per `/healthz` poll). Flipping the env var on the backend takes effect on the very next dashboard refresh — no UI button to toggle it.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+SSO and per-operator session identity will land in a follow-up milestone; until then the `operator` field on approve/reject is free text recorded in the audit log, not authenticated.
+
+## Architecture
+
+- App Router with server components for data fetching (`getRecommendations`, `getIncidents`, `getActions`, `getSlo` in [`src/lib/api.ts`](src/lib/api.ts)).
+- Client islands only where state is needed: `Sidebar` (active route), `ApprovalActions` (optimistic transition), `HistoryTable` (kind filter).
+- Hand-written shadcn-style primitives under [`src/components/ui/`](src/components/ui/): `Card`, `Badge`, `Button`, `EmptyState`. No `npx shadcn add` runtime dependency.
+- IBM Plex Sans loaded via `next/font/google`.

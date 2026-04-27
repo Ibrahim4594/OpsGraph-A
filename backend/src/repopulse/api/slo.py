@@ -54,7 +54,7 @@ def get_slo(
     target: float = Query(default=0.99, ge=0.0, le=1.0),
 ) -> dict[str, object]:
     orchestrator = getattr(request.app.state, "orchestrator", None)
-    events = list(orchestrator._events) if orchestrator is not None else []  # noqa: SLF001
+    events = orchestrator.iter_events() if orchestrator is not None else []
     total = len(events)
     errors = sum(
         1 for ev in events if _classify_event(ev.kind, ev.severity)

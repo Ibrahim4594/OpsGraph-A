@@ -188,5 +188,11 @@ def usage(
     orchestrator = getattr(request.app.state, "orchestrator", None)
     if orchestrator is not None:
         orchestrator.record_normalized(event)
+        orchestrator.record_workflow_run(
+            workflow_name=record.workflow_name,
+            run_id=record.run_id,
+            conclusion=record.conclusion,
+            at=event.received_at,
+        )
         orchestrator.evaluate()
     return {"accepted": True, "event_id": str(event.event_id)}

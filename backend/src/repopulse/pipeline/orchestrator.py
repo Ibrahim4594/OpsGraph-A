@@ -110,6 +110,32 @@ class PipelineOrchestrator:
         """
         self._events.append(event)
 
+    def record_workflow_run(
+        self,
+        *,
+        workflow_name: str,
+        run_id: int,
+        conclusion: str,
+        at: datetime,
+    ) -> None:
+        """Append a ``workflow-run`` :class:`ActionHistoryEntry`.
+
+        Per ADR-004 §3, agentic workflow runs surface in the same audit
+        feed as operator approvals so the dashboard can render both in
+        one timeline. Called by the M5 ``/api/v1/github/usage`` endpoint
+        after the workflow's :class:`NormalizedEvent` lands in the
+        orchestrator.
+        """
+        self._action_history.append(
+            ActionHistoryEntry(
+                at=at,
+                kind="workflow-run",
+                recommendation_id=None,
+                actor=workflow_name,
+                summary=f"run {run_id}: {conclusion}",
+            )
+        )
+
     def _register_key(self, key: _IncidentKey) -> bool:
         """Return True iff ``key`` is new. Maintains the bounded LRU set."""
         if key in self._seen_keys_set:
@@ -146,6 +172,12 @@ class PipelineOrchestrator:
                 continue
             self._incidents.append(incident)
             rec = recommend(incident)
+            # Bounded ``_recommendations`` deque drops the oldest entry on
+            # appendleft when full; clean up its state-overlay key so
+            # ``_rec_state`` stays bounded along with the deque.
+            if len(self._recommendations) == self._recommendations.maxlen:
+                evicted = self._recommendations[-1]
+                self._rec_state.pop(evicted.recommendation_id, None)
             self._recommendations.appendleft(rec)
             self._rec_state[rec.recommendation_id] = rec.state
             if rec.state == "observed":
@@ -174,6 +206,16 @@ class PipelineOrchestrator:
         if limit < 0:
             raise ValueError(f"limit must be >= 0, got {limit!r}")
         return list(self._incidents)[-limit:][::-1] if limit else []
+
+    def iter_events(self) -> list[NormalizedEvent]:
+        """Snapshot of the events deque, oldest-first.
+
+        Returned as a list so callers can iterate safely even if a
+        concurrent ``ingest`` mutates the deque mid-loop. Used by the
+        SLO endpoint to compute availability without poking
+        ``self._events`` directly.
+        """
+        return list(self._events)
 
     def latest_actions(self, limit: int = 50) -> list[ActionHistoryEntry]:
         if limit < 0:

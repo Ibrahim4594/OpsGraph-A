@@ -28,7 +28,9 @@ The `dashboard` slug is the literal match for an AIOps operator UI — its regis
 | Foreground (dim) | `#71717a` | `--color-fg-dim` |
 | Primary | `#0c5cab` | `--color-primary` |
 | Primary (hover) | `#0a4a8a` | `--color-primary-hover` |
-| Primary (soft) | `rgba(12,92,171,0.12)` | `--color-primary-soft` |
+| Primary (soft) | `rgba(12,92,171,0.18)` | `--color-primary-soft` |
+| Link | `#60a5fa` | `--color-link` |
+| Link (hover) | `#93bdfd` | `--color-link-hover` |
 | Success | `#10b981` | `--color-success` |
 | Warning | `#f59e0b` | `--color-warning` |
 | Danger | `#ef4444` | `--color-danger` |
@@ -58,10 +60,12 @@ The `dashboard` slug is the literal match for an AIOps operator UI — its regis
 - **Touch targets** ≥ 44 × 44 px for all interactive elements (Sidebar items, StatusBar badges, page buttons all sized via Button md = 44 px high).
 - **Semantic HTML first**: `nav`, `main`, `ol > li` for the timeline, `table` with `th[scope]` for action history. ARIA only as supplement (`role="status"` on SLO cards, `role="dialog"` on the reject reason panel).
 - **Reduced motion**: `@media (prefers-reduced-motion: reduce)` clamps all transitions to ≤ 0.01 ms in `globals.css`.
-- **Contrast** (verified, see `m4-evidence/a11y-contrast.md`):
-  - `--color-fg` on `--color-bg`: ≥ 18:1 (AAA)
-  - `--color-fg-muted` on `--color-bg`: ≥ 7:1 (AAA)
-  - `--color-primary` on `--color-bg`: ≥ 4.5:1 (AA normal text)
+- **Contrast** (verified live via `playwright-cli` probe; see `m4-evidence/a11y-contrast.md`):
+  - `--color-fg` on `--color-bg`: **19.06:1** (AAA)
+  - `--color-fg-muted` on `--color-bg`: **7.76:1** (AAA)
+  - `--color-link` on `--color-bg`: **7.83:1** (AAA) — used for body-text hyperlinks
+  - White on `--color-primary` (button text): **6.42:1** (AA+) — primary buttons only
+  - **Anti-pattern:** `--color-primary` is **not** safe for body text on `--color-bg` (only **2.97:1**, fails AA). Always use `--color-link` for hyperlink text on dark surfaces.
 
 ## Writing tone
 
