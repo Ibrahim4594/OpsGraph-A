@@ -43,7 +43,7 @@ cd backend
 python3.11 -m venv .venv
 source .venv/bin/activate          # Windows cmd: .venv\Scripts\activate
 pip install -e ".[dev]"
-pytest                              # 209+ tests should pass
+pytest                              # 211 tests should pass
 ```
 
 ## Frontend

@@ -43,6 +43,11 @@ echo "→ booting backend on :$PORT_BACKEND"
 BACKEND_PID=$!
 sleep 3
 
+if [[ ! -f "$ROOT/frontend/.next/BUILD_ID" ]]; then
+  echo "→ no frontend production build found; running 'npm run build' first"
+  (cd "$ROOT/frontend" && npm run build)
+fi
+
 echo "→ booting frontend on :$PORT_FRONTEND"
 (
   cd "$ROOT/frontend"

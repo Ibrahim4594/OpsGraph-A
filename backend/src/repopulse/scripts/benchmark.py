@@ -8,8 +8,10 @@ to call from tests.
 KPI definitions (also in docs/results-report.md):
 
 - **MTTR** (time-to-recommendation): seconds from the first anomaly's
-  ``timestamp`` to the orchestrator's first emitted ``Recommendation``.
-  Floors at 0. ``None`` when the scenario has no anomalies.
+  ``timestamp`` to the earliest moment a streaming pipeline could emit
+  the recommendation, computed as
+  ``max(last_event_ts, last_anomaly_ts) - first_anomaly_ts``. Floors at
+  0. ``None`` when the scenario has no anomalies.
 - **False positive**: ``True`` iff
   ``recommendation.action_category != scenario.expected_action_category``.
 - **Burn-rate lead time**: seconds from the first error-classified event

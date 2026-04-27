@@ -3,7 +3,7 @@
 [![status](https://img.shields.io/badge/status-v1.0.0-blue)](#status)
 [![python](https://img.shields.io/badge/python-3.11+-blue)](#)
 [![nextjs](https://img.shields.io/badge/Next.js-15-black)](#)
-[![tests](https://img.shields.io/badge/tests-262_passing-success)](#)
+[![tests](https://img.shields.io/badge/tests-264_passing-success)](#)
 [![false_positive_rate](https://img.shields.io/badge/false_positives-0%25-success)](docs/results-report.md)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -96,7 +96,7 @@ Per-milestone diagrams: [`docs/architecture.md`](docs/architecture.md) · M3 dee
 
 ## Engineering standards
 
-- **TDD across both languages** — 209 backend pytest specs + 53 frontend vitest specs (262 total).
+- **TDD across both languages** — 211 backend pytest specs + 53 frontend vitest specs (264 total).
 - **Strict typing** — mypy strict, TypeScript strict.
 - **Anti-hallucination** — every claim in every milestone handoff has a
   re-runnable command + captured artifact under
