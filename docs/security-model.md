@@ -28,13 +28,15 @@ All runtime configuration that is sensitive flows through environment variables 
 
 ## GitHub Agentic Workflow Boundaries
 
-When M5 lands, the GitHub workflows that consume recommendations operate under these constraints:
+The M5 GitHub workflows that consume recommendations operate under these constraints (full details in [agentic-workflows.md](agentic-workflows.md) and [ADR-003](../adr/ADR-003-agentic-execution-model.md)):
 
-- **Scoped tokens.** A least-privilege `GITHUB_TOKEN` (or fine-grained PAT) for each workflow — `issues:write` for triage, `contents:read` for doc drift, etc. No `admin:repo` tokens.
-- **No force-push.** `--force` and `--force-with-lease` are blocked at the action layer.
-- **No merge to `main` without review.** Branch protection on `main` requires PR review; agentic workflows can comment, label, or open PRs but cannot merge.
-- **Disable mechanism.** A repository variable `REPOPULSE_AGENTIC_ENABLED=false` short-circuits all workflow runs. Documented in the M5 README.
-- **Cost/usage telemetry.** Each workflow run emits a usage event so cost/scale impact is observable.
+- **Scoped tokens.** Each workflow has its own `permissions:` block declaring exactly the access it needs — `issues: write` + `contents: read` for triage, `pull-requests: write` + `contents: read` + `actions: read` for CI failure analysis, `pull-requests: write` + `contents: read` for doc drift. **No `contents: write`. No `actions: write`. No admin scopes.** Backend never holds a GitHub token.
+- **Comment-only output.** Workflows post a single comment per event. They cannot label, close, merge, push, force-push, delete branches, or edit existing comments.
+- **No force-push, no merges.** The token's permission set makes these structurally impossible — not just blocked at the action layer.
+- **Two-layer kill switch.** The repository variable `REPOPULSE_AGENTIC_ENABLED=false` short-circuits both (a) the workflow `if:` gate (job never runs) and (b) the backend endpoint (returns `202 {"disabled": true}` with no analysis or orchestrator side effects). Either layer alone is sufficient to stop automation.
+- **Shared-secret authentication.** Workflow → backend uses `Authorization: Bearer ${{ secrets.REPOPULSE_AGENTIC_TOKEN }}`. Wrong/missing token → 401. Missing expected secret in backend env → 503 (fail closed; never accept any token when no expected token is configured).
+- **Cost/usage telemetry.** Every workflow run emits a `repopulse-workflow-usage` event ingested by the orchestrator with `source="agentic-workflow"`. Cost is computed from the static GitHub-hosted runner rate table.
+- **Dry-run mode.** `vars.REPOPULSE_AGENTIC_DRYRUN=true` runs analysis but skips the comment-posting step, so the result is visible in the Actions log without touching the issue/PR.
 
 ## Out of Scope (M1)
 
