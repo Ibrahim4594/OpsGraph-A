@@ -16,7 +16,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from repopulse.config import Settings
 from repopulse.github.ci_analysis import summarize_failure
@@ -28,11 +28,15 @@ from repopulse.github.usage import record_run, to_normalized_event
 router = APIRouter(prefix="/api/v1/github", tags=["github"])
 
 
-def _get_settings(request: Request) -> Settings:
-    settings = getattr(request.app.state, "settings", None)
-    if not isinstance(settings, Settings):
-        raise HTTPException(status_code=503, detail="settings not configured")
-    return settings
+def _get_settings() -> Settings:
+    """Build a fresh ``Settings`` per request.
+
+    pydantic-settings reads env vars at construction time, so this honors
+    the ``REPOPULSE_AGENTIC_ENABLED`` / ``REPOPULSE_AGENTIC_SHARED_SECRET``
+    kill-switch claim that flipping the env var takes effect immediately
+    without a process restart (see ADR-003 §3 and docs/agentic-workflows.md).
+    """
+    return Settings()
 
 
 def _auth(
@@ -60,30 +64,42 @@ def _disabled_response() -> JSONResponse:
     )
 
 
+# Per-field length limits keep request bodies bounded so a noisy or
+# malicious workflow run cannot OOM the backend. Numbers chosen to be
+# generous for legitimate use (e.g. ~500 changed files in a big PR) but
+# block obviously oversized payloads.
+_MAX_LOG_EXCERPT = 8 * 1024  # 8 KiB per failed-job excerpt
+_MAX_FAILED_JOBS = 50
+_MAX_CHANGED_FILES = 500
+_MAX_REPO_PATHS = 50_000
+_MAX_FILE_CONTENT_BYTES = 256 * 1024  # 256 KiB per file
+_MAX_FILE_PATH = 1024
+
+
 class _FailedJob(BaseModel):
-    job_name: str
-    step: str
-    log_excerpt: str
+    job_name: str = Field(max_length=_MAX_FILE_PATH)
+    step: str = Field(max_length=_MAX_FILE_PATH)
+    log_excerpt: str = Field(max_length=_MAX_LOG_EXCERPT)
 
 
 class _CIFailureBody(BaseModel):
     payload: WorkflowRunPayload
-    failed_jobs: list[_FailedJob]
+    failed_jobs: list[_FailedJob] = Field(max_length=_MAX_FAILED_JOBS)
 
 
 class _DocDriftBody(BaseModel):
-    changed_files: list[str]
-    repo_paths: list[str]
-    file_contents: dict[str, str]
+    changed_files: list[str] = Field(max_length=_MAX_CHANGED_FILES)
+    repo_paths: list[str] = Field(max_length=_MAX_REPO_PATHS)
+    file_contents: dict[str, str] = Field(default_factory=dict)
 
 
 class _UsageBody(BaseModel):
-    workflow_name: str
+    workflow_name: str = Field(max_length=_MAX_FILE_PATH)
     run_id: int
-    duration_seconds: float
-    conclusion: str
-    repository: str
-    runner: str
+    duration_seconds: float = Field(ge=0.0)
+    conclusion: str = Field(max_length=64)
+    repository: str = Field(max_length=_MAX_FILE_PATH)
+    runner: str = Field(max_length=64)
 
 
 @router.post("/triage", response_model=None)
@@ -135,6 +151,15 @@ def doc_drift(
 ) -> JSONResponse | dict[str, object]:
     if not settings.agentic_enabled:
         return _disabled_response()
+    for path, content in body.file_contents.items():
+        if len(content) > _MAX_FILE_CONTENT_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail=(
+                    f"file_contents[{path!r}] exceeds "
+                    f"{_MAX_FILE_CONTENT_BYTES} byte cap"
+                ),
+            )
     report = find_broken_refs(
         changed_files=body.changed_files,
         repo_paths=set(body.repo_paths),

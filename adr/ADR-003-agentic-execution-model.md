@@ -122,3 +122,16 @@ Tried in early sketch. Rejected because labels mutate the repo's tag namespace s
 - Webhook-driven mode (skip the workflow runner, deliver events straight to the backend over HMAC-signed webhooks) is a clear next step but requires either an external dispatcher or a public backend. Deferred.
 - Cost telemetry uses static per-runner rates (`linux=$0.008/min`). Real billing comes from the GitHub Billing API, which we'll wire when we have a real billing context to compare against.
 - Persistence: when the orchestrator gets a real store, the `agentic-workflow` event source replays cleanly because it's already a `NormalizedEvent` with a stable attribute schema.
+
+## Code review notes (post-tag fixes applied 2026-04-27)
+
+The M5 code review (`docs/superpowers/plans/m5-evidence/code-review.md`) flagged 2 Critical and 6 Important findings. Status:
+
+- **C1 (body validation runs before auth):** rejected after verification. Live-server curl with a malformed body and no auth header returned `401 invalid agentic token`, not `422` — FastAPI resolves the auth dependency before body validation in this stack. The reviewer's claim could not be reproduced.
+- **C2 (settings frozen at startup):** confirmed and fixed. `_get_settings` now constructs a fresh `Settings()` per request so flipping `REPOPULSE_AGENTIC_ENABLED` or rotating `REPOPULSE_AGENTIC_SHARED_SECRET` takes effect immediately. Regression test: `test_kill_switch_flip_takes_effect_without_restart`.
+- **I1 (triage `production` over-triggers, `crashed` under-triggers):** fixed. `production` only matches when paired with an incident-shaped word (`production-down`, `production-broken`, etc.), and the `crash` pattern now accepts verb stems (`crashed`/`crashing`/`crashes`). Regression tests added.
+- **I2 (CI analyzer first-job-wins):** documented in the module docstring with rationale.
+- **I3 (doc-drift regex coverage):** documented as known limitations in the module docstring (reference-style links and parens-in-targets are out of scope; our markdown uses inline links).
+- **I4 (`security-model.md` listed `REPOPULSE_GITHUB_TOKEN`):** fixed; that env var was never introduced and is replaced by `REPOPULSE_AGENTIC_SHARED_SECRET` + `REPOPULSE_AGENTIC_ENABLED`, consistent with this ADR.
+- **I5 (no request-size limits):** fixed. Per-field length caps on the API body models, plus a 413 guard on `file_contents` values. Regression tests: `test_doc_drift_rejects_oversized_file_content`, `test_ci_failure_rejects_too_many_jobs`.
+- **I6 (T3/T4 precedence undocumented):** documented in `triage.py` module docstring; T4 wins the `category` field on collision but both labels are emitted. Regression test: `test_classify_t3_t4_collision_t4_wins_category`.

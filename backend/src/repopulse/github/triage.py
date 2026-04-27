@@ -2,6 +2,12 @@
 
 Mirrors the M3 recommendation engine pattern: deterministic rules,
 priority-ordered, every firing rule contributes to ``evidence_trace``.
+
+Severity rules are mutually exclusive (T1 short-circuits T2). Category
+rules T3 and T4 are *both* allowed to fire; both labels are added, but
+when both match, ``category`` is set to ``"docs"`` (T4 wins) because
+docs labels are more specific and are usually the actionable signal.
+The trace records both matches so the precedence is auditable.
 """
 from __future__ import annotations
 
@@ -14,7 +20,18 @@ from repopulse.github.payloads import IssuePayload
 Severity = Literal["critical", "major", "minor"]
 Category = Literal["feature-request", "docs", "uncategorized"]
 
-_T1 = re.compile(r"\b(crash|outage|production|sev[\s-]?1)\b", re.IGNORECASE)
+# T1 — critical signals.
+# - "crash" with optional verb stems (crashed/crashing/crashes).
+# - "outage".
+# - "production" only when paired with an incident-shaped word, so a
+#   benign phrase like "production-ready logging" doesn't match.
+# - "sev1" / "sev-1" / "sev 1".
+_T1 = re.compile(
+    r"\b(?:crash(?:ed|es|ing)?|outage|sev[\s-]?1"
+    r"|production[\s-]+(?:down|outage|incident|broken|degraded|critical|crash(?:ed|ing)?|error))"
+    r"\b",
+    re.IGNORECASE,
+)
 _T2 = re.compile(
     r"\b(error|exception|failure|broken|stack\s*trace)\b", re.IGNORECASE
 )

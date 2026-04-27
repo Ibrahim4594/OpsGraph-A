@@ -99,3 +99,43 @@ def test_classify_dedupes_labels() -> None:
     # T3 + T4 both fire; "type:feature" and "type:docs" each appear once.
     assert rec.suggested_labels.count("type:feature") == 1
     assert rec.suggested_labels.count("type:docs") == 1
+
+
+# Post-review fixes (I1, I6) regression tests:
+
+
+def test_classify_production_ready_is_not_critical() -> None:
+    """Regression: 'production-ready logging' must NOT match T1.
+    The benign phrase 'production-ready' was over-triggering critical
+    severity in the initial M5 release.
+    """
+    rec = classify_issue(
+        _issue("Add production-ready logging", body="for observability")
+    )
+    assert rec.severity != "critical"
+
+
+def test_classify_production_outage_is_critical() -> None:
+    rec = classify_issue(_issue("Production outage on payments"))
+    assert rec.severity == "critical"
+
+
+def test_classify_crash_word_stems_match() -> None:
+    """Regression: T1 must match 'crashed', 'crashing', 'crashes'.
+    The original ``\\bcrash\\b`` regex missed verb stems because
+    word-boundaries don't fire between word characters.
+    """
+    for verb in ("crashed", "crashing", "crashes"):
+        rec = classify_issue(_issue(f"App {verb} on startup"))
+        assert rec.severity == "critical", f"failed for stem {verb!r}"
+
+
+def test_classify_t3_t4_collision_t4_wins_category() -> None:
+    """When T3 (feature) and T4 (docs) both match, T4 wins ``category``
+    but both labels are emitted. This is documented in the module
+    docstring; the test pins the precedence.
+    """
+    rec = classify_issue(_issue("Feature: docs proposal", body=""))
+    assert rec.category == "docs"
+    assert "type:feature" in rec.suggested_labels
+    assert "type:docs" in rec.suggested_labels

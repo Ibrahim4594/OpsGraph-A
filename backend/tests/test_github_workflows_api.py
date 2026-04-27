@@ -180,3 +180,73 @@ def test_wrong_secret_yields_401(
         headers={"Authorization": "Bearer wrong"},
     )
     assert response.status_code == 401
+
+
+# Post-review fixes:
+
+
+def test_kill_switch_flip_takes_effect_without_restart(
+    monkeypatch: pytest.MonkeyPatch, secret: str
+) -> None:
+    """Regression: settings are re-read per request, so flipping
+    REPOPULSE_AGENTIC_ENABLED on a running process honors the new value
+    on the very next request (matches the docs' 'milliseconds' claim).
+    """
+    monkeypatch.setenv("REPOPULSE_AGENTIC_ENABLED", "true")
+    monkeypatch.setenv("REPOPULSE_AGENTIC_SHARED_SECRET", secret)
+    app = create_app()
+    headers = {"Authorization": f"Bearer {secret}"}
+    with TestClient(app, raise_server_exceptions=False) as tc:
+        first = tc.post(
+            "/api/v1/github/triage", json=_issue_body(), headers=headers
+        )
+        assert first.status_code == 200
+
+        # Flip the flag on the SAME running app — must take effect now.
+        monkeypatch.setenv("REPOPULSE_AGENTIC_ENABLED", "false")
+
+        second = tc.post(
+            "/api/v1/github/triage", json=_issue_body(), headers=headers
+        )
+    assert second.status_code == 202
+    assert second.json()["disabled"] is True
+
+
+def test_doc_drift_rejects_oversized_file_content(
+    client: TestClient, auth: dict[str, str]
+) -> None:
+    """Regression: per-file content size cap (256 KiB) returns 413."""
+    body = {
+        "changed_files": ["docs/big.md"],
+        "repo_paths": ["docs/big.md"],
+        "file_contents": {"docs/big.md": "x" * (256 * 1024 + 1)},
+    }
+    response = client.post(
+        "/api/v1/github/doc-drift", json=body, headers=auth
+    )
+    assert response.status_code == 413
+
+
+def test_ci_failure_rejects_too_many_jobs(
+    client: TestClient, auth: dict[str, str]
+) -> None:
+    """Regression: failed_jobs list length cap (50) returns 422."""
+    body = {
+        "payload": {
+            "action": "completed",
+            "workflow_run": {
+                "id": 1, "name": "ci", "conclusion": "failure",
+                "head_branch": "x", "head_sha": "abc",
+                "html_url": "https://x", "run_attempt": 1,
+            },
+            "repository": {"full_name": "x/y"},
+        },
+        "failed_jobs": [
+            {"job_name": f"j{i}", "step": "s", "log_excerpt": "AssertionError"}
+            for i in range(51)
+        ],
+    }
+    response = client.post(
+        "/api/v1/github/ci-failure", json=body, headers=auth
+    )
+    assert response.status_code == 422

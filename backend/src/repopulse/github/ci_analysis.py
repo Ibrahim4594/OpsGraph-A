@@ -3,6 +3,16 @@
 Given a ``WorkflowRunPayload`` with ``conclusion=failure`` and the list of
 failed-job log excerpts, classify the likely cause and propose a next action.
 Pure function; no I/O.
+
+Cause-precedence policy when multiple jobs fail with different causes:
+
+- The **first job to match a known pattern wins** the top-level
+  ``likely_cause``. All other jobs' matches are still recorded in
+  ``evidence_trace`` for transparency.
+- Rationale: the first failed job is usually the root cause; downstream
+  jobs that fail because the first job failed (e.g., a deploy job after a
+  test job) would otherwise drown out the real signal. Operators can read
+  the trace to see the full picture if the heuristic is wrong.
 """
 from __future__ import annotations
 

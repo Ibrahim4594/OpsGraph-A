@@ -3,6 +3,23 @@
 Scans markdown files in a PR diff for relative links whose target is missing
 from the post-change repo path set. Pure function; the caller is responsible
 for providing the right ``repo_paths`` (post-change tree) and ``file_contents``.
+
+**Coverage (intentional subset):**
+
+- Inline links of the form ``[text](target)`` and ``[text](target#anchor)``.
+- External links (``http(s)://``, ``mailto:``) and same-file anchor links
+  (``#anchor``) are skipped.
+- Relative paths with ``..`` segments are normalized via ``posixpath.normpath``.
+
+**Known limitations (deferred to a later milestone if user reports false
+clean reports):**
+
+- Reference-style links (``[text][label]`` + ``[label]: target``) are not
+  followed. Our docs use inline links almost exclusively.
+- Targets containing literal parentheses (``[t](path/(weird).md)``) are
+  not parsed correctly because the regex stops at the first ``)``.
+- Link titles (``[text](target "title")``) work because the regex stops at
+  whitespace, but the title text itself is ignored.
 """
 from __future__ import annotations
 

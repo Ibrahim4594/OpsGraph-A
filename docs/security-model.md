@@ -19,7 +19,8 @@ The most sensitive operations (action gate → GitHub write paths) are explicitl
 
 All runtime configuration that is sensitive flows through environment variables prefixed `REPOPULSE_` (handled by the `Settings` model in `backend/src/repopulse/config.py`). Concretely:
 
-- `REPOPULSE_GITHUB_TOKEN` — scoped GitHub token for the agentic workflows path (M5). Never committed; loaded from `.env` (gitignored) or the deployment environment.
+- `REPOPULSE_AGENTIC_SHARED_SECRET` — bearer token used by agentic workflows to authenticate to the backend (M5). The backend never holds a GitHub token; write effects live in the workflow YAML, gated by the workflow's own `GITHUB_TOKEN`. See [ADR-003](../adr/ADR-003-agentic-execution-model.md) for the rationale.
+- `REPOPULSE_AGENTIC_ENABLED` — kill switch (M5). When set to `false`, all agentic endpoints return `202 {"disabled": true}`.
 - `REPOPULSE_OTEL_EXPORTER_OTLP_ENDPOINT` — collector endpoint (M2).
 - `REPOPULSE_REDIS_URL` — event bus connection string (M2/M3).
 - `REPOPULSE_DATABASE_URL` — timeseries store connection (M3).
