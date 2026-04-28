@@ -19,10 +19,13 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.metrics.export import MetricReader
 from opentelemetry.sdk.trace.export import SpanExporter
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
+from starlette.requests import Request
 
 from repopulse import __version__
 from repopulse.api.actions import router as actions_router
@@ -75,16 +78,59 @@ def create_app(
         version=__version__,
         lifespan=lifespan,
     )
+    _max_bytes = settings.max_request_bytes
+
+    class _BodySizeLimitMiddleware(BaseHTTPMiddleware):
+        """Reject requests whose ``Content-Length`` exceeds ``max_request_bytes``.
+
+        v1.1 post-review I1 fix. Runs before Starlette's body parser, so a
+        malicious caller cannot OOM the worker by sending a multi-MB body
+        even though the per-payload validator (256 KiB) would later reject it.
+        """
+
+        async def dispatch(self, request: Request, call_next):  # type: ignore[no-untyped-def]
+            cl = request.headers.get("content-length")
+            if cl is not None:
+                try:
+                    n = int(cl)
+                except ValueError:
+                    return JSONResponse(
+                        {"detail": "invalid Content-Length"}, status_code=400
+                    )
+                if n > _max_bytes:
+                    return JSONResponse(
+                        {
+                            "detail": (
+                                f"request body too large: {n} bytes exceeds "
+                                f"{_max_bytes} byte limit"
+                            )
+                        },
+                        status_code=413,
+                    )
+            return await call_next(request)
+
+    fastapi_app.add_middleware(_BodySizeLimitMiddleware)
     if settings.cors_origins.strip():
         _origins = [
             o.strip() for o in settings.cors_origins.split(",") if o.strip()
         ]
+        # CORS hardening (v1.1 post-review C1): the dashboard sends an
+        # Authorization bearer that the browser holds in a public env var
+        # (NEXT_PUBLIC_API_SHARED_SECRET, see ADR-005). Letting any origin
+        # send credentialed requests would defeat browser SOP — Starlette
+        # reflects the requesting Origin back when "*" is used, so this is
+        # not safe even though the spec ostensibly forbids it. Fail fast.
+        if any(o == "*" for o in _origins):
+            raise ValueError(
+                "REPOPULSE_CORS_ORIGINS must not contain a wildcard ('*'); "
+                "list explicit origins instead. See ADR-005 + docs/security-model.md."
+            )
         if _origins:
             fastapi_app.add_middleware(
                 CORSMiddleware,
                 allow_origins=_origins,
                 allow_credentials=True,
-                allow_methods=["*"],
+                allow_methods=["GET", "POST"],
                 allow_headers=["Authorization", "Content-Type"],
             )
     FastAPIInstrumentor.instrument_app(

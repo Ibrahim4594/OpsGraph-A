@@ -1,0 +1,10 @@
+=== npm test ===
+ Test Files  11 passed (11)
+      Tests  53 passed (53)
+=== npm run typecheck ===
+> tsc --noEmit
+
+=== npm run build ===
+ ✓ Compiled successfully in 1742ms
+Route (app)                                 Size  First Load JS
++ First Load JS shared by all             102 kB

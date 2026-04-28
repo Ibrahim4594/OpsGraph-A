@@ -30,7 +30,14 @@ _MAX_PAYLOAD_BYTES = 256 * 1024
 
 
 class EventEnvelope(BaseModel):
-    """Canonical inbound event payload."""
+    """Canonical inbound event payload.
+
+    ``extra="forbid"`` (v1.1 post-review I2) — silently dropping unknown
+    fields hid the operator-identity drift the audit story relies on; loud
+    rejection at the boundary is the right default.
+    """
+
+    model_config = {"extra": "forbid"}
 
     event_id: UUID
     source: str = Field(min_length=1)

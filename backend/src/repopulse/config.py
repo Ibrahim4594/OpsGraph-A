@@ -30,3 +30,7 @@ class Settings(BaseSettings):
     #: Comma-separated browser origins for CORS (e.g. ``http://127.0.0.1:3000``).
     #: Empty → no CORS middleware (same-origin or reverse-proxy only).
     cors_origins: str = ""
+    #: Max ``Content-Length`` in bytes accepted on any HTTP request body.
+    #: Larger requests are rejected with 413 *before* Starlette parses them.
+    #: Default 384 KiB = 256 KiB payload cap + envelope/headers overhead.
+    max_request_bytes: int = 384 * 1024

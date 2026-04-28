@@ -1,0 +1,10 @@
+=== pytest ===
+tests\test_telemetry_instrumentation.py ..                               [100%]
+
+============================= 236 passed in 2.77s =============================
+=== ruff ===
+All checks passed!
+=== mypy ===
+Success: no issues found in 64 source files
+=== version ===
+1.1.0

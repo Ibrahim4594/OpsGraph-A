@@ -41,6 +41,16 @@ class RecommendationsResponse(TypedDict):
 
 
 class _RejectBody(BaseModel):
+    """Reject body — only ``reason`` is accepted.
+
+    ``extra="forbid"`` (v1.1 post-review I2) — actor/operator MUST come
+    from the auth layer (see Settings.api_operator_actor); silently
+    dropping a stray ``operator`` field would mask client-supplied
+    identity drift instead of rejecting it loudly.
+    """
+
+    model_config = {"extra": "forbid"}
+
     reason: str | None = Field(default=None, max_length=512)
 
 
