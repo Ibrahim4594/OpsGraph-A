@@ -3,14 +3,16 @@
 Counts the orchestrator's recorded events, classifies error events
 (``severity in ('error', 'critical')`` or ``kind == 'error-log'``), and
 returns availability + error budget + burn rate. Reuses the pure
-functions in :mod:`repopulse.slo`.
+functions in :mod:`repopulse.slo`. Requires pipeline API auth (v1.1).
 """
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
 
+from repopulse.api.pipeline_auth import require_pipeline_api_key
+from repopulse.config import Settings
 from repopulse.slo import (
     SLO,
     availability_sli,
@@ -51,6 +53,7 @@ def _band(burn: float, *, over_budget: bool) -> BurnBand:
 @router.get("/slo")
 def get_slo(
     request: Request,
+    _settings: Annotated[Settings, Depends(require_pipeline_api_key)],
     target: float = Query(default=0.99, ge=0.0, le=1.0),
 ) -> dict[str, object]:
     orchestrator = getattr(request.app.state, "orchestrator", None)

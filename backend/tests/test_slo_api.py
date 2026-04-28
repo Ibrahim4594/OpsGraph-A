@@ -12,6 +12,8 @@ from repopulse.pipeline.orchestrator import PipelineOrchestrator
 
 _T0 = datetime(2026, 4, 27, 12, 0, tzinfo=UTC)
 
+_AUTH = {"Authorization": "Bearer test-pipeline-api-secret"}
+
 
 def _envelope(*, source: str, kind: str, severity: str | None = None) -> EventEnvelope:
     payload: dict[str, object] = {"occurred_at": _T0.isoformat()}
@@ -30,7 +32,7 @@ def _envelope(*, source: str, kind: str, severity: str | None = None) -> EventEn
 def test_slo_endpoint_no_traffic_returns_perfect_availability() -> None:
     app = create_app()
     with TestClient(app) as client:
-        body = client.get("/api/v1/slo").json()
+        body = client.get("/api/v1/slo", headers=_AUTH).json()
     assert body["service"] == "RepoPulse"
     assert body["total_events"] == 0
     assert body["error_events"] == 0
@@ -56,7 +58,7 @@ def test_slo_endpoint_computes_availability_from_event_log() -> None:
 
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
-        body = client.get("/api/v1/slo").json()
+        body = client.get("/api/v1/slo", headers=_AUTH).json()
     assert body["total_events"] == 100
     assert body["error_events"] == 2
     assert abs(body["availability"] - 0.98) < 1e-9
@@ -80,7 +82,7 @@ def test_slo_endpoint_fast_burn_band_when_burn_exceeds_threshold() -> None:
         )
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
-        body = client.get("/api/v1/slo").json()
+        body = client.get("/api/v1/slo", headers=_AUTH).json()
     assert body["burn_band"] == "fast"
 
 
@@ -93,7 +95,7 @@ def test_slo_endpoint_within_target_reports_ok_band() -> None:
         )
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
-        body = client.get("/api/v1/slo").json()
+        body = client.get("/api/v1/slo", headers=_AUTH).json()
     assert body["error_events"] == 0
     assert body["availability"] == 1.0
     assert body["burn_band"] == "ok"
@@ -115,7 +117,7 @@ def test_slo_endpoint_target_is_overridable_via_query() -> None:
         )
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
-        body = client.get("/api/v1/slo?target=0.95").json()
+        body = client.get("/api/v1/slo?target=0.95", headers=_AUTH).json()
     assert body["target"] == 0.95
     # 0.98 ≥ 0.95, so within target
     assert body["burn_band"] == "ok"

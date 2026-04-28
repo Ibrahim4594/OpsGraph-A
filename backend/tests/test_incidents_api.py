@@ -14,6 +14,8 @@ from repopulse.pipeline.orchestrator import PipelineOrchestrator
 
 _T0 = datetime(2026, 4, 27, 12, 0, tzinfo=UTC)
 
+_AUTH = {"Authorization": "Bearer test-pipeline-api-secret"}
+
 
 @pytest.fixture
 def populated_orchestrator() -> PipelineOrchestrator:
@@ -49,7 +51,7 @@ def populated_orchestrator() -> PipelineOrchestrator:
 def test_incidents_endpoint_returns_empty_when_orchestrator_empty() -> None:
     app = create_app()
     with TestClient(app) as client:
-        response = client.get("/api/v1/incidents")
+        response = client.get("/api/v1/incidents", headers=_AUTH)
     assert response.status_code == 200
     assert response.json() == {"incidents": [], "count": 0}
 
@@ -59,7 +61,7 @@ def test_incidents_endpoint_returns_orchestrator_incidents(
 ) -> None:
     app = create_app(orchestrator=populated_orchestrator)
     with TestClient(app) as client:
-        response = client.get("/api/v1/incidents")
+        response = client.get("/api/v1/incidents", headers=_AUTH)
     assert response.status_code == 200
     body = response.json()
     assert body["count"] == 1
@@ -77,12 +79,12 @@ def test_incidents_endpoint_respects_limit_zero(
 ) -> None:
     app = create_app(orchestrator=populated_orchestrator)
     with TestClient(app) as client:
-        response = client.get("/api/v1/incidents?limit=0")
+        response = client.get("/api/v1/incidents?limit=0", headers=_AUTH)
     assert response.json() == {"incidents": [], "count": 0}
 
 
 def test_incidents_endpoint_rejects_negative_limit() -> None:
     app = create_app()
     with TestClient(app) as client:
-        response = client.get("/api/v1/incidents?limit=-1")
+        response = client.get("/api/v1/incidents?limit=-1", headers=_AUTH)
     assert response.status_code == 422

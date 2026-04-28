@@ -4,16 +4,23 @@ GET /api/v1/recommendations            — list latest, with state overlay
 POST /api/v1/recommendations/{id}/approve  — operator approval (M4)
 POST /api/v1/recommendations/{id}/reject   — operator rejection (M4)
 
+All routes require ``Authorization: Bearer <REPOPULSE_API_SHARED_SECRET>``
+(v1.1). The audit ``actor`` is ``Settings.api_operator_actor`` (never
+client-supplied).
+
 The orchestrator on ``app.state.orchestrator`` owns the bounded
 recommendations deque and the state-overlay dict.
 """
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import Annotated, TypedDict
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field
+
+from repopulse.api.pipeline_auth import require_pipeline_api_key
+from repopulse.config import Settings
 
 router = APIRouter(prefix="/api/v1", tags=["recommendations"])
 
@@ -33,12 +40,7 @@ class RecommendationsResponse(TypedDict):
     count: int
 
 
-class _ApproveBody(BaseModel):
-    operator: str = Field(min_length=1, max_length=128)
-
-
 class _RejectBody(BaseModel):
-    operator: str = Field(min_length=1, max_length=128)
     reason: str | None = Field(default=None, max_length=512)
 
 
@@ -57,6 +59,7 @@ def _serialize(rec: object) -> RecommendationOut:
 @router.get("/recommendations")
 def list_recommendations(
     request: Request,
+    _settings: Annotated[Settings, Depends(require_pipeline_api_key)],
     limit: int = Query(default=10, ge=0, le=100),
 ) -> RecommendationsResponse:
     orchestrator = request.app.state.orchestrator
@@ -68,13 +71,14 @@ def list_recommendations(
 @router.post("/recommendations/{rec_id}/approve")
 def approve_recommendation(
     rec_id: UUID,
-    body: _ApproveBody,
     request: Request,
+    settings: Annotated[Settings, Depends(require_pipeline_api_key)],
 ) -> dict[str, object]:
+    actor = settings.api_operator_actor
     orchestrator = request.app.state.orchestrator
     try:
         rec = orchestrator.transition_recommendation(
-            rec_id, to_state="approved", actor=body.operator
+            rec_id, to_state="approved", actor=actor
         )
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="recommendation not found") from exc
@@ -83,7 +87,7 @@ def approve_recommendation(
     return {
         "recommendation_id": str(rec_id),
         "state": rec.state,
-        "actor": body.operator,
+        "actor": actor,
     }
 
 
@@ -92,13 +96,15 @@ def reject_recommendation(
     rec_id: UUID,
     body: _RejectBody,
     request: Request,
+    settings: Annotated[Settings, Depends(require_pipeline_api_key)],
 ) -> dict[str, object]:
+    actor = settings.api_operator_actor
     orchestrator = request.app.state.orchestrator
     try:
         rec = orchestrator.transition_recommendation(
             rec_id,
             to_state="rejected",
-            actor=body.operator,
+            actor=actor,
             reason=body.reason,
         )
     except KeyError as exc:
@@ -108,5 +114,5 @@ def reject_recommendation(
     return {
         "recommendation_id": str(rec_id),
         "state": rec.state,
-        "actor": body.operator,
+        "actor": actor,
     }

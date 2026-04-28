@@ -17,6 +17,8 @@ from repopulse.pipeline.orchestrator import PipelineOrchestrator
 
 _T0 = datetime(2026, 4, 27, 12, 0, 0, tzinfo=UTC)
 
+_AUTH = {"Authorization": "Bearer test-pipeline-api-secret"}
+
 
 def _envelope(*, source: str, kind: str, payload: dict[str, object] | None = None) -> EventEnvelope:
     return EventEnvelope.model_validate(
@@ -100,7 +102,7 @@ def test_e2e_pipeline_via_http_api() -> None:
 
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
-        r = client.get("/api/v1/recommendations")
+        r = client.get("/api/v1/recommendations", headers=_AUTH)
         assert r.status_code == 200
         body = r.json()
         assert body["count"] == 1

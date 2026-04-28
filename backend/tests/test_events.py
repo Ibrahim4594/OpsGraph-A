@@ -4,7 +4,11 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
+from repopulse.api.events import _MAX_PAYLOAD_BYTES
 from repopulse.main import create_app
+
+# Matches conftest autouse ``REPOPULSE_API_SHARED_SECRET``.
+PIPELINE_API_HEADERS = {"Authorization": "Bearer test-pipeline-api-secret"}
 
 
 @pytest.fixture
@@ -24,9 +28,14 @@ def _valid_envelope() -> dict[str, object]:
     }
 
 
+def test_post_event_requires_auth(client: TestClient) -> None:
+    r = client.post("/api/v1/events", json=_valid_envelope())
+    assert r.status_code == 401
+
+
 def test_post_event_returns_202_with_event_id(client: TestClient) -> None:
     envelope = _valid_envelope()
-    r = client.post("/api/v1/events", json=envelope)
+    r = client.post("/api/v1/events", json=envelope, headers=PIPELINE_API_HEADERS)
     assert r.status_code == 202
     body = r.json()
     assert body["accepted"] is True
@@ -36,47 +45,90 @@ def test_post_event_returns_202_with_event_id(client: TestClient) -> None:
 def test_post_event_missing_event_id_returns_422(client: TestClient) -> None:
     envelope = _valid_envelope()
     del envelope["event_id"]
-    r = client.post("/api/v1/events", json=envelope)
+    r = client.post("/api/v1/events", json=envelope, headers=PIPELINE_API_HEADERS)
     assert r.status_code == 422
 
 
 def test_post_event_missing_source_returns_422(client: TestClient) -> None:
     envelope = _valid_envelope()
     del envelope["source"]
-    r = client.post("/api/v1/events", json=envelope)
+    r = client.post("/api/v1/events", json=envelope, headers=PIPELINE_API_HEADERS)
     assert r.status_code == 422
 
 
 def test_post_event_invalid_event_id_returns_422(client: TestClient) -> None:
     envelope = _valid_envelope()
     envelope["event_id"] = "not-a-uuid"
-    r = client.post("/api/v1/events", json=envelope)
+    r = client.post("/api/v1/events", json=envelope, headers=PIPELINE_API_HEADERS)
     assert r.status_code == 422
 
 
-def test_post_event_simulate_error_returns_500(client: TestClient) -> None:
+def test_post_event_simulate_error_returns_403_when_not_allowed(
+    client: TestClient,
+) -> None:
     envelope = _valid_envelope()
     envelope["simulate_error"] = True
-    r = client.post("/api/v1/events", json=envelope)
+    r = client.post("/api/v1/events", json=envelope, headers=PIPELINE_API_HEADERS)
+    assert r.status_code == 403
+
+
+def test_post_event_simulate_error_returns_500_when_allowed(
+    monkeypatch: pytest.MonkeyPatch, client: TestClient
+) -> None:
+    monkeypatch.setenv("REPOPULSE_ALLOW_SIMULATE_ERROR", "true")
+    app = create_app()
+    with TestClient(app, raise_server_exceptions=False) as c:
+        envelope = _valid_envelope()
+        envelope["simulate_error"] = True
+        r = c.post("/api/v1/events", json=envelope, headers=PIPELINE_API_HEADERS)
     assert r.status_code == 500
 
 
 def test_post_event_simulate_error_default_false(client: TestClient) -> None:
     envelope = _valid_envelope()
-    r = client.post("/api/v1/events", json=envelope)
+    r = client.post("/api/v1/events", json=envelope, headers=PIPELINE_API_HEADERS)
     assert r.status_code == 202
 
 
 def test_post_event_forwards_to_orchestrator() -> None:
-    """A successful POST must reach app.state.orchestrator. Without this wiring,
-    the recommendations endpoint can never produce non-empty output from real HTTP
-    traffic — regression guard for the M3 review C1 finding."""
+    """A successful POST must reach app.state.orchestrator."""
     from repopulse.main import create_app
     from repopulse.pipeline.orchestrator import PipelineOrchestrator
 
     orch = PipelineOrchestrator()
     app = create_app(orchestrator=orch)
     with TestClient(app, raise_server_exceptions=False) as c:
-        r = c.post("/api/v1/events", json=_valid_envelope())
+        r = c.post(
+            "/api/v1/events",
+            json=_valid_envelope(),
+            headers=PIPELINE_API_HEADERS,
+        )
         assert r.status_code == 202
     assert orch.snapshot()["events"] == 1
+
+
+def test_post_event_rejects_oversized_payload_json(client: TestClient) -> None:
+    """P2: cap serialized payload size (GitHub-style bounded ingest)."""
+    huge = {"blob": "x" * (_MAX_PAYLOAD_BYTES + 512)}
+    envelope = {
+        "event_id": str(uuid4()),
+        "source": "github",
+        "kind": "push",
+        "payload": huge,
+    }
+    r = client.post("/api/v1/events", json=envelope, headers=PIPELINE_API_HEADERS)
+    assert r.status_code == 422
+
+
+def test_post_event_503_when_api_secret_unconfigured(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("REPOPULSE_API_SHARED_SECRET", raising=False)
+    app = create_app()
+    with TestClient(app) as c:
+        r = c.post(
+            "/api/v1/events",
+            json=_valid_envelope(),
+            headers=PIPELINE_API_HEADERS,
+        )
+    assert r.status_code == 503

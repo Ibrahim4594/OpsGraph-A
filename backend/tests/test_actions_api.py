@@ -14,6 +14,8 @@ from repopulse.pipeline.orchestrator import PipelineOrchestrator
 
 _T0 = datetime(2026, 4, 27, 12, 0, tzinfo=UTC)
 
+_AUTH = {"Authorization": "Bearer test-pipeline-api-secret"}
+
 
 def _envelope(*, source: str = "github") -> EventEnvelope:
     return EventEnvelope.model_validate(
@@ -44,7 +46,7 @@ def _seed_pending(orch: PipelineOrchestrator) -> str:
 def test_actions_endpoint_empty_returns_count_zero() -> None:
     app = create_app()
     with TestClient(app) as client:
-        r = client.get("/api/v1/actions")
+        r = client.get("/api/v1/actions", headers=_AUTH)
     assert r.status_code == 200
     assert r.json() == {"actions": [], "count": 0}
 
@@ -56,14 +58,14 @@ def test_actions_endpoint_returns_history_after_approve() -> None:
     with TestClient(app) as client:
         client.post(
             f"/api/v1/recommendations/{rec_id}/approve",
-            json={"operator": "alice"},
+            headers=_AUTH,
         )
-        r = client.get("/api/v1/actions")
+        r = client.get("/api/v1/actions", headers=_AUTH)
     body = r.json()
     assert body["count"] >= 1
     first = body["actions"][0]
     assert first["kind"] == "approve"
-    assert first["actor"] == "alice"
+    assert first["actor"] == "authenticated-api"
     assert first["recommendation_id"] == rec_id
     assert "at" in first
 
@@ -75,7 +77,7 @@ def test_actions_endpoint_includes_observe_entries() -> None:
     orch.evaluate(window_seconds=300.0)
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
-        body = client.get("/api/v1/actions").json()
+        body = client.get("/api/v1/actions", headers=_AUTH).json()
     kinds = [entry["kind"] for entry in body["actions"]]
     actors = [entry["actor"] for entry in body["actions"]]
     assert "observe" in kinds
@@ -87,7 +89,7 @@ def test_actions_endpoint_respects_limit_zero() -> None:
     _seed_pending(orch)
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
-        r = client.get("/api/v1/actions?limit=0")
+        r = client.get("/api/v1/actions?limit=0", headers=_AUTH)
     assert r.json() == {"actions": [], "count": 0}
 
 
@@ -113,7 +115,7 @@ def test_actions_endpoint_includes_workflow_run_entries(
             },
             headers={"Authorization": "Bearer test-secret"},
         )
-        body = client.get("/api/v1/actions").json()
+        body = client.get("/api/v1/actions", headers=_AUTH).json()
     kinds = [entry["kind"] for entry in body["actions"]]
     actors = [entry["actor"] for entry in body["actions"]]
     assert "workflow-run" in kinds

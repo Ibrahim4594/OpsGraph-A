@@ -91,14 +91,22 @@ def generate_load(
 
 
 def _real_post(url: str, envelope: dict[str, object]) -> int:
+    import os
+
     import httpx  # local import keeps unit tests free of network deps
 
+    secret = os.environ.get("REPOPULSE_API_SHARED_SECRET", "")
+    headers: dict[str, str] = {}
+    if secret:
+        headers["Authorization"] = f"Bearer {secret}"
     with httpx.Client(timeout=5.0) as client:
-        response = client.post(url, json=envelope)
+        response = client.post(url, json=envelope, headers=headers)
         return response.status_code
 
 
 def main() -> None:
+    import os
+
     parser = argparse.ArgumentParser(
         description="Drive synthetic load at the RepoPulse /api/v1/events ingest endpoint.",
     )
@@ -109,7 +117,14 @@ def main() -> None:
         default="http://127.0.0.1:8000/api/v1/events",
         help="Target URL for POST",
     )
+    parser.add_argument(
+        "--api-secret",
+        default=None,
+        help="Override REPOPULSE_API_SHARED_SECRET for Authorization header",
+    )
     args = parser.parse_args()
+    if args.api_secret:
+        os.environ["REPOPULSE_API_SHARED_SECRET"] = args.api_secret
     result = generate_load(
         requests=args.requests,
         error_rate=args.error_rate,

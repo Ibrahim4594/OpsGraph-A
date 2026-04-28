@@ -1,10 +1,11 @@
 """Events ingest endpoint.
 
 POST /api/v1/events accepts a canonical event envelope and returns 202
-Accepted on success. Validation failures return 422 (FastAPI default for
-pydantic errors). The ``simulate_error`` flag exists so the synthetic
-load generator (and the SLO module) can exercise the error path
-deterministically — production traffic must always set it false.
+Accepted on success. Requires ``Authorization: Bearer
+<REPOPULSE_API_SHARED_SECRET>`` (v1.1). Validation failures return 422.
+
+The ``simulate_error`` flag is **disabled by default**; set
+``REPOPULSE_ALLOW_SIMULATE_ERROR=true`` for synthetic load / tests only.
 
 On a successful ingest the envelope is forwarded to the in-memory
 ``PipelineOrchestrator`` (``app.state.orchestrator``) and a fresh
@@ -13,13 +14,19 @@ reflects the new event without a separate trigger call.
 """
 from __future__ import annotations
 
-from typing import Literal, TypedDict
+import json
+from typing import Annotated, Literal, TypedDict
 from uuid import UUID
 
-from fastapi import APIRouter, Request, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, Field, field_validator
+
+from repopulse.api.pipeline_auth import require_pipeline_api_key
+from repopulse.config import Settings
 
 router = APIRouter(prefix="/api/v1", tags=["events"])
+
+_MAX_PAYLOAD_BYTES = 256 * 1024
 
 
 class EventEnvelope(BaseModel):
@@ -31,6 +38,16 @@ class EventEnvelope(BaseModel):
     payload: dict[str, object] = Field(default_factory=dict)
     simulate_error: bool = False
 
+    @field_validator("payload")
+    @classmethod
+    def _payload_size_cap(cls, v: dict[str, object]) -> dict[str, object]:
+        raw = json.dumps(v, separators=(",", ":"), default=str).encode("utf-8")
+        if len(raw) > _MAX_PAYLOAD_BYTES:
+            raise ValueError(
+                f"payload JSON must be <= {_MAX_PAYLOAD_BYTES} bytes when serialized"
+            )
+        return v
+
 
 class IngestResponse(TypedDict):
     accepted: Literal[True]
@@ -38,8 +55,17 @@ class IngestResponse(TypedDict):
 
 
 @router.post("/events", status_code=status.HTTP_202_ACCEPTED)
-def ingest_event(envelope: EventEnvelope, request: Request) -> IngestResponse:
+def ingest_event(
+    envelope: EventEnvelope,
+    request: Request,
+    settings: Annotated[Settings, Depends(require_pipeline_api_key)],
+) -> IngestResponse:
     if envelope.simulate_error:
+        if not settings.allow_simulate_error:
+            raise HTTPException(
+                status_code=403,
+                detail="simulate_error is disabled; set REPOPULSE_ALLOW_SIMULATE_ERROR=true",
+            )
         raise RuntimeError("simulated ingest failure")
     orchestrator = getattr(request.app.state, "orchestrator", None)
     if orchestrator is not None:

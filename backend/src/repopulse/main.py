@@ -22,6 +22,7 @@ from fastapi import FastAPI
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.metrics.export import MetricReader
 from opentelemetry.sdk.trace.export import SpanExporter
+from starlette.middleware.cors import CORSMiddleware
 
 from repopulse import __version__
 from repopulse.api.actions import router as actions_router
@@ -74,6 +75,18 @@ def create_app(
         version=__version__,
         lifespan=lifespan,
     )
+    if settings.cors_origins.strip():
+        _origins = [
+            o.strip() for o in settings.cors_origins.split(",") if o.strip()
+        ]
+        if _origins:
+            fastapi_app.add_middleware(
+                CORSMiddleware,
+                allow_origins=_origins,
+                allow_credentials=True,
+                allow_methods=["*"],
+                allow_headers=["Authorization", "Content-Type"],
+            )
     FastAPIInstrumentor.instrument_app(
         fastapi_app,
         tracer_provider=tracer_provider,

@@ -3,10 +3,16 @@
 Returns the orchestrator's bounded action-history deque, newest-first.
 Includes operator approvals/rejections, R1 auto-observe entries, and
 agentic-workflow run entries (M5 source) once those are wired in.
+Requires pipeline API auth (v1.1).
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Query, Request
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Query, Request
+
+from repopulse.api.pipeline_auth import require_pipeline_api_key
+from repopulse.config import Settings
 
 router = APIRouter(prefix="/api/v1", tags=["actions"])
 
@@ -14,6 +20,7 @@ router = APIRouter(prefix="/api/v1", tags=["actions"])
 @router.get("/actions")
 def list_actions(
     request: Request,
+    _settings: Annotated[Settings, Depends(require_pipeline_api_key)],
     limit: int = Query(default=50, ge=0, le=200),
 ) -> dict[str, object]:
     orchestrator = getattr(request.app.state, "orchestrator", None)

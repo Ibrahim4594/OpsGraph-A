@@ -9,9 +9,12 @@ trivially testable with in-memory exporters.
 """
 from __future__ import annotations
 
+import os
+
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import (
     ConsoleMetricExporter,
+    InMemoryMetricReader,
     MetricReader,
     PeriodicExportingMetricReader,
 )
@@ -51,8 +54,11 @@ def init_telemetry(
       experience prints spans to stdout without extra setup. Tests should
       pass an ``InMemorySpanExporter``.
     - ``metric_reader`` defaults to a ``PeriodicExportingMetricReader`` over
-      the console metric exporter (60 s interval). Tests should pass an
-      ``InMemoryMetricReader``.
+      the console metric exporter (60 s interval). When
+      ``REPOPULSE_UNDER_PYTEST=1`` (set by ``tests/conftest.py`` before
+      collection imports app code), defaults to ``InMemoryMetricReader`` so
+      no background export thread writes to a closed stdout after the suite.
+      Tests may still pass an explicit ``InMemoryMetricReader``.
     - All exporters use ``SimpleSpanProcessor`` (synchronous export).
       This is intentional for the AIOps service's expected throughput and
       avoids background-thread teardown races (notably the
@@ -68,10 +74,13 @@ def init_telemetry(
     tracer_provider.add_span_processor(SimpleSpanProcessor(span_exporter))
 
     if metric_reader is None:
-        metric_reader = PeriodicExportingMetricReader(
-            ConsoleMetricExporter(),
-            export_interval_millis=60_000,
-        )
+        if os.environ.get("REPOPULSE_UNDER_PYTEST") == "1":
+            metric_reader = InMemoryMetricReader()
+        else:
+            metric_reader = PeriodicExportingMetricReader(
+                ConsoleMetricExporter(),
+                export_interval_millis=60_000,
+            )
 
     meter_provider = MeterProvider(resource=resource, metric_readers=[metric_reader])
 

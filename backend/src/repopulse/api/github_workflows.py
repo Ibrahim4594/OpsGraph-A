@@ -11,6 +11,7 @@ is ``false``. See ADR-003 for the trust model.
 """
 from __future__ import annotations
 
+import hmac
 from datetime import UTC, datetime
 from typing import Annotated
 
@@ -49,7 +50,13 @@ def _auth(
             status_code=503, detail="agentic shared secret not configured"
         )
     token = (authorization or "").removeprefix("Bearer ").strip()
-    if token != expected:
+    exp_b = expected.encode("utf-8")
+    tok_b = token.encode("utf-8")
+    try:
+        ok = hmac.compare_digest(tok_b, exp_b)
+    except (TypeError, ValueError):
+        ok = False
+    if not ok:
         raise HTTPException(status_code=401, detail="invalid agentic token")
     return settings
 

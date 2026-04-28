@@ -19,3 +19,14 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     agentic_enabled: bool = True
     agentic_shared_secret: str | None = None
+    #: Bearer token for ``/api/v1/events``, recommendations, incidents, actions,
+    #: and SLO read APIs. Required in production; unset → 503 on those routes.
+    api_shared_secret: str | None = None
+    #: Audit ``actor`` recorded for approve/reject when using the shared API key
+    #: (never taken from untrusted request body).
+    api_operator_actor: str = "authenticated-api"
+    #: Allow ``simulate_error`` on ``POST /api/v1/events`` (dev/load-test only).
+    allow_simulate_error: bool = False
+    #: Comma-separated browser origins for CORS (e.g. ``http://127.0.0.1:3000``).
+    #: Empty → no CORS middleware (same-origin or reverse-proxy only).
+    cors_origins: str = ""
