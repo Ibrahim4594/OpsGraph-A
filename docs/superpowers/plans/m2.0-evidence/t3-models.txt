@@ -1,0 +1,17 @@
+=== T3: 8 ORM models + 2 bridge tables — verification (post-mypy fixes) ===
+
+--- imports + tables registered ---
+tables: ['action_history', 'anomalies', 'incident_anomalies', 'incident_events', 'incidents', 'normalized_events', 'raw_events', 'recommendation_transitions', 'recommendations', 'workflow_usage']
+count: 10
+
+--- model layer tests ---
+...............                                                          [100%]
+15 passed in 0.42s
+
+--- gate: not integration/e2e/migration ---
+...........................................                              [100%]
+259 passed in 2.70s
+
+--- ruff + mypy ---
+All checks passed!
+Success: no issues found in 78 source files
