@@ -13,10 +13,12 @@ import {
 const fetchMock = vi.fn();
 
 beforeEach(() => {
+  process.env.NEXT_PUBLIC_API_SHARED_SECRET = "pipeline-test";
   vi.stubGlobal("fetch", fetchMock);
 });
 
 afterEach(() => {
+  delete process.env.NEXT_PUBLIC_API_SHARED_SECRET;
   fetchMock.mockReset();
   vi.unstubAllGlobals();
 });
@@ -50,6 +52,9 @@ describe("getRecommendations", () => {
     expect(r.count).toBe(1);
     expect(r.recommendations[0].state).toBe("pending");
     expect(r.recommendations[0].action_category).toBe("triage");
+    const [, init] = fetchMock.mock.calls[0];
+    const hdr = new Headers(init?.headers as HeadersInit);
+    expect(hdr.get("Authorization")).toBe("Bearer pipeline-test");
   });
 
   it("hits the configured base URL", async () => {
@@ -93,26 +98,35 @@ describe("getIncidents / getActions / getSlo", () => {
 });
 
 describe("approve/reject", () => {
-  it("approveRecommendation POSTs operator and returns the new state", async () => {
+  it("approveRecommendation POSTs without body; actor comes from server", async () => {
     fetchMock.mockResolvedValueOnce(
-      ok({ recommendation_id: "r1", state: "approved", actor: "alice" }),
+      ok({
+        recommendation_id: "r1",
+        state: "approved",
+        actor: "authenticated-api",
+      }),
     );
-    const out = await approveRecommendation("r1", "alice");
+    const out = await approveRecommendation("r1");
     expect(out.state).toBe("approved");
     const [, init] = fetchMock.mock.calls[0];
     expect(init?.method).toBe("POST");
-    expect(JSON.parse(init?.body as string)).toEqual({ operator: "alice" });
+    expect(init?.body).toBeUndefined();
+    const hdr = new Headers(init?.headers as HeadersInit);
+    expect(hdr.get("Authorization")).toBe("Bearer pipeline-test");
   });
 
-  it("rejectRecommendation POSTs operator + reason", async () => {
+  it("rejectRecommendation POSTs optional reason only", async () => {
     fetchMock.mockResolvedValueOnce(
-      ok({ recommendation_id: "r1", state: "rejected", actor: "bob" }),
+      ok({
+        recommendation_id: "r1",
+        state: "rejected",
+        actor: "authenticated-api",
+      }),
     );
-    const out = await rejectRecommendation("r1", "bob", "false positive");
+    const out = await rejectRecommendation("r1", "false positive");
     expect(out.state).toBe("rejected");
     const [, init] = fetchMock.mock.calls[0];
     expect(JSON.parse(init?.body as string)).toEqual({
-      operator: "bob",
       reason: "false positive",
     });
   });
@@ -121,15 +135,13 @@ describe("approve/reject", () => {
     fetchMock.mockResolvedValueOnce(
       ok({ detail: "cannot transition approved → approved" }, 409),
     );
-    await expect(approveRecommendation("r1", "alice")).rejects.toBeInstanceOf(
-      ApiError,
-    );
+    await expect(approveRecommendation("r1")).rejects.toBeInstanceOf(ApiError);
   });
 
   it("throws ApiError on 404", async () => {
     fetchMock.mockResolvedValueOnce(ok({ detail: "not found" }, 404));
-    await expect(
-      rejectRecommendation("r1", "alice", undefined),
-    ).rejects.toMatchObject({ status: 404 });
+    await expect(rejectRecommendation("r1", undefined)).rejects.toMatchObject(
+      { status: 404 },
+    );
   });
 });

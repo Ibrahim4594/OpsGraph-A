@@ -40,27 +40,59 @@ def main() -> int:
     parser.add_argument(
         "--secret",
         default=os.environ.get("REPOPULSE_AGENTIC_SHARED_SECRET", ""),
+        help="Bearer token for POST /api/v1/github/usage (agentic secret)",
+    )
+    parser.add_argument(
+        "--api-secret",
+        default=os.environ.get("REPOPULSE_API_SHARED_SECRET", ""),
+        help="Bearer token for POST /api/v1/events (pipeline API secret)",
     )
     args = parser.parse_args()
     base = args.url.rstrip("/")
+    api_secret = args.api_secret or None
+    if not api_secret:
+        print(
+            "ERROR: pipeline API auth required — set REPOPULSE_API_SHARED_SECRET "
+            "or pass --api-secret",
+            flush=True,
+        )
+        return 1
 
     for i in range(95):
-        _post(base, "/api/v1/events", {
-            "event_id": str(uuid.uuid4()),
-            "source": "github", "kind": "push",
-            "payload": {"sha": f"abc{i}"},
-        })
+        _post(
+            base,
+            "/api/v1/events",
+            {
+                "event_id": str(uuid.uuid4()),
+                "source": "github",
+                "kind": "push",
+                "payload": {"sha": f"abc{i}"},
+            },
+            secret=api_secret,
+        )
     for i in range(5):
-        _post(base, "/api/v1/events", {
+        _post(
+            base,
+            "/api/v1/events",
+            {
+                "event_id": str(uuid.uuid4()),
+                "source": "otel-logs",
+                "kind": "error-log",
+                "payload": {"severity": "error", "message": f"err {i}"},
+            },
+            secret=api_secret,
+        )
+    _post(
+        base,
+        "/api/v1/events",
+        {
             "event_id": str(uuid.uuid4()),
-            "source": "otel-logs", "kind": "error-log",
-            "payload": {"severity": "error", "message": f"err {i}"},
-        })
-    _post(base, "/api/v1/events", {
-        "event_id": str(uuid.uuid4()),
-        "source": "github", "kind": "incident",
-        "payload": {"severity": "critical", "message": "demo outage"},
-    })
+            "source": "github",
+            "kind": "incident",
+            "payload": {"severity": "critical", "message": "demo outage"},
+        },
+        secret=api_secret,
+    )
     if args.secret:
         try:
             _post(base, "/api/v1/github/usage", {

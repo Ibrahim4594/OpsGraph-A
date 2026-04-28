@@ -1,44 +1,68 @@
-# Security Model
+# Security Model (v1.1)
 
-## Threat Model
+## Trust boundaries
 
-**Trusted:** code in this repository, the developer's local machine, GitHub Actions runners running CI on `main`-branch workflows, the FastAPI service's own internal modules.
+| Zone | Trust level | Notes |
+|------|-------------|--------|
+| **Demo / local** | Operator machine + `127.0.0.1` bind | `scripts/demo.sh` binds backend and frontend to loopback. **Do not** port-forward or expose these processes to untrusted networks without adding a reverse proxy and stronger auth. |
+| **CI** | GitHub-hosted runners + repository secrets | Workflows inject secrets; minimal `permissions:` on workflow jobs (see each YAML). |
+| **Production (if deployed)** | Your VPC / edge policy | Not prescribed here: use a BFF or OIDC, never rely on `NEXT_PUBLIC_*` secrets across the public internet. |
 
-**Not trusted:** any payload arriving over the network — GitHub webhooks, OpenTelemetry exporters, operator browsers (eventual UI milestone), pull-request CI runs from forks. Inputs are validated against schemas at the ingest boundary; malformed events are rejected with structured errors and logged for triage.
+## Pipeline API (dashboard + ingest)
 
-The most sensitive operations (action gate → GitHub write paths) are explicitly excluded from any "automatic" path: a human approval state is required before any destructive recommendation reaches the GitHub adapter.
+**Mechanism:** `Authorization: Bearer <REPOPULSE_API_SHARED_SECRET>`.
 
-## Action Gate Principles
+**Protected routes (non-exhaustive):**
 
-1. **Read-only by default.** Every recommendation type starts in a read-only category. Promotion to a write category requires an explicit policy entry.
-2. **Human approval for destructive ops.** Categories that mutate repository state (close issue, merge PR, push, delete branch) cannot execute without an `approved` state recorded by an operator.
-3. **Audit trail.** Every recommendation, its evidence trace, the operator who approved (or rejected) it, and the resulting action outcome are persisted before the action runs.
-4. **Reversible-first preference.** Where a reversible action exists (comment instead of close, label instead of merge), it is preferred and offered alongside the destructive variant.
+- `POST /api/v1/events`
+- `GET /api/v1/recommendations`, `GET /api/v1/incidents`, `GET /api/v1/actions`, `GET /api/v1/slo`
+- `POST /api/v1/recommendations/{id}/approve`, `POST .../reject`
 
-## Secret Handling
+**Configuration (`backend/src/repopulse/config.py`):**
 
-All runtime configuration that is sensitive flows through environment variables prefixed `REPOPULSE_` (handled by the `Settings` model in `backend/src/repopulse/config.py`). Concretely:
+| Env var | Purpose |
+|---------|---------|
+| `REPOPULSE_API_SHARED_SECRET` | Shared bearer for pipeline routes. **Required** for normal operation; unset → **503** on protected routes. |
+| `REPOPULSE_API_OPERATOR_ACTOR` | Audit field recorded on approve/reject (default `authenticated-api`). |
+| `REPOPULSE_ALLOW_SIMULATE_ERROR` | When `true`, allows `simulate_error` on ingest (tests / load only). Default `false`. |
+| `REPOPULSE_CORS_ORIGINS` | Comma-separated origins for `CORSMiddleware` (e.g. `http://127.0.0.1:3000`). Empty → no CORS (same-origin or reverse-proxy only). |
 
-- `REPOPULSE_AGENTIC_SHARED_SECRET` — bearer token used by agentic workflows to authenticate to the backend (M5). The backend never holds a GitHub token; write effects live in the workflow YAML, gated by the workflow's own `GITHUB_TOKEN`. See [ADR-003](../adr/ADR-003-agentic-execution-model.md) for the rationale.
-- `REPOPULSE_AGENTIC_ENABLED` — kill switch (M5). When set to `false`, all agentic endpoints return `202 {"disabled": true}`.
-- `REPOPULSE_OTEL_EXPORTER_OTLP_ENDPOINT` — collector endpoint (M2).
-- `REPOPULSE_REDIS_URL` — event bus connection string (M2/M3).
-- `REPOPULSE_DATABASE_URL` — timeseries store connection (M3).
+**Client:** The Next.js operator UI reads `NEXT_PUBLIC_API_SHARED_SECRET` and
+sends the same bearer. This duplicates the secret in the browser bundle —
+**demo-only**; see [ADR-005](../adr/ADR-005-pipeline-api-authentication.md).
 
-`.env` is gitignored at the repo root; CI provides values via repository/environment secrets. The `Settings` model rejects unknown env keys (`extra="ignore"` keeps things permissive at runtime, but documented keys are the only ones referenced).
+**Approve / reject:** Identity is **not** taken from JSON body. The server
+uses `api_operator_actor` only.
 
-## GitHub Agentic Workflow Boundaries
+**Ingest limits:** Serialized `payload` JSON on `POST /api/v1/events` is
+capped at **256 KiB** (validator in `repopulse.api.events`).
 
-The M5 GitHub workflows that consume recommendations operate under these constraints (full details in [agentic-workflows.md](agentic-workflows.md) and [ADR-003](../adr/ADR-003-agentic-execution-model.md)):
+## GitHub agentic workflows (M5)
 
-- **Scoped tokens.** Each workflow has its own `permissions:` block declaring exactly the access it needs — `issues: write` + `contents: read` for triage, `pull-requests: write` + `contents: read` + `actions: read` for CI failure analysis, `pull-requests: write` + `contents: read` for doc drift. **No `contents: write`. No `actions: write`. No admin scopes.** Backend never holds a GitHub token.
-- **Comment-only output.** Workflows post a single comment per event. They cannot label, close, merge, push, force-push, delete branches, or edit existing comments.
-- **No force-push, no merges.** The token's permission set makes these structurally impossible — not just blocked at the action layer.
-- **Two-layer kill switch.** The repository variable `REPOPULSE_AGENTIC_ENABLED=false` short-circuits both (a) the workflow `if:` gate (job never runs) and (b) the backend endpoint (returns `202 {"disabled": true}` with no analysis or orchestrator side effects). Either layer alone is sufficient to stop automation.
-- **Shared-secret authentication.** Workflow → backend uses `Authorization: Bearer ${{ secrets.REPOPULSE_AGENTIC_TOKEN }}`. Wrong/missing token → 401. Missing expected secret in backend env → 503 (fail closed; never accept any token when no expected token is configured).
-- **Cost/usage telemetry.** Every workflow run emits a `repopulse-workflow-usage` event ingested by the orchestrator with `source="agentic-workflow"`. Cost is computed from the static GitHub-hosted runner rate table.
-- **Dry-run mode.** `vars.REPOPULSE_AGENTIC_DRYRUN=true` runs analysis but skips the comment-posting step, so the result is visible in the Actions log without touching the issue/PR.
+Unchanged at a high level: workflows use a **repository secret** bearer; the
+backend stores `REPOPULSE_AGENTIC_SHARED_SECRET` and validates with
+`hmac.compare_digest`. GitHub Actions jobs set `REPOPULSE_AGENTIC_TOKEN` from
+`secrets.REPOPULSE_AGENTIC_TOKEN` for the Python caller — treat that value as
+the same class of secret as `REPOPULSE_AGENTIC_SHARED_SECRET` on the server.
 
-## Out of Scope (M1)
+Kill switch, dry-run, scoped `permissions:`, and comment-only behavior remain
+as documented in [ADR-003](../adr/ADR-003-agentic-execution-model.md) and
+[agentic-workflows.md](agentic-workflows.md).
 
-User authentication for the eventual operator dashboard, network policy / VPC design, encryption-at-rest configuration, and disaster recovery procedures are out of scope until their respective milestones (M3 for storage, the UI milestone for auth). This document will be updated as those milestones land.
+## Settings vs documentation
+
+All **implemented** `REPOPULSE_*` keys for security-relevant behavior live in
+`Settings` in `backend/src/repopulse/config.py`. Keys that are **not** in
+`Settings` (for example a future `REPOPULSE_DATABASE_URL`) are **not**
+documented here as active until code references them.
+
+## Cross-origin browser access
+
+When the UI origin differs from the API origin, set `REPOPULSE_CORS_ORIGINS`
+to an explicit allowlist. The alternative pattern (Next Route Handlers as
+BFF to avoid browser-held secrets) is described as a follow-up in ADR-005.
+
+## Out of scope
+
+End-user OIDC, per-operator RBAC, mTLS, and encryption-at-rest policy are
+out of scope for this reference repository unless added in a later ADR.

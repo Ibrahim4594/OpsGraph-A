@@ -89,12 +89,28 @@ function backendBaseUrl(): string {
   return env.trim().replace(/\/+$/, "");
 }
 
+/** Bearer for pipeline APIs (must match ``REPOPULSE_API_SHARED_SECRET``). */
+function pipelineAuthHeaders(): HeadersInit {
+  const secret =
+    typeof process !== "undefined"
+      ? (process.env.NEXT_PUBLIC_API_SHARED_SECRET ?? "").trim()
+      : "";
+  if (!secret) return {};
+  return { Authorization: `Bearer ${secret}` };
+}
+
 async function request<T>(
   path: string,
   init?: RequestInit & { signal?: AbortSignal },
 ): Promise<T> {
   const url = `${backendBaseUrl()}${path}`;
   const headers = new Headers(init?.headers);
+  const auth = pipelineAuthHeaders();
+  if (typeof auth === "object" && !Array.isArray(auth)) {
+    for (const [k, v] of Object.entries(auth)) {
+      if (v) headers.set(k, v);
+    }
+  }
   if (init?.body) headers.set("Content-Type", "application/json");
   const response = await fetch(url, {
     ...init,
@@ -151,20 +167,17 @@ export async function getSlo(init?: { target?: number }): Promise<SloResponse> {
 
 export async function approveRecommendation(
   id: string,
-  operator: string,
 ): Promise<ApprovalResponse> {
   return request<ApprovalResponse>(`/api/v1/recommendations/${id}/approve`, {
     method: "POST",
-    body: JSON.stringify({ operator }),
   });
 }
 
 export async function rejectRecommendation(
   id: string,
-  operator: string,
   reason?: string,
 ): Promise<ApprovalResponse> {
-  const body: Record<string, string | undefined> = { operator };
+  const body: Record<string, string | undefined> = {};
   if (reason !== undefined) body.reason = reason;
   return request<ApprovalResponse>(`/api/v1/recommendations/${id}/reject`, {
     method: "POST",

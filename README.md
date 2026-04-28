@@ -1,9 +1,9 @@
 # OpsGraph — RepoPulse AIOps
 
-[![status](https://img.shields.io/badge/status-v1.0.0-blue)](#status)
+[![status](https://img.shields.io/badge/status-v1.1.0-blue)](#status)
 [![python](https://img.shields.io/badge/python-3.11+-blue)](#)
 [![nextjs](https://img.shields.io/badge/Next.js-15-black)](#)
-[![tests](https://img.shields.io/badge/tests-264_passing-success)](#)
+[![tests](https://img.shields.io/badge/tests-pytest%2Bvitest-informational)](#)
 [![false_positive_rate](https://img.shields.io/badge/false_positives-0%25-success)](docs/results-report.md)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -16,10 +16,12 @@
 ## Demo
 
 ```bash
+export REPOPULSE_API_SHARED_SECRET="$(openssl rand -hex 16)"
+export REPOPULSE_AGENTIC_SHARED_SECRET="$(openssl rand -hex 16)"
 ./scripts/demo.sh
 ```
 
-→ Dashboard at http://localhost:3000 · API at http://localhost:8000.
+→ Dashboard at http://127.0.0.1:3000 · API at http://127.0.0.1:8000 (loopback only).
 
 | | |
 |---|---|
@@ -96,7 +98,8 @@ Per-milestone diagrams: [`docs/architecture.md`](docs/architecture.md) · M3 dee
 
 ## Engineering standards
 
-- **TDD across both languages** — 211 backend pytest specs + 53 frontend vitest specs (264 total).
+- **TDD across both languages** — run `cd backend && pytest --co -q` and
+  `cd frontend && npm test` for current counts (see CI for green status).
 - **Strict typing** — mypy strict, TypeScript strict.
 - **Anti-hallucination** — every claim in every milestone handoff has a
   re-runnable command + captured artifact under
@@ -116,6 +119,7 @@ Per-milestone diagrams: [`docs/architecture.md`](docs/architecture.md) · M3 dee
 | M5 | `v0.4.0-m5` | GitHub agentic workflows (read-only, kill-switch) |
 | M4 | `v0.5.0-m4` | Operator dashboard UI |
 | **M6** | **`v1.0.0`** | **Benchmark + portfolio polish** |
+| **v1.1** | **`v1.1.0`** | **Pipeline API auth, CORS, ingest hardening** |
 
 ## Setup + contributing
 

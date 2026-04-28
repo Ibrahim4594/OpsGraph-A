@@ -2,13 +2,17 @@
 
 ## One command
 
+Set secrets first (the script **fails fast** if they are unset):
+
 ```bash
+export REPOPULSE_API_SHARED_SECRET="$(openssl rand -hex 16)"
+export REPOPULSE_AGENTIC_SHARED_SECRET="$(openssl rand -hex 16)"
 ./scripts/demo.sh
 ```
 
 Boots:
-- backend (`uvicorn :8000`)
-- frontend (`next start :3000`)
+- backend (`uvicorn` on **127.0.0.1:8000** by default)
+- frontend (`next start` on **127.0.0.1:3000** by default)
 - seeds the canonical dataset (95 push events + 5 error-log events + 1 critical
   github event + 1 workflow-run usage event)
 

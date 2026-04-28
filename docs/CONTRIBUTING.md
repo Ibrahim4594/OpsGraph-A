@@ -10,6 +10,9 @@
 3. **Lint + typecheck + test** before pushing:
    - Backend: `pytest && ruff check src tests && mypy`
    - Frontend: `npm test && npm run typecheck && npm run lint && npm run build`
+   - Local dashboard against a dev API: set `REPOPULSE_API_SHARED_SECRET` on
+     the backend and the **same** value as `NEXT_PUBLIC_API_SHARED_SECRET` for
+     `next dev` / `demo.sh` (see [SETUP.md](SETUP.md), [security-model.md](security-model.md)).
 4. **PR** — fill the template (summary + test plan).
 
 ## Commit messages

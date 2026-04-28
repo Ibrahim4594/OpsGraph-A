@@ -1,12 +1,18 @@
 # Setup
 
+## What you actually need
+
+**Required:** Python 3.11+, Node.js 20+, Git. You can develop entirely on **native Windows** (PowerShell + `backend\.venv`) or macOS/Linux — the same commands work; CI uses `ubuntu-latest` on GitHub, so you do **not** need a local Linux machine for correctness.
+
+**Optional:** Docker + WSL Ubuntu only if you want the **OTel Collector** stack from `infra/` or you prefer Linux-native tooling. They are **not** required for `pytest`, `npm test`, or `./scripts/demo.sh` (Git Bash/WSL recommended for the bash demo script only because it is `.sh`).
+
 ## Prerequisites
 
 | Tool | Version | Why |
 |---|---|---|
 | Python | 3.11+ | backend (FastAPI 0.136, pydantic 2.13) |
 | Node.js | 20+ LTS | frontend (Next.js 15) |
-| Docker | any current | OTel Collector (optional, only for telemetry validation runs) |
+| Docker | any current | OTel Collector (**optional**, only for telemetry validation runs) |
 | Git | any | source control |
 
 ## Path A — WSL Ubuntu LTS (recommended on Windows)
@@ -43,17 +49,44 @@ cd backend
 python3.11 -m venv .venv
 source .venv/bin/activate          # Windows cmd: .venv\Scripts\activate
 pip install -e ".[dev]"
-pytest                              # 211 tests should pass
+# v1.1: pipeline routes need a shared secret (tests set this via conftest).
+export REPOPULSE_API_SHARED_SECRET="your-local-secret"
+pytest                              # run ``pytest --co -q`` for current count
 ```
+
+If you omit `REPOPULSE_API_SHARED_SECRET`, protected routes return **503** at
+runtime (fail closed). Use a disposable value for local work.
+
+The `simulate_error` flag on `POST /api/v1/events` (used by the load
+generator and a few tests) is **disabled by default** in v1.1. To enable
+it for a synthetic-load run:
+
+```bash
+export REPOPULSE_ALLOW_SIMULATE_ERROR=true
+```
+
+Leaving it `false` (the default) returns **403** for any ingest carrying
+`simulate_error: true`, which is the right behaviour for production.
 
 ## Frontend
 
 ```bash
 cd frontend
 npm install
-npm test                            # 53+ vitest specs
+npm test                            # vitest; see test output for count
 npm run build                       # production build (under 200 KB First Load JS)
 ```
+
+For the operator UI to call a backend on another origin during development,
+either:
+
+1. **CORS allowlist (implemented)** — set `REPOPULSE_CORS_ORIGINS` to the
+   exact browser origin(s), e.g. `http://127.0.0.1:3000`, and pass the pipeline
+   bearer via `NEXT_PUBLIC_API_SHARED_SECRET` (demo/lab only), or
+2. **Next.js BFF (not implemented here)** — add Route Handlers that attach
+   `Authorization` server-side so the browser never holds the pipeline secret.
+
+`scripts/demo.sh` uses (1) with loopback bind on both processes.
 
 ## OTel Collector (optional)
 
@@ -70,12 +103,21 @@ This pulls `otel/opentelemetry-collector-contrib:0.116.1` and listens on
 
 ## One-command demo
 
+Requires **strong** secrets (the script exits if they are missing). On
+Windows, run from **Git Bash** / WSL (script is bash), or set the variables
+in PowerShell using e.g.
+`python -c "import secrets; print(secrets.token_hex(16))"` twice.
+
 ```bash
+export REPOPULSE_API_SHARED_SECRET="$(openssl rand -hex 16)"
+export REPOPULSE_AGENTIC_SHARED_SECRET="$(openssl rand -hex 16)"
 ./scripts/demo.sh
 ```
 
-Boots backend + frontend + seeds canonical data, prints the URLs.
-See [docs/demo/README.md](demo/README.md).
+Boots backend + frontend on **127.0.0.1**, exports CORS for the chosen
+frontend port, sets `NEXT_PUBLIC_API_SHARED_SECRET` to match the pipeline
+secret, and seeds data. See [docs/demo/README.md](demo/README.md) and
+[security-model.md](security-model.md).
 
 ## Verify everything works
 

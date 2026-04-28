@@ -45,11 +45,11 @@ describe("ApprovalActions", () => {
     mocks.approve.mockResolvedValueOnce({
       recommendation_id: "r1",
       state: "approved",
-      actor: "alice",
+      actor: "authenticated-api",
     });
-    renderWithToast(<ApprovalActions id="r1" initialState="pending" operator="alice" />);
+    renderWithToast(<ApprovalActions id="r1" initialState="pending" />);
     await userEvent.click(screen.getByRole("button", { name: /approve/i }));
-    expect(mocks.approve).toHaveBeenCalledWith("r1", "alice");
+    expect(mocks.approve).toHaveBeenCalledWith("r1");
     // State badge surfaces the new state with an aria-label.
     expect(
       await screen.findByLabelText(/State: Approved/i),
@@ -60,21 +60,21 @@ describe("ApprovalActions", () => {
     mocks.reject.mockResolvedValueOnce({
       recommendation_id: "r1",
       state: "rejected",
-      actor: "alice",
+      actor: "authenticated-api",
     });
-    renderWithToast(<ApprovalActions id="r1" initialState="pending" operator="alice" />);
+    renderWithToast(<ApprovalActions id="r1" initialState="pending" />);
     await userEvent.click(screen.getByRole("button", { name: /reject/i }));
     const textarea = await screen.findByRole("textbox", { name: /reason/i });
     await userEvent.type(textarea, "false positive");
     await userEvent.click(
       screen.getByRole("button", { name: /confirm reject/i }),
     );
-    expect(mocks.reject).toHaveBeenCalledWith("r1", "alice", "false positive");
+    expect(mocks.reject).toHaveBeenCalledWith("r1", "false positive");
   });
 
   it("shows an error message if the API call fails", async () => {
     mocks.approve.mockRejectedValueOnce(new Error("boom"));
-    renderWithToast(<ApprovalActions id="r1" initialState="pending" operator="alice" />);
+    renderWithToast(<ApprovalActions id="r1" initialState="pending" />);
     await userEvent.click(screen.getByRole("button", { name: /approve/i }));
     // Error surfaces both inline (role=alert kept for legacy) and via toast.
     expect(await screen.findByRole("alert")).toHaveTextContent(/boom/i);

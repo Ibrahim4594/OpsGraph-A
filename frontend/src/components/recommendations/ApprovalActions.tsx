@@ -28,11 +28,9 @@ const STATE_LABEL: Record<RecommendationState, string> = {
 export function ApprovalActions({
   id,
   initialState,
-  operator = "operator",
 }: {
   id: string;
   initialState: RecommendationState;
-  operator?: string;
 }) {
   const [state, setState] = useState<RecommendationState>(initialState);
   const [error, setError] = useState<string | null>(null);
@@ -45,9 +43,12 @@ export function ApprovalActions({
     setError(null);
     startTransition(async () => {
       try {
-        const out = await approveRecommendation(id, operator);
+        const out = await approveRecommendation(id);
         setState(out.state);
-        toast.success("Recommendation approved", `${id.slice(0, 8)}… by ${operator}`);
+        toast.success(
+          "Recommendation approved",
+          `${id.slice(0, 8)}… (${out.actor})`,
+        );
       } catch (exc) {
         const msg = exc instanceof Error ? exc.message : String(exc);
         setError(msg);
@@ -60,11 +61,14 @@ export function ApprovalActions({
     setError(null);
     startTransition(async () => {
       try {
-        const out = await rejectRecommendation(id, operator, reason || undefined);
+        const out = await rejectRecommendation(id, reason || undefined);
         setState(out.state);
         setRejectOpen(false);
         setReason("");
-        toast.success("Recommendation rejected", `${id.slice(0, 8)}… by ${operator}`);
+        toast.success(
+          "Recommendation rejected",
+          `${id.slice(0, 8)}… (${out.actor})`,
+        );
       } catch (exc) {
         const msg = exc instanceof Error ? exc.message : String(exc);
         setError(msg);
