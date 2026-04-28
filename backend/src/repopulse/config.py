@@ -34,3 +34,15 @@ class Settings(BaseSettings):
     #: Larger requests are rejected with 413 *before* Starlette parses them.
     #: Default 384 KiB = 256 KiB payload cap + envelope/headers overhead.
     max_request_bytes: int = 384 * 1024
+    #: Database URL for the storage layer (M2.0+).
+    #:
+    #: Format: ``postgresql+psycopg://<user>:<pass>@<host>:<port>/<db>``.
+    #: **Optional** at the Settings level — unit tests and the v1.1 in-memory
+    #: orchestrator do not require a database. Code paths that need the DB
+    #: (Alembic, repositories, the M2.0+ orchestrator facade) raise
+    #: ``RuntimeError`` if this is unset when they are invoked.
+    database_url: str | None = None
+    #: Connection-pool size for the async engine. Defaults are tuned for a
+    #: single uvicorn worker; revisit when M4.0 multi-worker compose lands.
+    database_pool_size: int = 5
+    database_pool_max_overflow: int = 10
