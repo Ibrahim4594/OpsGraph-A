@@ -19,6 +19,10 @@ dependencies = [
   "opentelemetry-instrumentation-fastapi>=0.48b0",
   "opentelemetry-instrumentation-httpx>=0.48b0",
   "opentelemetry-instrumentation-logging>=0.48b0",
+  # M2.0 storage layer (planned in docs/superpowers/plans/milestone-2.0-storage-plan.md).
+  "sqlalchemy[asyncio]>=2.0",
+  "psycopg[binary,pool]>=3.2",
+  "alembic>=1.13",
 ]
 
 [project.optional-dependencies]
@@ -29,6 +33,8 @@ dev = [
   "ruff>=0.7",
   "mypy>=1.13",
   "opentelemetry-test-utils>=0.48b0",
+  # M2.0 integration tests use a Postgres container managed by testcontainers.
+  "testcontainers[postgres]>=4.0",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -54,3 +60,8 @@ plugins = ["pydantic.mypy"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 asyncio_mode = "auto"
+markers = [
+  "integration: tests that use a real Postgres container (Testcontainers).",
+  "e2e: end-to-end tests that drive the FastAPI app against a real DB.",
+  "migration: tests that exercise Alembic migrations (upgrade/downgrade).",
+]

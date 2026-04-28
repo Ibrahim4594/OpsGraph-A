@@ -1,0 +1,26 @@
+=== T1: deps + Alembic skeleton â€” verification ===
+
+--- new dep imports ---
+sqlalchemy 2.0.49
+alembic 1.18.4
+psycopg 3.3.3
+testcontainers: imported
+
+--- alembic env.py: fail-closed when REPOPULSE_DATABASE_URL unset ---
+    raise RuntimeError(
+    ...<3 lines>...
+    )
+RuntimeError: REPOPULSE_DATABASE_URL is not set. Alembic refuses to run with an unspecified database URL — set it in the environment (see docs/SETUP.md for the dev value).
+exit=0
+
+--- alembic env.py: succeeds when REPOPULSE_DATABASE_URL set (no migrations yet) ---
+
+COMMIT;
+
+exit=0
+
+--- gates ---
+
+============================= 236 passed in 2.81s =============================
+All checks passed!
+Success: no issues found in 64 source files
