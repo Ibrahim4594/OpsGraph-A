@@ -1,0 +1,22 @@
+=== T6: FastAPI wiring + duplicate-ingest 202 contract ===
+
+--- pytest tests/test_main_lifespan.py ---
+....                                                                     [100%]
+4 passed in 1.08s
+
+--- pytest tests/test_events.py (duplicate-ingest contract) ---
+............                                                             [100%]
+12 passed in 1.34s
+
+--- pytest -m 'not integration and not e2e and not migration' ---
+........................................................................ [ 49%]
+........................................................................ [ 74%]
+........................................................................ [ 99%]
+.                                                                        [100%]
+289 passed in 4.27s
+
+--- ruff check src tests ---
+All checks passed!
+
+--- mypy src tests ---
+Success: no issues found in 92 source files
