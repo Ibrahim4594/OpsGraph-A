@@ -112,6 +112,23 @@ def test_incidents_started_and_ended_indexed() -> None:
     assert ("ended_at",) in idx_columns
 
 
+def test_incidents_signature_hash_unique() -> None:
+    """signature_hash is declared in T3 (not migration 0005) per plan refresh 2026-04-29.
+
+    Persistent equivalent of v1.1's in-memory ``_seen_keys`` LRU. UNIQUE so
+    re-evaluating an overlapping correlation window does not duplicate rows.
+    """
+    table = metadata.tables["incidents"]
+    assert "signature_hash" in table.columns
+    sig_col = table.columns["signature_hash"]
+    assert sig_col.nullable is False
+    uniques = [c for c in table.constraints if isinstance(c, UniqueConstraint)]
+    assert any(
+        {col.name for col in u.columns} == {"signature_hash"}
+        for u in uniques
+    ), f"missing UNIQUE(signature_hash); got {uniques}"
+
+
 def test_incident_bridge_tables_have_composite_pk() -> None:
     for name, expected in (
         ("incident_events", {"incident_id", "event_id"}),

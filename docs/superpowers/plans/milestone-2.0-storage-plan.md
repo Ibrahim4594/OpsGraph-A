@@ -182,12 +182,11 @@ shortcuts. Every revision lands one logical change so rollback is single-step.
 
 | Rev | File | Up | Down |
 |---|---|---|---|
-| `0001_initial_schema` | `migrations/versions/0001_initial_schema.py` | Create `raw_events`, `normalized_events` (FK→raw_events.event_id), `anomalies`, `incidents`, `incident_events`, `incident_anomalies`, `recommendations`, `action_history`, `workflow_usage` with NOT NULL columns and PK constraints | `DROP TABLE` in reverse FK order |
+| `0001_initial_schema` | `migrations/versions/0001_initial_schema.py` | Create `raw_events`, `normalized_events` (FK→raw_events.event_id), `anomalies`, `incidents` (incl. `signature_hash` + UNIQUE), `incident_events`, `incident_anomalies`, `recommendations`, `action_history`, `workflow_usage` with NOT NULL columns and PK constraints. Idempotency on `raw_events` is the PK on `event_id` itself — no separate UNIQUE constraint needed. | `DROP TABLE` in reverse FK order |
 | `0002_recommendation_state` | `migrations/versions/0002_recommendation_state.py` | Add `recommendations.state` (CHECK constraint: pending/approved/rejected/observed); set NOT NULL with default `'pending'`; backfill row-default on existing rows (zero rows on a fresh DB; defensive on later upgrade paths) | DROP COLUMN |
 | `0003_indexes_hot_paths` | `migrations/versions/0003_indexes_hot_paths.py` | `CREATE INDEX` on `(received_at)` for `normalized_events`; `(timestamp, series_name)` for `anomalies`; `(started_at)` and `(ended_at)` for `incidents`; `(state, action_category)` for `recommendations`; `(at)` for `action_history`; `(run_id, repository)` UNIQUE for `workflow_usage` | DROP INDEX in reverse |
 | `0004_recommendation_transitions` | `migrations/versions/0004_recommendation_transitions.py` | Create `recommendation_transitions` (id PK, recommendation_id FK, from_state, to_state, actor, reason, at); index on `(recommendation_id, at)` | DROP TABLE + index |
-| `0005_incident_signature_dedup` | `migrations/versions/0005_incident_signature_dedup.py` | Add `incidents.signature_hash` (text, NOT NULL after backfill) + UNIQUE INDEX. Backfill from existing incidents (none on a fresh DB). | DROP INDEX + DROP COLUMN |
-| `0006_event_id_unique` | `migrations/versions/0006_event_id_unique.py` | UNIQUE constraint on `raw_events.event_id` (idempotency anchor). | DROP CONSTRAINT |
+| `0005_incident_signature_dedup` | `migrations/versions/0005_incident_signature_dedup.py` | **Existing-deployment-only DDL**: `ADD COLUMN incidents.signature_hash` + backfill (deterministic hash of `_incident_key` over existing rows) + UNIQUE INDEX. Fresh databases (CI, dev, brand-new prod) get the column from migration `0001` directly — `0005` is a no-op there. The model in `db/models/incident.py` is the source of truth. | DROP INDEX + DROP COLUMN |
 
 **Naming convention** in `db/base.py` so Alembic-generated names are stable
 across environments:
@@ -341,7 +340,7 @@ facade. Behavior assertions identical.
 
 | File | Coverage |
 |---|---|
-| `tests/migrations/test_alembic_reversible.py` | NEW — for each rev in 0001→0006, run upgrade then downgrade; assert no schema drift via `inspect(engine)` |
+| `tests/migrations/test_alembic_reversible.py` | NEW — for each rev in 0001→0005, run upgrade then downgrade; assert no schema drift via `inspect(engine)` |
 | `tests/migrations/test_migration_runs_clean.py` | NEW — `alembic upgrade head` on an empty DB exits 0 and produces all expected tables/indexes |
 
 ### 4.5 Frontend
@@ -363,8 +362,7 @@ the operator knows what happens to running data.
 | 0002 | Adds `recommendations.state` (NOT NULL default `pending`) | Drops the column | YES (state values lost). Application reverts to dataclass-default `pending`. |
 | 0003 | Adds 6 indexes | Drops 6 indexes | NO — performance regression only. Safe to roll back without downtime. |
 | 0004 | Adds `recommendation_transitions` table | Drops the table | YES (audit trail rows lost). Application falls back to `action_history` only — no fine-grained transition log. |
-| 0005 | Adds `incidents.signature_hash` + UNIQUE | Drops index then column | NO — reverts to in-application dedup (M3 behavior). Existing rows keep their data. |
-| 0006 | UNIQUE constraint on `raw_events.event_id` | Drops constraint | NO — but the application must not be running concurrent ingest during downgrade because duplicate inserts would then succeed. |
+| 0005 | Existing-deployment ADD COLUMN `incidents.signature_hash` + UNIQUE (no-op on fresh DBs that already have it from 0001) | Drops index then column | NO — reverts to in-application dedup (M3 behavior). Existing rows keep their data. |
 
 **Application rollback (binary level)**: `git checkout v1.1.0` recovers the
 in-memory orchestrator. The DB can stay populated; the in-memory v1.1
@@ -376,7 +374,7 @@ runs upgrade → downgrade → upgrade for each rev, so any non-reversible
 migration fails the build before it can ship.
 
 **Backup discipline**: production deploys must take a `pg_dump` snapshot
-before running migrations 0001/0002/0004/0006 (any rev with potential data
+before running migrations 0001/0002/0004 (any rev with potential data
 loss on rollback). The deploy script in M4.0 wires this in; until then it
 is documented in `docs/operations.md` (M3.2).
 
@@ -420,7 +418,7 @@ docker run --rm -d --name repopulse-pg-smoke -e POSTGRES_PASSWORD=test -p 55432:
 sleep 3
 REPOPULSE_DATABASE_URL=postgresql+psycopg://postgres:test@localhost:55432/postgres \
   ./.venv/Scripts/python -m alembic upgrade head
-# Expected: "Running upgrade ... -> 0006_event_id_unique"
+# Expected: "Running upgrade ... -> 0005_incident_signature_dedup"
 docker rm -f repopulse-pg-smoke
 ```
 
@@ -443,7 +441,7 @@ export REPOPULSE_DATABASE_URL=postgresql+psycopg://repopulse:repopulse@localhost
 export REPOPULSE_API_SHARED_SECRET=$(openssl rand -hex 16)
 export REPOPULSE_AGENTIC_SHARED_SECRET=$(openssl rand -hex 16)
 ./scripts/demo.sh
-# Expected: backend logs "Database ready (alembic head: 0006_event_id_unique)"
+# Expected: backend logs "Database ready (alembic head: 0005_incident_signature_dedup)"
 #           dashboard at http://localhost:3000 shows seeded data
 #           kill demo, restart it: data SURVIVES (proof of persistence)
 ```
@@ -471,7 +469,7 @@ export REPOPULSE_AGENTIC_SHARED_SECRET=$(openssl rand -hex 16)
 | 4 | Repositories (6 files) | `db/repository/*.py` | — |
 | 5 | Orchestrator facade rewrite | — | `pipeline/orchestrator.py` |
 | 6 | Wire `app.state.session_maker` | — | `main.py` |
-| 7 | Migrations 0001–0006 | `migrations/versions/0001..0006_*.py` | — |
+| 7 | Migrations 0001–0005 | `migrations/versions/0001..0005_*.py` | — |
 | 8 | Replay tooling | `backend/src/repopulse/scripts/replay_from_jsonl.py` | — |
 | 9 | Compose: add Postgres service | `docker-compose.dev.yml` | `scripts/demo.sh` (export DATABASE_URL) |
 | 10 | Tests: integration conftest + 7 repo tests | `tests/integration/conftest.py`, `tests/integration/test_*.py` | — |
