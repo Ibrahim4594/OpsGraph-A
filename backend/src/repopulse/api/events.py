@@ -7,10 +7,26 @@ Accepted on success. Requires ``Authorization: Bearer
 The ``simulate_error`` flag is **disabled by default**; set
 ``REPOPULSE_ALLOW_SIMULATE_ERROR=true`` for synthetic load / tests only.
 
-On a successful ingest the envelope is forwarded to the in-memory
-``PipelineOrchestrator`` (``app.state.orchestrator``) and a fresh
-``evaluate()`` cycle is run so that ``GET /api/v1/recommendations``
-reflects the new event without a separate trigger call.
+Idempotency contract (T6, v2.0)
+-------------------------------
+
+POST is **idempotent on ``event_id``**. The operator may safely retry
+this endpoint — for example, after a network blip or load-balancer
+reset — without producing duplicate events, anomalies, incidents, or
+recommendations:
+
+- **Fresh ``event_id``**: 202 with body
+  ``{"accepted": true, "event_id": "<uuid>", "duplicate": false}``.
+  The envelope is persisted, normalised, and a fresh ``evaluate()``
+  cycle is run so ``GET /api/v1/recommendations`` reflects the new event.
+- **Duplicate ``event_id`` (already ingested)**: still 202 with body
+  ``{"accepted": true, "event_id": "<uuid>", "duplicate": true}``.
+  No persistence side effects; ``evaluate()`` is skipped.
+
+We deliberately do **not** return 409 on duplicates: 409 would force
+clients to special-case a benign retry, when the entire point of an
+``event_id`` is to make retries safe. See
+``docs/ingest-idempotency.md`` for the full design rationale.
 """
 from __future__ import annotations
 
@@ -59,10 +75,11 @@ class EventEnvelope(BaseModel):
 class IngestResponse(TypedDict):
     accepted: Literal[True]
     event_id: str
+    duplicate: bool
 
 
 @router.post("/events", status_code=status.HTTP_202_ACCEPTED)
-def ingest_event(
+async def ingest_event(
     envelope: EventEnvelope,
     request: Request,
     settings: Annotated[Settings, Depends(require_pipeline_api_key)],
@@ -75,7 +92,17 @@ def ingest_event(
             )
         raise RuntimeError("simulated ingest failure")
     orchestrator = getattr(request.app.state, "orchestrator", None)
+    duplicate = False
     if orchestrator is not None:
-        orchestrator.ingest(envelope)
-        orchestrator.evaluate()
-    return {"accepted": True, "event_id": str(envelope.event_id)}
+        normalized = await orchestrator.ingest(envelope)
+        if normalized is None:
+            # event_id has already been ingested. The PK on raw_events is
+            # the idempotency anchor — see ``docs/ingest-idempotency.md``.
+            duplicate = True
+        else:
+            await orchestrator.evaluate()
+    return {
+        "accepted": True,
+        "event_id": str(envelope.event_id),
+        "duplicate": duplicate,
+    }

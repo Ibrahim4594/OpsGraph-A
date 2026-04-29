@@ -16,7 +16,10 @@ _AUTH = {"Authorization": "Bearer test-pipeline-api-secret"}
 
 
 def test_oversized_content_length_rejected_before_parse() -> None:
-    app = create_app()
+    from tests._inmem_orchestrator import make_inmem_orchestrator
+
+    orch, _ = make_inmem_orchestrator()
+    app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         # 4 MiB of zeros — well above the 384 KiB request cap, well below
         # what would OOM jsdom but still proves the middleware fires.
@@ -39,7 +42,10 @@ def test_under_cap_passes_through() -> None:
     import json
     import uuid
 
-    app = create_app()
+    from tests._inmem_orchestrator import make_inmem_orchestrator
+
+    orch, _ = make_inmem_orchestrator()
+    app = create_app(orchestrator=orch)
     body = json.dumps(
         {
             "event_id": str(uuid.uuid4()),

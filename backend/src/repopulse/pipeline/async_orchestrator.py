@@ -274,6 +274,21 @@ class PipelineOrchestrator:
                 limit=limit
             )
 
+    async def latest_incidents_with_counts(
+        self, limit: int = 50
+    ) -> list[tuple[Incident, int, int]]:
+        """Like :meth:`latest_incidents`, but returns
+        ``(incident, anomaly_count, event_count)`` triples. The dashboard
+        incidents endpoint uses this so it can surface counts without
+        round-tripping the bridge tables a second time.
+        """
+        if limit < 0:
+            raise ValueError(f"limit must be >= 0, got {limit!r}")
+        async with self._session_maker.begin() as session:
+            return await self._incident_repo_factory(
+                session
+            ).list_recent_with_counts(limit=limit)
+
     async def latest_actions(
         self, limit: int = 50
     ) -> list[ActionHistoryEntry]:
@@ -344,25 +359,22 @@ class PipelineOrchestrator:
     # -------------------------------------------------------------- diagnostics
 
     async def snapshot(self) -> dict[str, int]:
-        """Counts for /healthz-style diagnostics. Cheap aggregates only."""
-        from sqlalchemy import func, select
+        """Counts for /healthz-style diagnostics. Cheap aggregates only.
 
-        from repopulse.db.models.anomaly import AnomalyORM
-        from repopulse.db.models.incident import IncidentORM
-        from repopulse.db.models.normalized_event import NormalizedEventORM
-        from repopulse.db.models.recommendation import RecommendationORM
-
+        Routes through repository ``count()`` methods so the in-memory
+        test fakes can answer without a SQL session.
+        """
         async with self._session_maker.begin() as session:
-            results: dict[str, int] = {}
-            for label, table in (
-                ("events", NormalizedEventORM),
-                ("anomalies", AnomalyORM),
-                ("incidents", IncidentORM),
-                ("recommendations", RecommendationORM),
-            ):
-                row = await session.execute(select(func.count()).select_from(table))
-                results[label] = int(row.scalar_one())
-            return results
+            return {
+                "events": await self._event_repo_factory(
+                    session
+                ).count_normalized(),
+                "anomalies": await self._anomaly_repo_factory(session).count(),
+                "incidents": await self._incident_repo_factory(session).count(),
+                "recommendations": await self._recommendation_repo_factory(
+                    session
+                ).count(),
+            }
 
 
 __all__ = [

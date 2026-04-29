@@ -10,7 +10,8 @@ from fastapi.testclient import TestClient
 from repopulse.anomaly.detector import Anomaly
 from repopulse.api.events import EventEnvelope
 from repopulse.main import create_app
-from repopulse.pipeline.orchestrator import PipelineOrchestrator
+from repopulse.pipeline.async_orchestrator import PipelineOrchestrator
+from tests._inmem_orchestrator import make_inmem_orchestrator
 
 _T0 = datetime(2026, 4, 27, 12, 0, tzinfo=UTC)
 
@@ -23,9 +24,9 @@ def _envelope(*, source: str = "github") -> EventEnvelope:
     )
 
 
-def _seed_pending(orch: PipelineOrchestrator) -> str:
-    orch.ingest(_envelope(source="github"), received_at=_T0)
-    orch.record_anomalies(
+async def _seed_pending(orch: PipelineOrchestrator) -> str:
+    await orch.ingest(_envelope(source="github"), received_at=_T0)
+    await orch.record_anomalies(
         [
             Anomaly(
                 timestamp=_T0 + timedelta(seconds=10),
@@ -39,21 +40,23 @@ def _seed_pending(orch: PipelineOrchestrator) -> str:
             ),
         ]
     )
-    orch.evaluate(window_seconds=300.0)
-    return str(orch.latest_recommendations(limit=1)[0].recommendation_id)
+    await orch.evaluate(window_seconds=300.0)
+    recs = await orch.latest_recommendations(limit=1)
+    return str(recs[0].recommendation_id)
 
 
 def test_actions_endpoint_empty_returns_count_zero() -> None:
-    app = create_app()
+    orch, _ = make_inmem_orchestrator()
+    app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         r = client.get("/api/v1/actions", headers=_AUTH)
     assert r.status_code == 200
     assert r.json() == {"actions": [], "count": 0}
 
 
-def test_actions_endpoint_returns_history_after_approve() -> None:
-    orch = PipelineOrchestrator()
-    rec_id = _seed_pending(orch)
+async def test_actions_endpoint_returns_history_after_approve() -> None:
+    orch, _ = make_inmem_orchestrator()
+    rec_id = await _seed_pending(orch)
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         client.post(
@@ -70,11 +73,11 @@ def test_actions_endpoint_returns_history_after_approve() -> None:
     assert "at" in first
 
 
-def test_actions_endpoint_includes_observe_entries() -> None:
+async def test_actions_endpoint_includes_observe_entries() -> None:
     """When R1 fires, the orchestrator records a system-observe entry."""
-    orch = PipelineOrchestrator()
-    orch.ingest(_envelope(source="github"), received_at=_T0)
-    orch.evaluate(window_seconds=300.0)
+    orch, _ = make_inmem_orchestrator()
+    await orch.ingest(_envelope(source="github"), received_at=_T0)
+    await orch.evaluate(window_seconds=300.0)
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         body = client.get("/api/v1/actions", headers=_AUTH).json()
@@ -84,9 +87,9 @@ def test_actions_endpoint_includes_observe_entries() -> None:
     assert "system" in actors
 
 
-def test_actions_endpoint_respects_limit_zero() -> None:
-    orch = PipelineOrchestrator()
-    _seed_pending(orch)
+async def test_actions_endpoint_respects_limit_zero() -> None:
+    orch, _ = make_inmem_orchestrator()
+    await _seed_pending(orch)
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         r = client.get("/api/v1/actions?limit=0", headers=_AUTH)
@@ -101,7 +104,8 @@ def test_actions_endpoint_includes_workflow_run_entries(
     dashboard's workflow-run filter chip is not dead."""
     monkeypatch.setenv("REPOPULSE_AGENTIC_ENABLED", "true")
     monkeypatch.setenv("REPOPULSE_AGENTIC_SHARED_SECRET", "test-secret")
-    app = create_app()
+    orch, _ = make_inmem_orchestrator()
+    app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         client.post(
             "/api/v1/github/usage",

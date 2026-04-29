@@ -18,7 +18,7 @@ router = APIRouter(prefix="/api/v1", tags=["actions"])
 
 
 @router.get("/actions")
-def list_actions(
+async def list_actions(
     request: Request,
     _settings: Annotated[Settings, Depends(require_pipeline_api_key)],
     limit: int = Query(default=50, ge=0, le=200),
@@ -26,7 +26,7 @@ def list_actions(
     orchestrator = getattr(request.app.state, "orchestrator", None)
     if orchestrator is None:
         return {"actions": [], "count": 0}
-    entries = orchestrator.latest_actions(limit=limit)
+    entries = await orchestrator.latest_actions(limit=limit)
     out = [
         {
             "at": entry.at.isoformat(),

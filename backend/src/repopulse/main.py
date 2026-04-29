@@ -12,6 +12,21 @@ startup). If we instrumented inside the lifespan, the patch would land
 middleware would never run. We therefore instrument eagerly inside
 ``create_app`` (before the app handles any request) and use the lifespan
 solely for graceful shutdown.
+
+Storage wiring (T6):
+
+- Production: lifespan startup builds an :class:`AsyncEngine` +
+  :class:`async_sessionmaker` from :data:`Settings.database_url`, then
+  constructs the async :class:`PipelineOrchestrator` over that
+  sessionmaker. The engine is disposed on shutdown.
+- Tests: pass ``orchestrator=...`` (built via
+  :func:`tests._inmem_orchestrator.make_inmem_orchestrator`) to skip the
+  real engine path entirely.
+- Misconfiguration: when no orchestrator is supplied AND
+  ``REPOPULSE_DATABASE_URL`` is unset, ``create_app`` raises
+  ``RuntimeError`` immediately — the app fails loudly rather than
+  starting in a half-broken state where reads return empty and writes
+  silently no-op.
 """
 from __future__ import annotations
 
@@ -23,6 +38,7 @@ from fastapi.responses import JSONResponse
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.metrics.export import MetricReader
 from opentelemetry.sdk.trace.export import SpanExporter
+from sqlalchemy.ext.asyncio import AsyncEngine
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
@@ -36,7 +52,8 @@ from repopulse.api.incidents import router as incidents_router
 from repopulse.api.recommendations import router as recommendations_router
 from repopulse.api.slo import router as slo_router
 from repopulse.config import Settings
-from repopulse.pipeline.orchestrator import PipelineOrchestrator
+from repopulse.db.engine import make_engine_from_settings, make_session_factory
+from repopulse.pipeline.async_orchestrator import PipelineOrchestrator
 from repopulse.telemetry import init_telemetry
 
 
@@ -48,11 +65,17 @@ def create_app(
 ) -> FastAPI:
     """Build a FastAPI app with telemetry + AIOps pipeline wired in eagerly.
 
-    Tests pass ``InMemorySpanExporter`` / ``InMemoryMetricReader`` and may
-    inject a pre-populated ``PipelineOrchestrator``; production callers
-    leave the kwargs ``None`` to get console exporters and a fresh
-    orchestrator. Active providers + orchestrator are stored on
-    ``app.state`` so handlers and tests can reach them via the request.
+    Tests pass ``InMemorySpanExporter`` / ``InMemoryMetricReader`` and an
+    ``orchestrator`` built via the in-memory test helper to skip the DB.
+    Production callers leave ``orchestrator=None``; the lifespan startup
+    constructs the real :class:`PipelineOrchestrator` from
+    :data:`Settings.database_url`.
+
+    Raises:
+        RuntimeError: ``orchestrator is None`` AND
+            ``Settings.database_url`` is unset. v2.0 has no in-memory
+            production path — every read goes through the persistent
+            store, so misconfiguration must be loud.
     """
     settings = Settings()
     tracer_provider, meter_provider = init_telemetry(
@@ -60,8 +83,20 @@ def create_app(
         span_exporter=span_exporter,
         metric_reader=metric_reader,
     )
+
+    engine: AsyncEngine | None = None
     if orchestrator is None:
-        orchestrator = PipelineOrchestrator()
+        # Production path: refuse to start without a configured DB.
+        if not settings.database_url:
+            raise RuntimeError(
+                "REPOPULSE_DATABASE_URL is unset and no orchestrator was "
+                "injected. v2.0 requires the persistent storage layer; set "
+                "REPOPULSE_DATABASE_URL or pass `orchestrator=` (tests use "
+                "tests._inmem_orchestrator.make_inmem_orchestrator)."
+            )
+        engine = make_engine_from_settings(settings)
+        session_maker = make_session_factory(engine)
+        orchestrator = PipelineOrchestrator(session_maker=session_maker)
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
@@ -72,6 +107,8 @@ def create_app(
             tracer_provider.force_flush()
             tracer_provider.shutdown()
             meter_provider.shutdown()
+            if engine is not None:
+                await engine.dispose()
 
     fastapi_app = FastAPI(
         title="RepoPulse AIOps",
@@ -142,6 +179,7 @@ def create_app(
     fastapi_app.state.meter_provider = meter_provider
     fastapi_app.state.orchestrator = orchestrator
     fastapi_app.state.settings = settings
+    fastapi_app.state.engine = engine
     fastapi_app.include_router(health_router)
     fastapi_app.include_router(events_router)
     fastapi_app.include_router(recommendations_router)

@@ -10,7 +10,8 @@ from fastapi.testclient import TestClient
 from repopulse.anomaly.detector import Anomaly
 from repopulse.api.events import EventEnvelope
 from repopulse.main import create_app
-from repopulse.pipeline.orchestrator import PipelineOrchestrator
+from repopulse.pipeline.async_orchestrator import PipelineOrchestrator
+from tests._inmem_orchestrator import InMemoryState, make_inmem_orchestrator
 
 _T0 = datetime(2026, 4, 27, 12, 0, tzinfo=UTC)
 
@@ -18,9 +19,9 @@ _AUTH = {"Authorization": "Bearer test-pipeline-api-secret"}
 
 
 @pytest.fixture
-def populated_orchestrator() -> PipelineOrchestrator:
-    orch = PipelineOrchestrator()
-    orch.ingest(
+async def populated_orchestrator() -> tuple[PipelineOrchestrator, InMemoryState]:
+    orch, state = make_inmem_orchestrator()
+    await orch.ingest(
         EventEnvelope.model_validate(
             {
                 "event_id": uuid4(),
@@ -31,7 +32,7 @@ def populated_orchestrator() -> PipelineOrchestrator:
         ),
         received_at=_T0,
     )
-    orch.record_anomalies(
+    await orch.record_anomalies(
         [
             Anomaly(
                 timestamp=_T0,
@@ -44,12 +45,13 @@ def populated_orchestrator() -> PipelineOrchestrator:
             )
         ]
     )
-    orch.evaluate()
-    return orch
+    await orch.evaluate()
+    return orch, state
 
 
 def test_incidents_endpoint_returns_empty_when_orchestrator_empty() -> None:
-    app = create_app()
+    orch, _ = make_inmem_orchestrator()
+    app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         response = client.get("/api/v1/incidents", headers=_AUTH)
     assert response.status_code == 200
@@ -57,9 +59,10 @@ def test_incidents_endpoint_returns_empty_when_orchestrator_empty() -> None:
 
 
 def test_incidents_endpoint_returns_orchestrator_incidents(
-    populated_orchestrator: PipelineOrchestrator,
+    populated_orchestrator: tuple[PipelineOrchestrator, InMemoryState],
 ) -> None:
-    app = create_app(orchestrator=populated_orchestrator)
+    orch, _ = populated_orchestrator
+    app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         response = client.get("/api/v1/incidents", headers=_AUTH)
     assert response.status_code == 200
@@ -75,16 +78,18 @@ def test_incidents_endpoint_returns_orchestrator_incidents(
 
 
 def test_incidents_endpoint_respects_limit_zero(
-    populated_orchestrator: PipelineOrchestrator,
+    populated_orchestrator: tuple[PipelineOrchestrator, InMemoryState],
 ) -> None:
-    app = create_app(orchestrator=populated_orchestrator)
+    orch, _ = populated_orchestrator
+    app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         response = client.get("/api/v1/incidents?limit=0", headers=_AUTH)
     assert response.json() == {"incidents": [], "count": 0}
 
 
 def test_incidents_endpoint_rejects_negative_limit() -> None:
-    app = create_app()
+    orch, _ = make_inmem_orchestrator()
+    app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         response = client.get("/api/v1/incidents?limit=-1", headers=_AUTH)
     assert response.status_code == 422

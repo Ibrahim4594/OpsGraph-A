@@ -61,6 +61,14 @@ class AnomalyRepository:
             out.append(anomaly_id)
         return out
 
+    async def count(self) -> int:
+        from sqlalchemy import func, select
+
+        result = await self._session.execute(
+            select(func.count()).select_from(AnomalyORM)
+        )
+        return int(result.scalar_one())
+
     async def list_recent_with_ids(
         self,
         *,

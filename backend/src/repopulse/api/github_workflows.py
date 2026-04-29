@@ -176,7 +176,7 @@ def doc_drift(
 
 
 @router.post("/usage", status_code=status.HTTP_202_ACCEPTED, response_model=None)
-def usage(
+async def usage(
     body: _UsageBody,
     request: Request,
     settings: Annotated[Settings, Depends(_auth)],
@@ -194,12 +194,12 @@ def usage(
     event = to_normalized_event(record, received_at=datetime.now(UTC))
     orchestrator = getattr(request.app.state, "orchestrator", None)
     if orchestrator is not None:
-        orchestrator.record_normalized(event)
-        orchestrator.record_workflow_run(
+        await orchestrator.record_normalized(event)
+        await orchestrator.record_workflow_run(
             workflow_name=record.workflow_name,
             run_id=record.run_id,
             conclusion=record.conclusion,
             at=event.received_at,
         )
-        orchestrator.evaluate()
+        await orchestrator.evaluate()
     return {"accepted": True, "event_id": str(event.event_id)}

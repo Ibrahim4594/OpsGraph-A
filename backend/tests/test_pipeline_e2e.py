@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 from repopulse.anomaly.detector import Anomaly
 from repopulse.api.events import EventEnvelope
 from repopulse.main import create_app
-from repopulse.pipeline.orchestrator import PipelineOrchestrator
+from tests._inmem_orchestrator import make_inmem_orchestrator
 
 _T0 = datetime(2026, 4, 27, 12, 0, 0, tzinfo=UTC)
 
@@ -43,16 +43,16 @@ def _anomaly(*, at: datetime, severity: str, source: str = "otel-metrics") -> An
     )
 
 
-def test_e2e_multi_source_critical_incident_produces_rollback_with_evidence() -> None:
-    orch = PipelineOrchestrator()
+async def test_e2e_multi_source_critical_incident_produces_rollback_with_evidence() -> None:
+    orch, _ = make_inmem_orchestrator()
 
     # 5 GitHub push events + 1 otel-logs error event, all within 60s.
     for i in range(5):
-        orch.ingest(
+        await orch.ingest(
             _envelope(source="github", kind="push", payload={"commit": i}),
             received_at=_T0 + timedelta(seconds=i * 10),
         )
-    orch.ingest(
+    await orch.ingest(
         _envelope(
             source="otel-logs",
             kind="error",
@@ -62,7 +62,7 @@ def test_e2e_multi_source_critical_incident_produces_rollback_with_evidence() ->
     )
 
     # 3 otel-metrics anomalies (1 critical, 2 warning) inside the same window.
-    orch.record_anomalies(
+    await orch.record_anomalies(
         [
             _anomaly(at=_T0 + timedelta(seconds=20), severity="critical"),
             _anomaly(at=_T0 + timedelta(seconds=40), severity="warning"),
@@ -70,7 +70,7 @@ def test_e2e_multi_source_critical_incident_produces_rollback_with_evidence() ->
         ]
     )
 
-    new_recs = orch.evaluate(window_seconds=300.0)
+    new_recs = await orch.evaluate(window_seconds=300.0)
 
     # Single 5-min window means everything correlates to one incident.
     assert len(new_recs) == 1
@@ -87,18 +87,18 @@ def test_e2e_multi_source_critical_incident_produces_rollback_with_evidence() ->
     assert any(src in joined for src in ("github", "otel-logs", "otel-metrics"))
 
 
-def test_e2e_pipeline_via_http_api() -> None:
+async def test_e2e_pipeline_via_http_api() -> None:
     """Same scenario, verified end-to-end through the HTTP API."""
-    orch = PipelineOrchestrator()
+    orch, _ = make_inmem_orchestrator()
     for i in range(3):
-        orch.ingest(
+        await orch.ingest(
             _envelope(source="github", kind="push"),
             received_at=_T0 + timedelta(seconds=i * 5),
         )
-    orch.record_anomalies(
+    await orch.record_anomalies(
         [_anomaly(at=_T0 + timedelta(seconds=20), severity="critical")]
     )
-    orch.evaluate(window_seconds=300.0)
+    await orch.evaluate(window_seconds=300.0)
 
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:

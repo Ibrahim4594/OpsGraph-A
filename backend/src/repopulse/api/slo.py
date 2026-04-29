@@ -51,13 +51,13 @@ def _band(burn: float, *, over_budget: bool) -> BurnBand:
 
 
 @router.get("/slo")
-def get_slo(
+async def get_slo(
     request: Request,
     _settings: Annotated[Settings, Depends(require_pipeline_api_key)],
     target: float = Query(default=0.99, ge=0.0, le=1.0),
 ) -> dict[str, object]:
     orchestrator = getattr(request.app.state, "orchestrator", None)
-    events = orchestrator.iter_events() if orchestrator is not None else []
+    events = await orchestrator.iter_events() if orchestrator is not None else []
     total = len(events)
     errors = sum(
         1 for ev in events if _classify_event(ev.kind, ev.severity)

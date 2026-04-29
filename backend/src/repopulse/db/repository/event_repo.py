@@ -91,6 +91,14 @@ class EventRepository:
             )
         )
 
+    async def count_normalized(self) -> int:
+        from sqlalchemy import func, select
+
+        result = await self._session.execute(
+            select(func.count()).select_from(NormalizedEventORM)
+        )
+        return int(result.scalar_one())
+
     async def list_recent_normalized(
         self,
         *,

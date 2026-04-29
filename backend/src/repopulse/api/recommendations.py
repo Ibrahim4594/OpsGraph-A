@@ -67,19 +67,19 @@ def _serialize(rec: object) -> RecommendationOut:
 
 
 @router.get("/recommendations")
-def list_recommendations(
+async def list_recommendations(
     request: Request,
     _settings: Annotated[Settings, Depends(require_pipeline_api_key)],
     limit: int = Query(default=10, ge=0, le=100),
 ) -> RecommendationsResponse:
     orchestrator = request.app.state.orchestrator
-    recs = orchestrator.latest_recommendations(limit=limit)
+    recs = await orchestrator.latest_recommendations(limit=limit)
     serialized = [_serialize(rec) for rec in recs]
     return {"recommendations": serialized, "count": len(serialized)}
 
 
 @router.post("/recommendations/{rec_id}/approve")
-def approve_recommendation(
+async def approve_recommendation(
     rec_id: UUID,
     request: Request,
     settings: Annotated[Settings, Depends(require_pipeline_api_key)],
@@ -87,7 +87,7 @@ def approve_recommendation(
     actor = settings.api_operator_actor
     orchestrator = request.app.state.orchestrator
     try:
-        rec = orchestrator.transition_recommendation(
+        rec = await orchestrator.transition_recommendation(
             rec_id, to_state="approved", actor=actor
         )
     except KeyError as exc:
@@ -102,7 +102,7 @@ def approve_recommendation(
 
 
 @router.post("/recommendations/{rec_id}/reject")
-def reject_recommendation(
+async def reject_recommendation(
     rec_id: UUID,
     body: _RejectBody,
     request: Request,
@@ -111,7 +111,7 @@ def reject_recommendation(
     actor = settings.api_operator_actor
     orchestrator = request.app.state.orchestrator
     try:
-        rec = orchestrator.transition_recommendation(
+        rec = await orchestrator.transition_recommendation(
             rec_id,
             to_state="rejected",
             actor=actor,

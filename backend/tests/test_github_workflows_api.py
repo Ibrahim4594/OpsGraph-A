@@ -23,9 +23,12 @@ def secret() -> str:
 
 @pytest.fixture
 def client(monkeypatch: pytest.MonkeyPatch, secret: str) -> Iterator[TestClient]:
+    from tests._inmem_orchestrator import make_inmem_orchestrator
+
     monkeypatch.setenv("REPOPULSE_AGENTIC_ENABLED", "true")
     monkeypatch.setenv("REPOPULSE_AGENTIC_SHARED_SECRET", secret)
-    app = create_app()
+    orch, _ = make_inmem_orchestrator()
+    app = create_app(orchestrator=orch)
     with TestClient(app, raise_server_exceptions=False) as test_client:
         yield test_client
 
@@ -130,7 +133,7 @@ def test_doc_drift_endpoint(
     assert response.json()["broken_refs"] == [["docs/a.md", "missing.md", 1]]
 
 
-def test_usage_endpoint_ingests_event(
+async def test_usage_endpoint_ingests_event(
     client: TestClient, auth: dict[str, str]
 ) -> None:
     body = {
@@ -149,7 +152,7 @@ def test_usage_endpoint_ingests_event(
     from fastapi import FastAPI
     assert isinstance(client.app, FastAPI)
     orchestrator = client.app.state.orchestrator
-    snapshot = orchestrator.snapshot()
+    snapshot = await orchestrator.snapshot()
     assert snapshot["events"] >= 1
 
 

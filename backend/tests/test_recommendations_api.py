@@ -7,7 +7,8 @@ from fastapi.testclient import TestClient
 from repopulse.anomaly.detector import Anomaly
 from repopulse.api.events import EventEnvelope
 from repopulse.main import create_app
-from repopulse.pipeline.orchestrator import PipelineOrchestrator
+from repopulse.pipeline.async_orchestrator import PipelineOrchestrator
+from tests._inmem_orchestrator import make_inmem_orchestrator
 
 _T0 = datetime(2026, 4, 27, 12, 0, 0, tzinfo=UTC)
 
@@ -33,7 +34,7 @@ def _anomaly(*, at: datetime, source: str = "otel-metrics", severity: str = "cri
 
 
 def test_recommendations_endpoint_empty_list_returns_200_count_zero() -> None:
-    orch = PipelineOrchestrator()
+    orch, _ = make_inmem_orchestrator()
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         r = client.get("/api/v1/recommendations", headers=_AUTH)
@@ -42,13 +43,13 @@ def test_recommendations_endpoint_empty_list_returns_200_count_zero() -> None:
         assert body == {"recommendations": [], "count": 0}
 
 
-def test_recommendations_endpoint_returns_orchestrator_output() -> None:
-    orch = PipelineOrchestrator()
-    orch.ingest(_envelope(source="github"), received_at=_T0)
-    orch.record_anomalies(
+async def test_recommendations_endpoint_returns_orchestrator_output() -> None:
+    orch, _ = make_inmem_orchestrator()
+    await orch.ingest(_envelope(source="github"), received_at=_T0)
+    await orch.record_anomalies(
         [_anomaly(at=_T0 + timedelta(seconds=30), source="otel-metrics")]
     )
-    orch.evaluate(window_seconds=300.0)
+    await orch.evaluate(window_seconds=300.0)
 
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
@@ -65,12 +66,12 @@ def test_recommendations_endpoint_returns_orchestrator_output() -> None:
         assert "recommendation_id" in rec
 
 
-def test_recommendations_endpoint_respects_limit_query_param() -> None:
-    orch = PipelineOrchestrator()
+async def test_recommendations_endpoint_respects_limit_query_param() -> None:
+    orch, _ = make_inmem_orchestrator()
     for i in range(5):
-        orch.ingest(_envelope(), received_at=_T0 + timedelta(hours=i))
-        orch.record_anomalies([_anomaly(at=_T0 + timedelta(hours=i, seconds=10))])
-        orch.evaluate()
+        await orch.ingest(_envelope(), received_at=_T0 + timedelta(hours=i))
+        await orch.record_anomalies([_anomaly(at=_T0 + timedelta(hours=i, seconds=10))])
+        await orch.evaluate()
 
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
@@ -81,12 +82,15 @@ def test_recommendations_endpoint_respects_limit_query_param() -> None:
         assert len(body["recommendations"]) == 2
 
 
-def test_recommendations_endpoint_default_limit_caps_at_ten() -> None:
-    orch = PipelineOrchestrator(max_recommendations=20)
+async def test_recommendations_endpoint_default_limit_caps_at_ten() -> None:
+    """The route serves at most ``limit`` rows (default 10) regardless of
+    how many incidents have been correlated. v2.0 dropped the bounded
+    in-memory deque cap; the API-side ``limit`` is the only ceiling."""
+    orch, _ = make_inmem_orchestrator()
     for i in range(15):
-        orch.ingest(_envelope(), received_at=_T0 + timedelta(hours=i))
-        orch.record_anomalies([_anomaly(at=_T0 + timedelta(hours=i, seconds=10))])
-        orch.evaluate()
+        await orch.ingest(_envelope(), received_at=_T0 + timedelta(hours=i))
+        await orch.record_anomalies([_anomaly(at=_T0 + timedelta(hours=i, seconds=10))])
+        await orch.evaluate()
 
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
@@ -98,34 +102,35 @@ def test_recommendations_endpoint_default_limit_caps_at_ten() -> None:
 # --- M4: state field serialized + approval transitions ---
 
 
-def _seed_pending_recommendation(orch: PipelineOrchestrator) -> str:
+async def _seed_pending_recommendation(orch: PipelineOrchestrator) -> str:
     """Drives the orchestrator to emit one pending (R3) recommendation,
     returns its UUID."""
-    orch.ingest(_envelope(source="github"), received_at=_T0)
-    orch.record_anomalies(
+    await orch.ingest(_envelope(source="github"), received_at=_T0)
+    await orch.record_anomalies(
         [
             _anomaly(at=_T0 + timedelta(seconds=10), severity="warning"),
             _anomaly(at=_T0 + timedelta(seconds=20), severity="warning"),
         ]
     )
-    orch.evaluate(window_seconds=300.0)
-    rec = orch.latest_recommendations(limit=1)[0]
+    await orch.evaluate(window_seconds=300.0)
+    recs = await orch.latest_recommendations(limit=1)
+    rec = recs[0]
     assert rec.state == "pending"
     return str(rec.recommendation_id)
 
 
-def test_recommendations_endpoint_serializes_state_field() -> None:
-    orch = PipelineOrchestrator()
-    _seed_pending_recommendation(orch)
+async def test_recommendations_endpoint_serializes_state_field() -> None:
+    orch, _ = make_inmem_orchestrator()
+    await _seed_pending_recommendation(orch)
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         body = client.get("/api/v1/recommendations", headers=_AUTH).json()
     assert body["recommendations"][0]["state"] == "pending"
 
 
-def test_approve_pending_recommendation_transitions_to_approved() -> None:
-    orch = PipelineOrchestrator()
-    rec_id = _seed_pending_recommendation(orch)
+async def test_approve_pending_recommendation_transitions_to_approved() -> None:
+    orch, _ = make_inmem_orchestrator()
+    rec_id = await _seed_pending_recommendation(orch)
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         r = client.post(
@@ -139,9 +144,9 @@ def test_approve_pending_recommendation_transitions_to_approved() -> None:
     assert body["recommendation_id"] == rec_id
 
 
-def test_reject_pending_recommendation_with_reason() -> None:
-    orch = PipelineOrchestrator()
-    rec_id = _seed_pending_recommendation(orch)
+async def test_reject_pending_recommendation_with_reason() -> None:
+    orch, _ = make_inmem_orchestrator()
+    rec_id = await _seed_pending_recommendation(orch)
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         r = client.post(
@@ -153,9 +158,9 @@ def test_reject_pending_recommendation_with_reason() -> None:
     assert r.json()["state"] == "rejected"
 
 
-def test_double_approve_returns_409() -> None:
-    orch = PipelineOrchestrator()
-    rec_id = _seed_pending_recommendation(orch)
+async def test_double_approve_returns_409() -> None:
+    orch, _ = make_inmem_orchestrator()
+    rec_id = await _seed_pending_recommendation(orch)
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         client.post(
@@ -169,9 +174,9 @@ def test_double_approve_returns_409() -> None:
     assert r.status_code == 409
 
 
-def test_approve_unknown_id_returns_404() -> None:
-    orch = PipelineOrchestrator()
-    _seed_pending_recommendation(orch)  # populate but skip its id
+async def test_approve_unknown_id_returns_404() -> None:
+    orch, _ = make_inmem_orchestrator()
+    await _seed_pending_recommendation(orch)  # populate but skip its id
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         r = client.post(
@@ -181,12 +186,13 @@ def test_approve_unknown_id_returns_404() -> None:
     assert r.status_code == 404
 
 
-def test_approve_observed_recommendation_returns_409() -> None:
+async def test_approve_observed_recommendation_returns_409() -> None:
     """R1 emits state='observed'; further transitions are not allowed."""
-    orch = PipelineOrchestrator()
-    orch.ingest(_envelope(source="github"), received_at=_T0)
-    orch.evaluate(window_seconds=300.0)  # no anomalies → R1 → observed
-    rec = orch.latest_recommendations(limit=1)[0]
+    orch, _ = make_inmem_orchestrator()
+    await orch.ingest(_envelope(source="github"), received_at=_T0)
+    await orch.evaluate(window_seconds=300.0)  # no anomalies → R1 → observed
+    recs = await orch.latest_recommendations(limit=1)
+    rec = recs[0]
     assert rec.state == "observed"
 
     app = create_app(orchestrator=orch)
@@ -198,16 +204,16 @@ def test_approve_observed_recommendation_returns_409() -> None:
     assert r.status_code == 409
 
 
-def test_approve_writes_action_history_entry() -> None:
-    orch = PipelineOrchestrator()
-    rec_id = _seed_pending_recommendation(orch)
+async def test_approve_writes_action_history_entry() -> None:
+    orch, _ = make_inmem_orchestrator()
+    rec_id = await _seed_pending_recommendation(orch)
     app = create_app(orchestrator=orch)
     with TestClient(app) as client:
         client.post(
             f"/api/v1/recommendations/{rec_id}/approve",
             headers=_AUTH,
         )
-    history = orch.latest_actions(limit=10)
+    history = await orch.latest_actions(limit=10)
     assert any(
         entry.kind == "approve"
         and entry.actor == "authenticated-api"

@@ -61,6 +61,14 @@ class RecommendationRepository:
             )
         )
 
+    async def count(self) -> int:
+        from sqlalchemy import func
+
+        result = await self._session.execute(
+            select(func.count()).select_from(RecommendationORM)
+        )
+        return int(result.scalar_one())
+
     async def list_latest(self, limit: int = 10) -> list[Recommendation]:
         if limit < 0:
             raise ValueError(f"limit must be >= 0, got {limit!r}")

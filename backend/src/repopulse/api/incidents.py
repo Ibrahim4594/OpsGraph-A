@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api/v1", tags=["incidents"])
 
 
 @router.get("/incidents")
-def list_incidents(
+async def list_incidents(
     request: Request,
     _settings: Annotated[Settings, Depends(require_pipeline_api_key)],
     limit: int = Query(default=50, ge=0, le=200),
@@ -25,16 +25,16 @@ def list_incidents(
     orchestrator = getattr(request.app.state, "orchestrator", None)
     if orchestrator is None:
         return {"incidents": [], "count": 0}
-    incidents = orchestrator.latest_incidents(limit=limit)
+    triples = await orchestrator.latest_incidents_with_counts(limit=limit)
     out = [
         {
             "incident_id": str(inc.incident_id),
             "started_at": inc.started_at.isoformat(),
             "ended_at": inc.ended_at.isoformat(),
             "sources": sorted(inc.sources),
-            "anomaly_count": len(inc.anomalies),
-            "event_count": len(inc.events),
+            "anomaly_count": anomaly_count,
+            "event_count": event_count,
         }
-        for inc in incidents
+        for inc, anomaly_count, event_count in triples
     ]
     return {"incidents": out, "count": len(out)}

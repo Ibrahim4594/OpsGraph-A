@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -108,6 +108,12 @@ class IncidentRepository:
             )
         return True
 
+    async def count(self) -> int:
+        result = await self._session.execute(
+            select(func.count()).select_from(IncidentORM)
+        )
+        return int(result.scalar_one())
+
     async def list_recent(self, *, limit: int = 100) -> list[Incident]:
         """Return up to ``limit`` most-recent incidents, newest-first.
 
@@ -123,6 +129,43 @@ class IncidentRepository:
         )
         result = await self._session.execute(stmt)
         return [_to_incident_domain(r) for r in result.scalars()]
+
+    async def list_recent_with_counts(
+        self, *, limit: int = 100
+    ) -> list[tuple[Incident, int, int]]:
+        """Return ``(incident, anomaly_count, event_count)`` triples,
+        newest-first. Used by the GET /api/v1/incidents dashboard route
+        to preserve the v1.1 response shape (which surfaced
+        ``anomaly_count`` + ``event_count``) without forcing a bridge
+        walk that materialises every row.
+
+        Two correlated subqueries (one per bridge) avoid an N+1: the
+        whole result set is one round-trip.
+        """
+        if limit < 0:
+            raise ValueError(f"limit must be >= 0, got {limit!r}")
+        anomalies_count = (
+            select(func.count())
+            .select_from(incident_anomalies)
+            .where(incident_anomalies.c.incident_id == IncidentORM.incident_id)
+            .scalar_subquery()
+        )
+        events_count = (
+            select(func.count())
+            .select_from(incident_events)
+            .where(incident_events.c.incident_id == IncidentORM.incident_id)
+            .scalar_subquery()
+        )
+        stmt = (
+            select(IncidentORM, anomalies_count, events_count)
+            .order_by(IncidentORM.ended_at.desc())
+            .limit(limit)
+        )
+        result = await self._session.execute(stmt)
+        return [
+            (_to_incident_domain(orm), int(a_count), int(e_count))
+            for orm, a_count, e_count in result.all()
+        ]
 
 
 __all__ = ["IncidentRepository"]
