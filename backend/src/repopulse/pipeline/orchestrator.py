@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Iterable
-from dataclasses import dataclass, replace
+from dataclasses import replace
 from datetime import UTC, datetime
 from typing import Literal
 from uuid import UUID
@@ -20,42 +20,23 @@ from repopulse.anomaly.detector import Anomaly
 from repopulse.api.events import EventEnvelope
 from repopulse.correlation.engine import Incident, correlate
 from repopulse.pipeline.normalize import NormalizedEvent, normalize
+from repopulse.pipeline.types import (
+    ActionHistoryEntry,
+    _AnomalyFingerprint,
+    _incident_key,
+    _IncidentKey,
+)
 from repopulse.recommend.engine import Recommendation, State, recommend
 
-
-@dataclass(frozen=True)
-class ActionHistoryEntry:
-    """One transition in the operator action history.
-
-    Kinds:
-    - ``approve`` / ``reject`` — operator-driven recommendation transition.
-    - ``observe`` — system auto-observed an R1 recommendation.
-    - ``workflow-run`` — agentic workflow run completed (M5 source).
-    """
-
-    at: datetime
-    kind: Literal["approve", "reject", "observe", "workflow-run"]
-    recommendation_id: UUID | None
-    actor: str
-    summary: str
-
-_AnomalyFingerprint = tuple[datetime, float, str]
-_IncidentKey = tuple[frozenset[UUID], frozenset[_AnomalyFingerprint]]
-
-
-def _incident_key(incident: Incident) -> _IncidentKey:
-    """Stable, content-derived signature for ``incident``.
-
-    Two incidents with the same set of underlying events and anomalies
-    produce the same key, even though their freshly-generated UUIDs
-    differ. Used by ``PipelineOrchestrator`` to dedupe recommendations
-    across repeated ``evaluate`` calls on overlapping inputs.
-    """
-    events_key = frozenset(e.event_id for e in incident.events)
-    anomalies_key: frozenset[_AnomalyFingerprint] = frozenset(
-        (a.timestamp, a.value, a.series_name) for a in incident.anomalies
-    )
-    return (events_key, anomalies_key)
+# Re-exported for backward compatibility — pre-T5 callers imported these
+# names from this module. Canonical home is :mod:`pipeline.types`.
+__all__ = [
+    "ActionHistoryEntry",
+    "PipelineOrchestrator",
+    "_AnomalyFingerprint",
+    "_IncidentKey",
+    "_incident_key",
+]
 
 
 class PipelineOrchestrator:

@@ -16,7 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from repopulse.db.models.action_history import ActionHistoryORM
-from repopulse.pipeline.orchestrator import ActionHistoryEntry
+from repopulse.pipeline.types import ActionHistoryEntry
 
 ActionKind = Literal["approve", "reject", "observe", "workflow-run"]
 
