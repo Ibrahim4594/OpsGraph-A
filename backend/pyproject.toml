@@ -64,4 +64,5 @@ markers = [
   "integration: tests that use a real Postgres container (Testcontainers).",
   "e2e: end-to-end tests that drive the FastAPI app against a real DB.",
   "migration: tests that exercise Alembic migrations (upgrade/downgrade).",
+  "no_docker: migration tests that run without a Docker daemon (offline SQL emit).",
 ]
