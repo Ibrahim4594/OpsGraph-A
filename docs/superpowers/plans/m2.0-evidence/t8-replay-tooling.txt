@@ -1,0 +1,38 @@
+=== T8: replay_from_jsonl tooling + 10 unit tests ===
+
+--- pytest tests/test_replay_from_jsonl.py -q ---
+..........                                                               [100%]
+10 passed in 0.72s
+
+--- pytest -m 'not integration and not e2e and not migration' -q ---
+........................................................................ [ 48%]
+........................................................................ [ 72%]
+........................................................................ [ 96%]
+...........                                                              [100%]
+299 passed, 9 deselected in 3.96s
+
+--- ruff check src tests ---
+All checks passed!
+
+--- mypy src tests ---
+Success: no issues found in 99 source files
+
+--- Operational usage ---
+
+Strict (default) — fail-fast on any malformed line, validation error, or ingest failure:
+  REPOPULSE_DATABASE_URL=postgresql+psycopg://... \
+    python -m repopulse.scripts.replay_from_jsonl path/to/events.jsonl
+
+Tolerant — count invalid lines and continue:
+  REPOPULSE_DATABASE_URL=postgresql+psycopg://... \
+    python -m repopulse.scripts.replay_from_jsonl path/to/events.jsonl --skip-invalid
+
+From stdin (e.g. piped from kubectl logs):
+  kubectl logs deploy/api -n prod | python -m repopulse.scripts.replay_from_jsonl - --skip-invalid
+
+End-of-run output:
+  Replay complete: total=42 accepted=39 duplicates=2 invalid=1 failed=0
+
+Idempotency: replaying the same JSONL twice is safe — every event_id
+is matched against raw_events.event_id (PK), so the second run reports
+every event as a duplicate and writes nothing new.
