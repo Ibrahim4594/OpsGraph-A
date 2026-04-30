@@ -1,7 +1,7 @@
 # Milestone 2.0 — Persistent storage (Postgres + SQLAlchemy async + Alembic)
 
-**Status: Plan only. No code lands until the user approves this document.**
-> Builds on `v1.1.0`. Branch: `v2.0-storage`.
+**Status: Shipped.** Handoff: [`milestone-2.0-handoff.md`](milestone-2.0-handoff.md) · Tag **`v2.0.0-storage`** · ADR: [`../../../adr/ADR-006-postgres-persistent-storage.md`](../../../adr/ADR-006-postgres-persistent-storage.md).
+> Baseline: `v1.1.0`. Primary branch for this work: `v2.0-storage`.
 
 ## Goal
 
@@ -63,7 +63,7 @@ backend/src/repopulse/
 │       ├── action_history_repo.py
 │       └── workflow_usage_repo.py
 ├── pipeline/
-│   └── orchestrator.py              MODIFIED — facade calls repos via DI
+│   └── async_orchestrator.py        MODIFIED — facade calls repos via DI
 ├── api/                             unchanged route-level
 └── config.py                        +database_url, +database_pool_*
 ```
@@ -110,13 +110,13 @@ Key rules:
 | (assoc) | — | `incident_events`, `incident_anomalies` | many-to-many bridge tables |
 | `Recommendation` | `repopulse.recommend.engine` | `recommendations` | `state` column + index; `evidence_trace` jsonb |
 | (transition log) | — | `recommendation_transitions` | append-only; one row per state change |
-| `ActionHistoryEntry` | `repopulse.pipeline.orchestrator` | `action_history` | `at` indexed |
+| `ActionHistoryEntry` | `repopulse.pipeline.types` | `action_history` | `at` indexed |
 | `WorkflowUsage` | `repopulse.github.usage` | `workflow_usage` | `run_id` UNIQUE per repository |
 
 ### 1.4 Orchestrator facade (skeleton — code goes in M2.0 task 5)
 
 ```python
-# repopulse/pipeline/orchestrator.py — POST-M2.0
+# repopulse/pipeline/async_orchestrator.py — POST-M2.0 (async facade; legacy sync module removed in T11)
 class PipelineOrchestrator:
     def __init__(
         self, *,
@@ -471,7 +471,7 @@ export REPOPULSE_AGENTIC_SHARED_SECRET=$(openssl rand -hex 16)
 | 2 | `db/base.py` + `db/engine.py` + `Settings.database_url` | `db/__init__.py`, `db/base.py`, `db/engine.py` | `backend/src/repopulse/config.py` |
 | 3 | ORM models (one file per aggregate, 8 files) | `db/models/*.py` | — |
 | 4 | Repositories (6 files) | `db/repository/*.py` | — |
-| 5 | Orchestrator facade rewrite | — | `pipeline/orchestrator.py` |
+| 5 | Orchestrator facade rewrite | — | `pipeline/async_orchestrator.py` |
 | 6 | Wire `app.state.session_maker` | — | `main.py` |
 | 7 | Migrations 0001–0005 | `migrations/versions/0001..0005_*.py` | — |
 | 8 | Replay tooling | `backend/src/repopulse/scripts/replay_from_jsonl.py` | — |

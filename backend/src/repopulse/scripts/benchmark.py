@@ -1,7 +1,9 @@
 """benchmark.py — reproducible KPI harness for the AIOps pipeline.
 
-Drives :class:`PipelineOrchestrator` in-process over a scenario fixture.
-Emits one :class:`BenchmarkResult` per scenario and aggregates them via
+Drives :class:`repopulse.pipeline.async_orchestrator.PipelineOrchestrator`
+in-process over a scenario fixture (in-memory fakes via
+:func:`repopulse.testing.make_inmem_orchestrator`). Emits one
+:class:`BenchmarkResult` per scenario and aggregates them via
 :func:`summarize`. No I/O beyond reading scenarios and printing JSON; safe
 to call from tests.
 
@@ -21,6 +23,7 @@ KPI definitions (also in docs/results-report.md):
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime, timedelta
@@ -30,8 +33,9 @@ from typing import Literal
 from repopulse.anomaly.detector import Anomaly
 from repopulse.api.events import EventEnvelope
 from repopulse.api.slo import _classify_event
-from repopulse.pipeline.orchestrator import PipelineOrchestrator
+from repopulse.pipeline.async_orchestrator import PipelineOrchestrator
 from repopulse.slo import SLO, availability_sli, burn_rate
+from repopulse.testing import make_inmem_orchestrator
 
 # Anchor that ``scenarios.load_scenario`` uses when materialising anomaly
 # timestamps from ``offset_seconds`` in the JSON file. Kept in sync here
@@ -66,25 +70,22 @@ class BenchmarkResult:
     burn_rate_lead_seconds: float | None
 
 
-def run_scenario(scenario: Scenario, *, now: datetime) -> BenchmarkResult:
-    orch = PipelineOrchestrator()
+async def _run_scenario_async(scenario: Scenario, *, now: datetime) -> BenchmarkResult:
+    orch, _ = make_inmem_orchestrator()
     for event in scenario.events:
-        orch.ingest(
+        await orch.ingest(
             event.envelope,
             received_at=now + timedelta(seconds=event.offset_seconds),
         )
-    # Re-anchor anomaly timestamps to ``now`` so they share the correlation
-    # window with the events. The fixture's offset (relative to
-    # ``_SCENARIO_ANCHOR``) is preserved.
     rebased_anomalies = [
         replace(anomaly, timestamp=now + (anomaly.timestamp - _SCENARIO_ANCHOR))
         for anomaly in scenario.anomalies
     ]
     if rebased_anomalies:
-        orch.record_anomalies(rebased_anomalies)
-    orch.evaluate(window_seconds=300.0)
+        await orch.record_anomalies(rebased_anomalies)
+    await orch.evaluate(window_seconds=300.0)
 
-    recs = orch.latest_recommendations(limit=1)
+    recs = await orch.latest_recommendations(limit=1)
     if not recs:
         return BenchmarkResult(
             scenario_name=scenario.name,
@@ -106,15 +107,12 @@ def run_scenario(scenario: Scenario, *, now: datetime) -> BenchmarkResult:
             if scenario.events
             else first_anomaly_ts
         )
-        # MTTR is "earliest moment a streaming pipeline could emit the
-        # recommendation" minus "first anomaly", which is the later of
-        # last event arrival and last anomaly arrival.
         trigger_ts = max(last_event_ts, last_anomaly_ts)
         mttr_seconds = max(0.0, (trigger_ts - first_anomaly_ts).total_seconds())
     else:
         mttr_seconds = None
 
-    burn_lead_seconds = _burn_lead_seconds(orch)
+    burn_lead_seconds = await _burn_lead_seconds(orch)
 
     return BenchmarkResult(
         scenario_name=scenario.name,
@@ -126,10 +124,15 @@ def run_scenario(scenario: Scenario, *, now: datetime) -> BenchmarkResult:
     )
 
 
-def _burn_lead_seconds(
+def run_scenario(scenario: Scenario, *, now: datetime) -> BenchmarkResult:
+    """Synchronous entrypoint used by tests and :func:`main`."""
+    return asyncio.run(_run_scenario_async(scenario, now=now))
+
+
+async def _burn_lead_seconds(
     orch: PipelineOrchestrator, *, target: float = 0.99
 ) -> float | None:
-    events = orch.iter_events()
+    events = await orch.iter_events()
     if not events:
         return None
     first_error_at: datetime | None = None

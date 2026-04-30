@@ -40,7 +40,7 @@ Per the user's M5 mandate ("explicitly invoke and log the required skills/workfl
 | `backend/src/repopulse/github/usage.py` | Workflow usage telemetry — `WorkflowUsage` dataclass + `to_normalized_event` mapping. |
 | `backend/src/repopulse/api/github_workflows.py` | Four POST endpoints under `/api/v1/github/`. Bearer-token auth, two-layer kill switch, request-size caps. Post-review C2 fix re-reads `Settings` per request. Post-review I5 fix adds field length caps + a 413 guard on oversized `file_contents` values. |
 | `backend/src/repopulse/main.py` | Wires `github_workflows` router; stashes `settings` on `app.state`. |
-| `backend/src/repopulse/pipeline/orchestrator.py` | New `record_normalized` method for callers that already hold a `NormalizedEvent`. |
+| `backend/src/repopulse/pipeline/async_orchestrator.py` | `record_normalized` for callers that already hold a `NormalizedEvent`. |
 | `backend/tests/test_github_payloads.py` | 6 tests for payload model parsing. |
 | `backend/tests/test_github_triage.py` | 12 tests (8 original + 4 post-review regression). |
 | `backend/tests/test_github_ci_analysis.py` | 9 tests. |

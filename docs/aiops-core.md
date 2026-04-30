@@ -56,7 +56,7 @@ Pure function `normalize(envelope, *, received_at) -> NormalizedEvent`. Maps the
 
 The highest-priority firing rule sets `action_category`, `confidence`, `risk_level`. Every firing rule contributes a one-line entry to `evidence_trace`, so an operator reading a recommendation can audit why each rule fired (or didn't).
 
-### `pipeline.orchestrator` — [source](../backend/src/repopulse/pipeline/orchestrator.py)
+### `pipeline.async_orchestrator` — [source](../backend/src/repopulse/pipeline/async_orchestrator.py)
 
 `PipelineOrchestrator` owns four bounded `collections.deque` instances (events, anomalies, incidents, recommendations) with explicit `maxlen` caps. Methods:
 

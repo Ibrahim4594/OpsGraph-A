@@ -54,7 +54,7 @@ from repopulse.db.repository.recommendation_repo import _to_recommendation_domai
 from repopulse.db.repository.workflow_usage_repo import _to_workflow_domain
 from repopulse.github.usage import WorkflowUsage
 from repopulse.pipeline.normalize import NormalizedEvent
-from repopulse.pipeline.orchestrator import ActionHistoryEntry
+from repopulse.pipeline.types import ActionHistoryEntry
 from repopulse.recommend.engine import Recommendation
 
 

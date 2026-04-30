@@ -46,7 +46,7 @@ backend/src/repopulse/
 ├── pipeline/
 │   ├── __init__.py                (new)
 │   ├── normalize.py               (new — pure)
-│   └── orchestrator.py            (new — in-memory glue + thread-safe deques)
+│   └── async_orchestrator.py      (new — in-memory glue + thread-safe deques; async API post–M2.0)
 ├── anomaly/
 │   ├── __init__.py                (new)
 │   └── detector.py                (new — rolling z-score with optional seasonality)
@@ -719,7 +719,7 @@ Rules (deterministic; first match wins for category, but evidence_trace records 
 
 **Skill invoked:** `superpowers:test-driven-development`.
 
-**Files:** `pipeline/orchestrator.py`, `tests/test_orchestrator.py`.
+**Files:** `pipeline/async_orchestrator.py`, `tests/test_orchestrator.py`.
 
 Contract:
 
@@ -813,7 +813,7 @@ This is the integration check the user's brief explicitly asked for ("end-to-end
 
 Sections:
 - "Pipeline overview" (the diagram above, code-formatted).
-- "Modules" — one paragraph per `pipeline.normalize`, `anomaly.detector`, `correlation.engine`, `recommend.engine`, `pipeline.orchestrator`, with the concrete contract and link to each source file.
+- "Modules" — one paragraph per `pipeline.normalize`, `anomaly.detector`, `correlation.engine`, `recommend.engine`, `pipeline.async_orchestrator`, with the concrete contract and link to each source file.
 - "Algorithm choices" — restate the key bullets from ADR-002.
 - "Evidence assembly" — explain how `Recommendation.evidence_trace` is built (one line per rule fired), and how the `Incident` references back to anomalies / events for the operator UI (when M4 lands).
 - "Limitations & future work" — in-memory store will lose state on restart; no per-route SLO; no ML; no deduplication of recurring incidents. Each item references the milestone where it lands.

@@ -20,7 +20,7 @@ Storage wiring (T6):
   constructs the async :class:`PipelineOrchestrator` over that
   sessionmaker. The engine is disposed on shutdown.
 - Tests: pass ``orchestrator=...`` (built via
-  :func:`tests._inmem_orchestrator.make_inmem_orchestrator`) to skip the
+  :func:`repopulse.testing.make_inmem_orchestrator`) to skip the
   real engine path entirely.
 - Misconfiguration: when no orchestrator is supplied AND
   ``REPOPULSE_DATABASE_URL`` is unset, ``create_app`` raises
@@ -92,7 +92,7 @@ def create_app(
                 "REPOPULSE_DATABASE_URL is unset and no orchestrator was "
                 "injected. v2.0 requires the persistent storage layer; set "
                 "REPOPULSE_DATABASE_URL or pass `orchestrator=` (tests use "
-                "tests._inmem_orchestrator.make_inmem_orchestrator)."
+                "repopulse.testing.make_inmem_orchestrator)."
             )
         engine = make_engine_from_settings(settings)
         session_maker = make_session_factory(engine)

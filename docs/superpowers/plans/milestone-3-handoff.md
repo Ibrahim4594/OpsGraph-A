@@ -33,7 +33,7 @@ Per the user's M3 mandate ("explicitly invoke and log the required skills/workfl
 | `backend/pyproject.toml` | Version bump to `0.3.0`. |
 | `backend/src/repopulse/pipeline/__init__.py` | Package marker. |
 | `backend/src/repopulse/pipeline/normalize.py` | Pure `normalize(envelope, *, received_at) -> NormalizedEvent`; source-aware kind taxonomy; payload-derived severity; flat string `attributes`. |
-| `backend/src/repopulse/pipeline/orchestrator.py` | `PipelineOrchestrator` glue with bounded deques and content-signature dedup (post-review C2). |
+| `backend/src/repopulse/pipeline/async_orchestrator.py` | Async `PipelineOrchestrator` glue with bounded deques and content-signature dedup (post-review C2). |
 | `backend/src/repopulse/anomaly/__init__.py` | Package marker. |
 | `backend/src/repopulse/anomaly/detector.py` | `detect_zscore` modified-z-score with optional seasonal-baseline sampling. Special-cases `MAD = 0` per ADR-002. |
 | `backend/src/repopulse/correlation/__init__.py` | Package marker. |

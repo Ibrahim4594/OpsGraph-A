@@ -1,0 +1,22 @@
+=== T11: remove legacy sync orchestrator; testing.inmem; docs grep ===
+
+Changes (summary):
+- Deleted `backend/src/repopulse/pipeline/orchestrator.py` (sync facade).
+- In-memory harness: `repopulse.testing` / `repopulse.testing.inmem` (`make_inmem_orchestrator`).
+- Tests + `benchmark.py` use `PipelineOrchestrator` from `repopulse.pipeline.async_orchestrator`.
+- Planning/handoff markdown paths updated from `orchestrator.py` → `async_orchestrator.py` where referenced.
+
+--- pytest tests/test_orchestrator.py tests/test_benchmark.py ---
+(17 passed — run locally after T11)
+
+--- pytest -m "not integration and not e2e and not migration" ---
+(296 passed, 46 deselected — run locally after T11)
+
+--- ruff check src tests ---
+All checks passed!
+
+--- mypy src tests ---
+Success: no issues found in 106 source files
+
+--- grep (backend only): repopulse.pipeline.orchestrator | tests._inmem ---
+(no matches)

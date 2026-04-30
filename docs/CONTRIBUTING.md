@@ -8,7 +8,12 @@
    implementation. The `(TDD)` suffix on commit messages is the project
    convention.
 3. **Lint + typecheck + test** before pushing:
-   - Backend: `pytest && ruff check src tests && mypy`
+   - Backend: `pytest && ruff check src tests && mypy`  
+     **Docker:** `pytest -m integration` and `pytest -m migration` need Docker
+     (Testcontainers). The default `pytest` on PRs matches CI:  
+     `pytest -m "not integration and not e2e and not migration"`.
+   - **v2.0:** real `create_app()` requires `REPOPULSE_DATABASE_URL`; unit tests
+     inject an in-memory orchestrator via `conftest.py` — see `docs/SETUP.md`.
    - Frontend: `npm test && npm run typecheck && npm run lint && npm run build`
    - Local dashboard against a dev API: set `REPOPULSE_API_SHARED_SECRET` on
      the backend and the **same** value as `NEXT_PUBLIC_API_SHARED_SECRET` for

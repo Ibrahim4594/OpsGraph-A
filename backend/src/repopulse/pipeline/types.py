@@ -1,6 +1,6 @@
 """Shared types + helpers for the pipeline (orchestrator + repos).
 
-Lives here, not in :mod:`pipeline.orchestrator`, so the persistence-layer
+Lives here so the persistence-layer
 repository :mod:`db.repository.action_history_repo` can import
 :class:`ActionHistoryEntry` without forming an import cycle when the
 async :class:`pipeline.async_orchestrator.PipelineOrchestrator` (T5) in
@@ -49,8 +49,7 @@ def _incident_key(incident: Incident) -> _IncidentKey:
 
     Two incidents with the same set of underlying events and anomalies
     produce the same key, even though their freshly-generated UUIDs
-    differ. Re-exported via :mod:`pipeline.orchestrator` for backward
-    compatibility — this is the canonical home as of T5.
+    differ. Canonical definition lives in this module (T5 / T11).
     """
     events_key = frozenset(e.event_id for e in incident.events)
     anomalies_key: frozenset[_AnomalyFingerprint] = frozenset(

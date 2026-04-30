@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 from repopulse.anomaly.detector import Anomaly
 from repopulse.api.events import EventEnvelope
 from repopulse.main import create_app
-from tests._inmem_orchestrator import make_inmem_orchestrator
+from repopulse.testing import make_inmem_orchestrator
 
 _T0 = datetime(2026, 4, 27, 12, 0, 0, tzinfo=UTC)
 

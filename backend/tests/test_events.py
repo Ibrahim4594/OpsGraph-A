@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from repopulse.api.events import _MAX_PAYLOAD_BYTES
 from repopulse.main import create_app
-from tests._inmem_orchestrator import make_inmem_orchestrator
+from repopulse.testing import make_inmem_orchestrator
 
 # Matches conftest autouse ``REPOPULSE_API_SHARED_SECRET``.
 PIPELINE_API_HEADERS = {"Authorization": "Bearer test-pipeline-api-secret"}

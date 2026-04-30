@@ -36,7 +36,7 @@ Per the user's M4 mandate ("explicitly invoke and log the required skills/workfl
 | `backend/src/repopulse/__init__.py` | `__version__ = "0.5.0"`. |
 | `backend/pyproject.toml` | Version bump to `0.5.0`. |
 | `backend/src/repopulse/recommend/engine.py` | `Recommendation.state` field (Literal of 4 values); R1 emits `observed`, others `pending`. |
-| `backend/src/repopulse/pipeline/orchestrator.py` | `ActionHistoryEntry` dataclass; bounded action-history deque (200); `_rec_state` overlay map; `transition_recommendation`, `find_recommendation`, `latest_actions`, `latest_incidents`, `record_normalized`, `record_workflow_run`, `iter_events` methods. Post-review I2 fix: `_rec_state` cleanup on deque eviction. |
+| `backend/src/repopulse/pipeline/async_orchestrator.py` | `ActionHistoryEntry` lives in `pipeline/types.py`; async `PipelineOrchestrator` with bounded action-history deque (200); `_rec_state` overlay map; `transition_recommendation`, `find_recommendation`, `latest_actions`, `latest_incidents`, `record_normalized`, `record_workflow_run`, `iter_events` methods. Post-review I2 fix: `_rec_state` cleanup on deque eviction. |
 | `backend/src/repopulse/api/recommendations.py` | `state` field in GET response; new POST `/approve` and `/reject` (200/404/409); narrow Pydantic body models. |
 | `backend/src/repopulse/api/incidents.py` | NEW `GET /api/v1/incidents`. |
 | `backend/src/repopulse/api/actions.py` | NEW `GET /api/v1/actions`. |

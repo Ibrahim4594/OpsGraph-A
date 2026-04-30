@@ -1286,7 +1286,7 @@ Expected: all green.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add backend/src/repopulse/api/github_workflows.py backend/src/repopulse/config.py backend/src/repopulse/main.py backend/src/repopulse/pipeline/orchestrator.py backend/tests/test_github_workflows_api.py backend/tests/test_orchestrator.py
+git add backend/src/repopulse/api/github_workflows.py backend/src/repopulse/config.py backend/src/repopulse/main.py backend/src/repopulse/pipeline/async_orchestrator.py backend/tests/test_github_workflows_api.py backend/tests/test_orchestrator.py
 git commit -m "feat(api): GitHub agentic workflow endpoints with auth + kill switch (TDD)"
 ```
 

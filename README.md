@@ -1,6 +1,6 @@
 # OpsGraph — RepoPulse AIOps
 
-[![status](https://img.shields.io/badge/status-v1.1.0-blue)](#status)
+[![status](https://img.shields.io/badge/status-v2.0.0--storage-success)](#status)
 [![python](https://img.shields.io/badge/python-3.11+-blue)](#)
 [![nextjs](https://img.shields.io/badge/Next.js-15-black)](#)
 [![tests](https://img.shields.io/badge/tests-pytest%2Bvitest-informational)](#)
@@ -11,17 +11,23 @@
 > and OTel metrics → detect anomalies → group correlated signals into
 > incidents → emit ranked recommendations with explainable evidence → human
 > approval gate → automated workflows with safety guardrails. Operator
-> dashboard included.
+> dashboard included. **v2.0** persists pipeline state in **Postgres** (async
+> SQLAlchemy + Alembic); see [ADR-006](adr/ADR-006-postgres-persistent-storage.md).
 
 ## Demo
+
+**v2.0 requires Postgres** before the API starts (default: compose on
+`127.0.0.1:55432`). Bring the DB up, then run the demo:
 
 ```bash
 export REPOPULSE_API_SHARED_SECRET="$(openssl rand -hex 16)"
 export REPOPULSE_AGENTIC_SHARED_SECRET="$(openssl rand -hex 16)"
+./scripts/dev-stack-up.sh    # or: docker compose -f docker-compose.dev.yml up -d postgres
 ./scripts/demo.sh
 ```
 
-→ Dashboard at http://127.0.0.1:3000 · API at http://127.0.0.1:8000 (loopback only).
+→ Dashboard at http://127.0.0.1:3000 · API at http://127.0.0.1:8000 (loopback only).  
+Full stack notes: [docs/dev-stack.md](docs/dev-stack.md) · Operations runbook: [docs/operations.md](docs/operations.md).
 
 | | |
 |---|---|
@@ -38,6 +44,7 @@ See [docs/demo/README.md](docs/demo/README.md) for the full walkthrough.
 | Detect | `repopulse.anomaly.detector` | Modified z-score (Iglewicz & Hoaglin, 1993) | ✅ |
 | Correlate | `repopulse.correlation.engine` | Time-window grouping | ✅ |
 | Recommend | `repopulse.recommend.engine` | Rule-based + evidence trace | ✅ |
+| **Persist** | **`repopulse.db` + `pipeline.async_orchestrator`** | **Postgres + repos ([ADR-006](adr/ADR-006-postgres-persistent-storage.md))** | **✅** |
 | Action gate | `repopulse.api.recommendations` | Pending → approved/rejected state machine ([ADR-004](adr/ADR-004-approval-gate-model.md)) | ✅ |
 | Agentic actions | `.github/workflows/agentic-*.yml` | Kill-switch + scoped tokens ([ADR-003](adr/ADR-003-agentic-execution-model.md)) | ✅ |
 | Operator UI | `frontend/` | Next.js 15 + Tailwind 4 + Base UI toast | ✅ |
@@ -73,7 +80,7 @@ flowchart LR
     OM[OTel metrics]
   end
   subgraph Backend["FastAPI (M1–M5)"]
-    NORM[normalize] --> ORCH[orchestrator]
+    NORM[normalize] --> ORCH[async orchestrator + Postgres]
     DET[anomaly detector] --> ORCH
     ORCH --> CORR[correlate]
     CORR --> REC[recommend]
@@ -120,12 +127,15 @@ Per-milestone diagrams: [`docs/architecture.md`](docs/architecture.md) · M3 dee
 | M4 | `v0.5.0-m4` | Operator dashboard UI |
 | **M6** | **`v1.0.0`** | **Benchmark + portfolio polish** |
 | **v1.1** | **`v1.1.0`** | **Pipeline API auth, CORS, ingest hardening** |
+| **M2.0** | **`v2.0.0-storage`** | **Postgres persistence, Alembic, async orchestrator; T11 legacy removal** |
 
 ## Setup + contributing
 
-- [`docs/SETUP.md`](docs/SETUP.md) — prerequisites + WSL/Docker walkthrough
+- [`docs/SETUP.md`](docs/SETUP.md) — prerequisites + WSL/Docker walkthrough + database URL
+- [`docs/operations.md`](docs/operations.md) — migrations, health, backups (v2.0)
 - [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) — workflow + TDD rule
 - [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) — common gotchas
+- [`docs/security-model.md`](docs/security-model.md) — auth, limits, trust boundaries
 
 ## Author
 

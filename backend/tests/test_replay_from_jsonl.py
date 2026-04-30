@@ -18,7 +18,7 @@ from repopulse.scripts.replay_from_jsonl import (
     format_stats,
     replay_stream,
 )
-from tests._inmem_orchestrator import make_inmem_orchestrator
+from repopulse.testing import make_inmem_orchestrator
 
 
 def _envelope_dict() -> dict[str, object]:

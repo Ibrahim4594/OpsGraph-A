@@ -1,7 +1,6 @@
 """Async pipeline orchestrator — DB-backed facade over the T4 repositories.
 
-Replaces the bounded in-memory deques in
-:mod:`pipeline.orchestrator` with PostgreSQL-backed storage. The public
+PostgreSQL-backed (or in-memory-fake) pipeline storage. The public
 shape (return types) is preserved: callers still get
 :class:`NormalizedEvent`, :class:`Recommendation`, :class:`Incident`,
 :class:`ActionHistoryEntry` — the same domain dataclasses they got from

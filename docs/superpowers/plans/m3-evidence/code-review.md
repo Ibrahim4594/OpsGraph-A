@@ -39,7 +39,7 @@ This is the single largest plan-vs-implementation gap in M3. The diagram in `doc
 
 ### C2. `evaluate()` re-emits recommendations for every prior incident on every call
 
-**File:** `backend/src/repopulse/pipeline/orchestrator.py` lines 56–75.
+**File:** `backend/src/repopulse/pipeline/async_orchestrator.py` (legacy path was `orchestrator.py` pre–M2.0 T11) lines 56–75.
 
 ```python
 def evaluate(self, *, window_seconds: float = 300.0) -> list[Recommendation]:
@@ -158,7 +158,7 @@ def test_detect_seasonal_baseline_off_phase_spike_with_noisy_baseline() -> None:
 
 ### I5. `evaluate()` "Returns the new batch only" docstring is wrong
 
-**File:** `backend/src/repopulse/pipeline/orchestrator.py` lines 60–63.
+**File:** `backend/src/repopulse/pipeline/async_orchestrator.py` lines 60–63.
 
 > "Run correlation over current state and emit one recommendation per incident. Returned recommendations are also stashed in the latest-first queue. **Returns the new batch only.**"
 
@@ -174,7 +174,7 @@ It returns *the recommendations produced by this call*, but those are produced b
 
 ### m2. `EventEnvelope` import in orchestrator creates a soft layering issue
 
-`backend/src/repopulse/pipeline/orchestrator.py` imports from `repopulse.api.events`. The pipeline layer importing from the API layer is a small architectural smell — it means the API can never depend on the pipeline package without creating a cycle, and the pipeline can't be vendored without the FastAPI deps coming along. Consider moving `EventEnvelope` (or a small `Envelope` protocol) into a neutral `repopulse.types` module so `pipeline/`, `anomaly/`, `correlation/`, and `recommend/` are pure-domain modules and `api/` is the only edge that imports FastAPI/pydantic.
+`backend/src/repopulse/pipeline/async_orchestrator.py` imports from `repopulse.api.events`. The pipeline layer importing from the API layer is a small architectural smell — it means the API can never depend on the pipeline package without creating a cycle, and the pipeline can't be vendored without the FastAPI deps coming along. Consider moving `EventEnvelope` (or a small `Envelope` protocol) into a neutral `repopulse.types` module so `pipeline/`, `anomaly/`, `correlation/`, and `recommend/` are pure-domain modules and `api/` is the only edge that imports FastAPI/pydantic.
 
 ### m3. `_flatten_attributes` and `_resolve_kind` discard the original `kind` for `otel-metrics`
 

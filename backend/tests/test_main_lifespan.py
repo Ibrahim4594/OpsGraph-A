@@ -14,7 +14,7 @@ Production path:
 Test path:
 
 - ``orchestrator=`` injected (built via
-  :func:`tests._inmem_orchestrator.make_inmem_orchestrator`) bypasses
+  :func:`repopulse.testing.make_inmem_orchestrator`) bypasses
   the engine entirely. ``app.state.engine`` is ``None``.
 
 The lifespan startup itself is a no-op for the orchestrator (the engine
@@ -31,7 +31,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from repopulse.main import create_app
-from tests._inmem_orchestrator import make_inmem_orchestrator
+from repopulse.testing import make_inmem_orchestrator
 
 
 def test_create_app_with_inmem_orchestrator_does_not_build_engine() -> None:

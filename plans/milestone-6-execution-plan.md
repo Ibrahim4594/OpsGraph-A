@@ -231,6 +231,8 @@ Expected: `ModuleNotFoundError: No module named 'repopulse.scripts.benchmark'`.
 
 Create `backend/src/repopulse/scripts/__init__.py` if not present (empty).
 
+As of M2.0 T11, `benchmark.py` uses `asyncio.run` with `PipelineOrchestrator` from `repopulse.pipeline.async_orchestrator` and `repopulse.testing.make_inmem_orchestrator` for in-process runs. The sketch below shows the historical sync shape; see the repo file for the current async implementation.
+
 ```python
 """benchmark.py — reproducible KPI harness for the AIOps pipeline.
 
@@ -251,7 +253,7 @@ from uuid import UUID
 from repopulse.anomaly.detector import Anomaly
 from repopulse.api.events import EventEnvelope
 from repopulse.api.slo import _classify_event
-from repopulse.pipeline.orchestrator import PipelineOrchestrator
+from repopulse.pipeline.async_orchestrator import PipelineOrchestrator
 from repopulse.slo import SLO, availability_sli, burn_rate
 
 ActionCategory = Literal["observe", "triage", "escalate", "rollback"]

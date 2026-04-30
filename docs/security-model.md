@@ -1,4 +1,4 @@
-# Security Model (v1.1)
+# Security Model (v1.1 + v2.0 storage)
 
 ## Trust boundaries
 
@@ -26,6 +26,7 @@
 | `REPOPULSE_API_OPERATOR_ACTOR` | Audit field recorded on approve/reject (default `authenticated-api`). |
 | `REPOPULSE_ALLOW_SIMULATE_ERROR` | When `true`, allows `simulate_error` on ingest (tests / load only). Default `false`. |
 | `REPOPULSE_CORS_ORIGINS` | Comma-separated origins for `CORSMiddleware` (e.g. `http://127.0.0.1:3000`). Empty → no CORS (same-origin or reverse-proxy only). |
+| `REPOPULSE_DATABASE_URL` | **v2.0+** Postgres DSN (`postgresql+psycopg://…`). Required for `create_app()` when no test orchestrator is injected; unset → `RuntimeError` at startup (fail loud). See [ADR-006](../adr/ADR-006-postgres-persistent-storage.md). |
 
 **Client:** The Next.js operator UI reads `NEXT_PUBLIC_API_SHARED_SECRET` and
 sends the same bearer. This duplicates the secret in the browser bundle —
@@ -51,10 +52,9 @@ as documented in [ADR-003](../adr/ADR-003-agentic-execution-model.md) and
 
 ## Settings vs documentation
 
-All **implemented** `REPOPULSE_*` keys for security-relevant behavior live in
-`Settings` in `backend/src/repopulse/config.py`. Keys that are **not** in
-`Settings` (for example a future `REPOPULSE_DATABASE_URL`) are **not**
-documented here as active until code references them.
+All **implemented** `REPOPULSE_*` keys for security- and storage-relevant
+behavior live in `Settings` in `backend/src/repopulse/config.py`. If a
+variable is not in `Settings`, it is not an official configuration surface.
 
 ## Cross-origin browser access
 

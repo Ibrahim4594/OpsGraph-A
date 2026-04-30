@@ -23,7 +23,7 @@ def secret() -> str:
 
 @pytest.fixture
 def client(monkeypatch: pytest.MonkeyPatch, secret: str) -> Iterator[TestClient]:
-    from tests._inmem_orchestrator import make_inmem_orchestrator
+    from repopulse.testing import make_inmem_orchestrator
 
     monkeypatch.setenv("REPOPULSE_AGENTIC_ENABLED", "true")
     monkeypatch.setenv("REPOPULSE_AGENTIC_SHARED_SECRET", secret)

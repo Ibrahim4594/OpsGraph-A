@@ -45,7 +45,7 @@ Two layers ship in M4:
 ```
 backend/src/repopulse/
 ├── pipeline/
-│   └── orchestrator.py              (modify — add approval state + action history)
+│   └── async_orchestrator.py        (modify — add approval state + action history)
 ├── api/
 │   ├── recommendations.py           (modify — POST /approve|reject + state in GET shape)
 │   ├── incidents.py                 (NEW — GET /api/v1/incidents)
@@ -150,7 +150,7 @@ git commit -m "plan: M4 execution plan + ADR-004 (approval gate state model)"
 **Files:**
 - Create: `backend/src/repopulse/api/incidents.py`
 - Modify: `backend/src/repopulse/main.py` (register router)
-- Modify: `backend/src/repopulse/pipeline/orchestrator.py` (add `latest_incidents(limit)` if not present)
+- Modify: `backend/src/repopulse/pipeline/async_orchestrator.py` (add `latest_incidents(limit)` if not present)
 - Test: `backend/tests/test_incidents_api.py`
 
 Response shape:
@@ -173,6 +173,8 @@ Response shape:
 
 - [ ] **Step 1: Write failing test (`test_incidents_api.py`)**
 
+As of M2.0 T11, `PipelineOrchestrator` is defined in `repopulse.pipeline.async_orchestrator` and `ingest` / `evaluate` are async; real tests use `await` and `pytest.mark.asyncio`. The sketch below omits `await` for readability.
+
 ```python
 """Tests for GET /api/v1/incidents."""
 from __future__ import annotations
@@ -186,7 +188,7 @@ from fastapi.testclient import TestClient
 from repopulse.anomaly.detector import Anomaly
 from repopulse.api.events import EventEnvelope
 from repopulse.main import create_app
-from repopulse.pipeline.orchestrator import PipelineOrchestrator
+from repopulse.pipeline.async_orchestrator import PipelineOrchestrator
 
 _T0 = datetime(2026, 4, 27, 12, 0, tzinfo=UTC)
 
@@ -256,7 +258,7 @@ Expected: 404 / `ModuleNotFoundError`.
 - [ ] **Step 3: Add `latest_incidents` to orchestrator**
 
 ```python
-# backend/src/repopulse/pipeline/orchestrator.py — append to class
+# backend/src/repopulse/pipeline/async_orchestrator.py — append to class
 def latest_incidents(self, limit: int = 50) -> list[Incident]:
     if limit < 0:
         raise ValueError(f"limit must be >= 0, got {limit!r}")
@@ -313,7 +315,7 @@ Expected: 3 passed.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add backend/src/repopulse/api/incidents.py backend/src/repopulse/main.py backend/src/repopulse/pipeline/orchestrator.py backend/tests/test_incidents_api.py
+git add backend/src/repopulse/api/incidents.py backend/src/repopulse/main.py backend/src/repopulse/pipeline/async_orchestrator.py backend/tests/test_incidents_api.py
 git commit -m "feat(api): GET /api/v1/incidents exposes orchestrator incidents (TDD)"
 ```
 
@@ -323,7 +325,7 @@ git commit -m "feat(api): GET /api/v1/incidents exposes orchestrator incidents (
 
 **Files:**
 - Modify: `backend/src/repopulse/recommend/engine.py` (add `state` to `Recommendation`)
-- Modify: `backend/src/repopulse/pipeline/orchestrator.py` (action history + transition methods)
+- Modify: `backend/src/repopulse/pipeline/async_orchestrator.py` (action history + transition methods)
 - Modify: `backend/src/repopulse/api/recommendations.py` (POST /approve + /reject; serialize state)
 - Test: `backend/tests/test_recommendations_api.py` (new tests for transitions)
 - Test: `backend/tests/test_recommend.py` (R1 default-observed)
@@ -434,7 +436,7 @@ def recommend(incident: Incident) -> Recommendation:
 - [ ] **Step 4: Add transition methods + action history to orchestrator**
 
 ```python
-# pipeline/orchestrator.py — additions
+# pipeline/async_orchestrator.py — additions
 
 @dataclass(frozen=True)
 class ActionHistoryEntry:

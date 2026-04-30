@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "repopulse"
-version = "1.1.0"
+version = "2.0.0"
 description = "RepoPulse AIOps backend"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -19,7 +19,7 @@ dependencies = [
   "opentelemetry-instrumentation-fastapi>=0.48b0",
   "opentelemetry-instrumentation-httpx>=0.48b0",
   "opentelemetry-instrumentation-logging>=0.48b0",
-  # M2.0 storage layer (planned in docs/superpowers/plans/milestone-2.0-storage-plan.md).
+  # M2.0 storage layer (see adr/ADR-006-postgres-persistent-storage.md).
   "sqlalchemy[asyncio]>=2.0",
   "psycopg[binary,pool]>=3.2",
   "alembic>=1.13",

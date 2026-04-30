@@ -244,7 +244,7 @@ Repeat for `incidents`, `actions`, `slo`. ~30 lines total.
 
 ### I4 — Reject `summary` loses operator-supplied reason on empty string
 
-**Where:** `backend/src/repopulse/pipeline/orchestrator.py:265`.
+**Where:** `backend/src/repopulse/pipeline/async_orchestrator.py` (line numbers were valid for the legacy sync module pre–M2.0 T11).
 
 ```python
 self._action_history.append(

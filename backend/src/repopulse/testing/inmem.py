@@ -1,27 +1,23 @@
-"""In-memory async :class:`PipelineOrchestrator` for the test suite.
+"""In-memory async :class:`PipelineOrchestrator` for tests and benchmarks.
 
-T6 makes ``app.state.orchestrator`` the async DB-backed orchestrator from
-:mod:`repopulse.pipeline.async_orchestrator`. Tests can't spin up
-Postgres for the unit gate, so this helper builds the same async
-orchestrator wired to fake repos that share an in-memory state object.
-The fakes implement just enough of each repo's contract to make the
-orchestrator's flow (ingest → evaluate → transition) behave as the
-legacy in-memory class did.
+``app.state.orchestrator`` in production is the async DB-backed
+:class:`repopulse.pipeline.async_orchestrator.PipelineOrchestrator`.
+Callers that cannot spin up Postgres (unit gate, ``benchmark`` harness)
+use this factory: same async class, fake repos over shared in-memory
+state.
 
-Why not subclass / monkeypatch the real repos? Because the production
-repos depend on a live ``AsyncSession``. The orchestrator only relies on
-the **shape** of each repo (a small async API per aggregate), so duck
-typing through factories is the cleanest seam.
+Why not monkeypatch real repos? Production repos need a live
+``AsyncSession``. The orchestrator only needs each repo's async API
+shape, so duck-typed factories are the cleanest seam.
 
-Behavior parity vs the legacy in-memory ``PipelineOrchestrator``:
+Semantics (aligned with the async orchestrator + v1.1 behavior):
 
 - Same return shapes (domain dataclasses).
-- Same idempotency semantics: duplicate ``event_id`` POST → ``ingest``
-  returns ``None``; duplicate incident signature → ``evaluate`` skips.
-- Same R1 fallback → ``observed`` row appended to action history.
-- **Unbounded** state. Legacy used ``deque(maxlen=...)``; tests that
-  used the ``max_*`` constructor kwargs need to drop them — bounded
-  retention is now a DB-level concern handled in M3.2.
+- Duplicate ``event_id`` on ``ingest`` → ``None``.
+- Duplicate incident ``signature_hash`` on ``evaluate`` → skip insert.
+- R1 fallback → ``observe`` row in action history.
+- **Unbounded** in-memory state (no ``deque(maxlen=...)``); retention is
+  a DB / ops concern (M3.2).
 """
 from __future__ import annotations
 
@@ -148,7 +144,6 @@ class _FakeAnomalyRepo:
     async def list_recent_with_ids(
         self, *, limit: int = 200
     ) -> list[tuple[UUID, Anomaly]]:
-        # Order by anomaly.timestamp ascending, take last `limit`.
         ordered = sorted(
             self._s.anomalies_by_id.items(),
             key=lambda kv: kv[1].timestamp,
@@ -182,7 +177,6 @@ class _FakeIncidentRepo:
         return len(self._s.incidents)
 
     async def list_recent(self, *, limit: int = 100) -> list[Incident]:
-        # Newest first by ended_at.
         ordered = sorted(
             self._s.incidents.values(),
             key=lambda inc: inc.ended_at,
@@ -215,7 +209,6 @@ class _FakeRecommendationRepo:
     async def insert(self, rec: Recommendation) -> None:
         self._s.recommendations[rec.recommendation_id] = rec
         self._s.rec_insert_order.append(rec.recommendation_id)
-        # Best-effort ordering surrogate: incident.ended_at if known.
         inc = self._s.incidents.get(rec.incident_id)
         if inc is not None:
             self._s.rec_to_incident_ended_at[rec.recommendation_id] = inc.ended_at
@@ -224,7 +217,6 @@ class _FakeRecommendationRepo:
         return len(self._s.recommendations)
 
     async def list_latest(self, limit: int = 10) -> list[Recommendation]:
-        # Real repo orders by IncidentORM.ended_at DESC; mirror that.
         ranked = sorted(
             self._s.recommendations.values(),
             key=lambda rec: self._s.rec_to_incident_ended_at.get(
@@ -293,22 +285,13 @@ class _FakeActionHistoryRepo:
         )
 
     async def list_latest(self, limit: int = 50) -> list[ActionHistoryEntry]:
-        # Newest first.
         return list(reversed(self._s.action_history))[:limit]
-
-
-# ---------------------------------------------------------------------------
-# Public factory
-# ---------------------------------------------------------------------------
 
 
 def make_inmem_orchestrator(
     *, clock: Any = None
 ) -> tuple[PipelineOrchestrator, InMemoryState]:
-    """Build a :class:`PipelineOrchestrator` (async) wired to fake in-memory
-    repos. Returns the orchestrator and the shared state so tests can
-    inspect it after driving HTTP routes through ``TestClient``.
-    """
+    """Build async :class:`PipelineOrchestrator` with fake in-memory repos."""
     state = InMemoryState()
     session_maker = _FakeSessionMaker()
     return (

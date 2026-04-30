@@ -16,7 +16,7 @@ _AUTH = {"Authorization": "Bearer test-pipeline-api-secret"}
 
 
 def test_oversized_content_length_rejected_before_parse() -> None:
-    from tests._inmem_orchestrator import make_inmem_orchestrator
+    from repopulse.testing import make_inmem_orchestrator
 
     orch, _ = make_inmem_orchestrator()
     app = create_app(orchestrator=orch)
@@ -42,7 +42,7 @@ def test_under_cap_passes_through() -> None:
     import json
     import uuid
 
-    from tests._inmem_orchestrator import make_inmem_orchestrator
+    from repopulse.testing import make_inmem_orchestrator
 
     orch, _ = make_inmem_orchestrator()
     app = create_app(orchestrator=orch)

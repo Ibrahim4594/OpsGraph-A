@@ -10,7 +10,7 @@ need source membership go through the bridge table joined onto
 ``PipelineOrchestrator._seen_keys`` LRU set. It is a deterministic hash
 of ``(frozenset[event_id], frozenset[(timestamp, value, series_name)])``
 — the same content signature defined in
-:func:`repopulse.pipeline.orchestrator._incident_key`. The UNIQUE
+:func:`repopulse.pipeline.types._incident_key`. The UNIQUE
 constraint enforces "same content → same row," so re-evaluating an
 overlapping window does not produce duplicate recommendations.
 

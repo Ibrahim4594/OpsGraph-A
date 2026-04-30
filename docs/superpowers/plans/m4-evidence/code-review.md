@@ -57,7 +57,7 @@
 
 #### C2. `ActionHistoryEntry(kind="workflow-run")` is never written
 
-**File:** `backend/src/repopulse/api/github_workflows.py` and `backend/src/repopulse/pipeline/orchestrator.py`. ADR-004 §3 explicitly required workflow runs to write a `kind="workflow-run"` audit entry so the dashboard's filter chip works. The handler called `record_normalized` but never appended history.
+**File:** `backend/src/repopulse/api/github_workflows.py` and `backend/src/repopulse/pipeline/async_orchestrator.py`. ADR-004 §3 explicitly required workflow runs to write a `kind="workflow-run"` audit entry so the dashboard's filter chip works. The handler called `record_normalized` but never appended history.
 
 **Fix landed:** New public method `PipelineOrchestrator.record_workflow_run(workflow_name, run_id, conclusion, at)` writes the audit entry. The `/api/v1/github/usage` endpoint calls it after `record_normalized`. Backend regression test `test_actions_endpoint_includes_workflow_run_entries` exercises the full path.
 
@@ -75,7 +75,7 @@ The reviewer correctly noted these were missing. They were the work of this Task
 
 #### I2. State-overlay leak when recommendation deque evicts
 
-**File:** `backend/src/repopulse/pipeline/orchestrator.py`. `_rec_state` accumulated entries that no longer corresponded to recommendations in the bounded deque, breaking the orchestrator's "predictable memory" guarantee.
+**File:** `backend/src/repopulse/pipeline/async_orchestrator.py`. `_rec_state` accumulated entries that no longer corresponded to recommendations in the bounded deque, breaking the orchestrator's "predictable memory" guarantee.
 
 **Fix landed:** When `_recommendations` is at `maxlen` and a new rec is about to be appended, the to-be-evicted rec's id is popped from `_rec_state` first. Regression test `test_orchestrator_rec_state_cleaned_when_recommendation_deque_evicts` asserts the invariant that `set(_rec_state) == set(rec_ids in deque)`.
 

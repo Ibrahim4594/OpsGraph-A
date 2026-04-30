@@ -19,7 +19,7 @@ def pytest_configure(config: pytest.Config) -> None:
       URL mandatory for production). The engine is lazy — no socket
       opens until a route reaches it. Tests that drive orchestrator
       routes pass ``orchestrator=`` from
-      ``tests._inmem_orchestrator.make_inmem_orchestrator``, so the
+      ``repopulse.testing.make_inmem_orchestrator``, so the
       stub URL is never actually dialled. The negative case (URL unset
       → RuntimeError) is asserted explicitly in
       ``tests/test_main_lifespan.py``.
