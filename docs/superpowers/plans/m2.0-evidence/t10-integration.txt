@@ -1,0 +1,39 @@
+=== T10: integration test suite — repos + orchestrator vs real Postgres ===
+
+--- Test files (5 + conftest) ---
+tests/integration/__init__.py
+tests/integration/conftest.py
+tests/integration/test_orchestrator_integration.py
+tests/integration/test_repo_action_history_workflow.py
+tests/integration/test_repo_event_anomaly.py
+tests/integration/test_repo_incident.py
+tests/integration/test_repo_recommendation.py
+
+--- pytest -m integration -q (local — Docker daemon not running, skips cleanly) ---
+sssssssssssssssssssssssssssssssssssss                                    [100%]
+37 skipped, 308 deselected in 2.63s
+
+--- CI (.github/workflows/ci.yml::integration) — runs the full suite on ubuntu-latest ---
+    pytest -m integration -q
+    Testcontainers brings up postgres:16-alpine; one container per session,
+    per-test TRUNCATE CASCADE keeps tests hermetic.
+
+--- pytest -m 'not integration and not e2e and not migration' -q (unit gate) ---
+........................................................................ [ 48%]
+........................................................................ [ 72%]
+........................................................................ [ 96%]
+...........                                                              [100%]
+299 passed, 46 deselected in 8.62s
+
+--- pytest -m migration -q (regression check — still passes the offline smoke) ---
+ssssssss.                                                                [100%]
+1 passed, 8 skipped, 336 deselected in 3.49s
+
+--- ruff check src tests ---
+All checks passed!
+
+--- mypy src tests ---
+Success: no issues found in 106 source files
+
+--- 37 integration tests across 5 files ---
+37

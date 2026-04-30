@@ -40,7 +40,7 @@ docker compose -f docker-compose.dev.yml down -v
 
 | Service    | Image                | Bind                | Notes                                            |
 |------------|----------------------|---------------------|--------------------------------------------------|
-| `postgres` | `postgres:16-alpine` | `127.0.0.1:55432`   | Persistent volume `repopulse_pgdata`; healthcheck via `pg_isready` |
+| `postgres` | `postgres:16-alpine` | `127.0.0.1:${POSTGRES_HOST_PORT:-55432}` | Persistent volume `repopulse_pgdata`; healthcheck via `pg_isready`. Override `POSTGRES_HOST_PORT` to dodge clashes with other local stacks. |
 | `api`      | built from `backend/Dockerfile` | `127.0.0.1:8000` | `depends_on: postgres: condition: service_healthy` — waits on real DB readiness, not just container start. Runs `alembic upgrade head` on entry, then uvicorn. |
 
 The `REPOPULSE_DATABASE_URL` baked into the api service is:

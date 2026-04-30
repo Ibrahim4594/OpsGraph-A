@@ -29,8 +29,10 @@ services:
       - repopulse_pgdata:/var/lib/postgresql/data
     ports:
       # Bind to loopback so local CLI tools (psql, alembic on the host)
-      # can reach the container without exposing it to the LAN.
-      - "127.0.0.1:55432:5432"
+      # can reach the container without exposing it to the LAN. The host
+      # port is overridable via ``POSTGRES_HOST_PORT`` if 55432 clashes
+      # with another local stack.
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-55432}:5432"
     healthcheck:
       # ``pg_isready`` returns 0 only after Postgres has finished initdb,
       # opened its socket, AND accepted at least one connection. Compose
