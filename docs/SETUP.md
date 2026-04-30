@@ -90,19 +90,29 @@ either:
 
 ## Database (M2.0+)
 
-The storage layer (M2.0) introduces Postgres as the primary persistent
-store. Until M2.0 task 7 ships migrations, the only requirement is
-`REPOPULSE_DATABASE_URL` — Alembic refuses to run without it:
+The storage layer requires Postgres. The dev compose file ships
+`postgres:16-alpine` with a healthcheck and a persistent volume — see
+[docs/dev-stack.md](dev-stack.md) for the full operator runbook.
 
 ```bash
-# Local dev (Postgres on host:5432):
-export REPOPULSE_DATABASE_URL="postgresql+psycopg://repopulse:repopulse@localhost:5432/repopulse"
+# 1) Bring up Postgres + the api container, run migrations.
+./scripts/dev-stack-up.sh
+
+# 2) Or, hybrid mode: only Postgres in compose, backend on host venv.
+docker compose -f docker-compose.dev.yml up -d postgres
+export REPOPULSE_DATABASE_URL="postgresql+psycopg://repopulse:repopulse@127.0.0.1:55432/repopulse"
+./scripts/db-upgrade.sh
+./scripts/demo.sh
 ```
 
-The dev compose file (M2.0 task 9) provides a matching Postgres service.
+`scripts/db-upgrade.sh` is the canonical migration runner — wraps
+`alembic upgrade head`, idempotent. `scripts/demo.sh` calls it
+automatically before booting uvicorn.
+
 Tests that need a database use Testcontainers Postgres by default — no
-extra setup required if Docker is available; CI may set
-`REPOPULSE_TEST_DATABASE_URL` to point at a service container instead.
+extra setup required if Docker is available. The migration suite is
+gated on `pytest -m migration -q`; CI runs it in a dedicated job (see
+`.github/workflows/ci.yml::migrations`).
 
 ## OTel Collector (optional)
 

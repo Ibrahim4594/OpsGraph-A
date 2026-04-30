@@ -8,6 +8,11 @@
 #   export REPOPULSE_API_SHARED_SECRET="$(openssl rand -hex 16)"
 #   export REPOPULSE_AGENTIC_SHARED_SECRET="$(openssl rand -hex 16)"
 #
+# Storage (M2.0 T9): the backend now requires a real Postgres. The dev
+# default points at the compose stack on 127.0.0.1:55432 — bring it up
+# first with ``./scripts/dev-stack-up.sh`` (or override
+# REPOPULSE_DATABASE_URL to point elsewhere).
+#
 # Usage:
 #   ./scripts/demo.sh                                # :8000 backend, :3000 frontend
 #   PORT_BACKEND=8011 PORT_FRONTEND=3300 ./scripts/demo.sh
@@ -19,6 +24,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PORT_BACKEND="${PORT_BACKEND:-8000}"
 PORT_FRONTEND="${PORT_FRONTEND:-3000}"
+
+# Storage wiring: default to the compose Postgres on loopback. Override
+# by exporting REPOPULSE_DATABASE_URL before running.
+export REPOPULSE_DATABASE_URL="${REPOPULSE_DATABASE_URL:-postgresql+psycopg://repopulse:repopulse@127.0.0.1:55432/repopulse}"
 
 if [[ -z "${REPOPULSE_API_SHARED_SECRET:-}" ]]; then
   echo "ERROR: REPOPULSE_API_SHARED_SECRET is not set." >&2
@@ -50,6 +59,10 @@ cleanup() {
 }
 trap cleanup EXIT
 
+echo "→ ensuring DB schema (alembic upgrade head) against $REPOPULSE_DATABASE_URL"
+"$ROOT/scripts/db-upgrade.sh" \
+  || { echo "ERROR: db-upgrade failed — is compose Postgres up? \`./scripts/dev-stack-up.sh\`" >&2; exit 1; }
+
 echo "→ booting backend on 127.0.0.1:$PORT_BACKEND"
 (
   cd "$ROOT/backend"
@@ -57,6 +70,7 @@ echo "→ booting backend on 127.0.0.1:$PORT_BACKEND"
     REPOPULSE_AGENTIC_SHARED_SECRET="$REPOPULSE_AGENTIC_SHARED_SECRET" \
     REPOPULSE_API_SHARED_SECRET="$REPOPULSE_API_SHARED_SECRET" \
     REPOPULSE_CORS_ORIGINS="$CORS_ORIGINS" \
+    REPOPULSE_DATABASE_URL="$REPOPULSE_DATABASE_URL" \
     "$PY" -m uvicorn repopulse.main:app --host 127.0.0.1 --port "$PORT_BACKEND" --log-level warning
 ) &
 BACKEND_PID=$!

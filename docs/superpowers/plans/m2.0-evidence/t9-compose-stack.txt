@@ -1,0 +1,80 @@
+=== T9: docker-compose.dev.yml + Postgres + dev-stack scripts ===
+
+--- docker compose -f docker-compose.dev.yml config (with required env set) ---
+name: aiops
+services:
+  api:
+    build:
+      context: C:\Users\ibrah\Desktop\AIOPS\backend
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+        required: true
+    environment:
+      REPOPULSE_AGENTIC_ENABLED: "true"
+      REPOPULSE_AGENTIC_SHARED_SECRET: stub
+      REPOPULSE_API_SHARED_SECRET: stub
+      REPOPULSE_CORS_ORIGINS: http://127.0.0.1:3000,http://localhost:3000
+      REPOPULSE_DATABASE_URL: postgresql+psycopg://repopulse:repopulse@postgres:5432/repopulse
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        host_ip: 127.0.0.1
+        target: 8000
+        published: "8000"
+        protocol: tcp
+    restart: unless-stopped
+  postgres:
+    environment:
+      POSTGRES_DB: repopulse
+      POSTGRES_PASSWORD: repopulse
+      POSTGRES_USER: repopulse
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U repopulse -d repopulse
+      timeout: 3s
+      interval: 2s
+      retries: 30
+      start_period: 5s
+    image: postgres:16-alpine
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        host_ip: 127.0.0.1
+        target: 5432
+        published: "55432"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: volume
+  ...
+
+--- docker compose config WITHOUT required env (must fail loud) ---
+error while interpolating services.api.environment.REPOPULSE_API_SHARED_SECRET: required variable REPOPULSE_API_SHARED_SECRET is missing a value: REPOPULSE_API_SHARED_SECRET is required (export to env or .env)
+
+--- DB health passes + backend connects ---
+Local Docker Desktop daemon was NOT running during this run.
+Operator verifies by:
+  ./scripts/dev-stack-up.sh
+  curl http://127.0.0.1:8000/healthz
+
+--- Migration command runs against compose Postgres ---
+Verified via:
+  ./scripts/db-upgrade.sh   # alembic upgrade head against compose DSN
+
+--- pytest -m 'not integration and not e2e and not migration' -q ---
+........................................................................ [ 48%]
+........................................................................ [ 72%]
+........................................................................ [ 96%]
+...........                                                              [100%]
+299 passed, 9 deselected in 3.66s
+
+--- ruff check src tests ---
+All checks passed!
+
+--- mypy src tests ---
+Success: no issues found in 99 source files

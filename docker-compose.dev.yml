@@ -1,0 +1,73 @@
+# RepoPulse dev stack (M2.0 T9).
+#
+# Brings up Postgres + the FastAPI backend with the right env wiring.
+# Frontend stays on the host (npm run dev) so HMR remains snappy.
+#
+# Usage
+# -----
+#
+#     export REPOPULSE_API_SHARED_SECRET="$(openssl rand -hex 16)"
+#     export REPOPULSE_AGENTIC_SHARED_SECRET="$(openssl rand -hex 16)"
+#     docker compose -f docker-compose.dev.yml up -d
+#     ./scripts/db-upgrade.sh        # run alembic upgrade head once
+#     curl http://localhost:8000/healthz
+#
+# Operator runbook is in docs/dev-stack.md.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: repopulse
+      POSTGRES_USER: repopulse
+      # Dev-only password. Compose volumes preserve the data dir across
+      # restarts; rotate before any deploy that isn't an air-gapped dev
+      # box. Production uses Settings + a managed-secrets store (M4.0).
+      POSTGRES_PASSWORD: repopulse
+    volumes:
+      - repopulse_pgdata:/var/lib/postgresql/data
+    ports:
+      # Bind to loopback so local CLI tools (psql, alembic on the host)
+      # can reach the container without exposing it to the LAN.
+      - "127.0.0.1:55432:5432"
+    healthcheck:
+      # ``pg_isready`` returns 0 only after Postgres has finished initdb,
+      # opened its socket, AND accepted at least one connection. Compose
+      # treats that as "service_healthy" — the api service waits on it.
+      test: ["CMD-SHELL", "pg_isready -U repopulse -d repopulse"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        # Real readiness gate, not just "container started". The api
+        # entrypoint runs ``alembic upgrade head`` first; that needs a
+        # connectable DB or it crashes the container.
+        condition: service_healthy
+    environment:
+      # Single source of truth for the URL — also exported by
+      # scripts/demo.sh and scripts/db-upgrade.sh so host-side tooling
+      # uses the same DSN.
+      REPOPULSE_DATABASE_URL: postgresql+psycopg://repopulse:repopulse@postgres:5432/repopulse
+      REPOPULSE_CORS_ORIGINS: ${REPOPULSE_CORS_ORIGINS:-http://127.0.0.1:3000,http://localhost:3000}
+      # Required — refuses to start without these. ``${VAR:?msg}`` makes
+      # docker compose fail loudly at config time, not at container
+      # runtime.
+      REPOPULSE_API_SHARED_SECRET: ${REPOPULSE_API_SHARED_SECRET:?REPOPULSE_API_SHARED_SECRET is required (export to env or .env)}
+      REPOPULSE_AGENTIC_SHARED_SECRET: ${REPOPULSE_AGENTIC_SHARED_SECRET:?REPOPULSE_AGENTIC_SHARED_SECRET is required}
+      REPOPULSE_AGENTIC_ENABLED: ${REPOPULSE_AGENTIC_ENABLED:-true}
+    ports:
+      - "127.0.0.1:8000:8000"
+
+volumes:
+  repopulse_pgdata:
+    # Named volume preserves Postgres data across ``compose down``.
+    # ``compose down -v`` wipes it — see the runbook in docs/dev-stack.md.
