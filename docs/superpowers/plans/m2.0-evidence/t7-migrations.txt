@@ -1,0 +1,38 @@
+=== T7: Alembic migrations 0001-0005 + reversibility tests ===
+
+--- Migration files (5) ---
+migrations/versions/0001_initial_schema.py
+migrations/versions/0002_recommendation_state.py
+migrations/versions/0003_indexes_hot_paths.py
+migrations/versions/0004_recommendation_transitions.py
+migrations/versions/0005_incident_signature_dedup.py
+
+--- pytest tests/migrations/ -q ---
+ssssssss.                                                                [100%]
+1 passed, 8 skipped in 0.66s
+
+--- pytest -m migration -q (explicit migration gate) ---
+ssssssss.                                                                [100%]
+1 passed, 8 skipped, 289 deselected in 1.48s
+
+--- pytest -m 'not integration and not e2e and not migration' -q (unit gate) ---
+........................................................................ [ 49%]
+........................................................................ [ 74%]
+........................................................................ [ 99%]
+.                                                                        [100%]
+289 passed, 9 deselected in 3.81s
+
+--- ruff check src tests ---
+All checks passed!
+
+--- mypy src tests ---
+Success: no issues found in 97 source files
+
+--- Note on Docker availability ---
+Local Docker daemon was NOT running during this run; 8 Testcontainers
+tests skipped cleanly. The offline SQL-emit smoke (test_offline_sql_emit.py)
+ran and confirmed all 5 migrations parse + emit valid SQL covering every
+expected table + signature_hash UNIQUE.
+
+CI runs the full migration suite via .github/workflows/ci.yml::migrations
+on ubuntu-latest where Docker is preinstalled.

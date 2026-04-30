@@ -358,11 +358,11 @@ the operator knows what happens to running data.
 
 | Rev | Forward effect | Reverse effect | Data loss? |
 |---|---|---|---|
-| 0001 | Creates 9 tables | Drops 9 tables | **YES** — all rows lost. Only run on a deployment you intend to wipe. Operator runbook in M3.2 will warn explicitly. |
-| 0002 | Adds `recommendations.state` (NOT NULL default `pending`) | Drops the column | YES (state values lost). Application reverts to dataclass-default `pending`. |
-| 0003 | Adds 6 indexes | Drops 6 indexes | NO — performance regression only. Safe to roll back without downtime. |
-| 0004 | Adds `recommendation_transitions` table | Drops the table | YES (audit trail rows lost). Application falls back to `action_history` only — no fine-grained transition log. |
-| 0005 | Existing-deployment ADD COLUMN `incidents.signature_hash` + UNIQUE (no-op on fresh DBs that already have it from 0001) | Drops index then column | NO — reverts to in-application dedup (M3 behavior). Existing rows keep their data. |
+| 0001 | Creates 10 tables (9 named aggregates + the 2 bridge tables — `incident_events` and `incident_anomalies` — count as one schema-level pair); `incidents.signature_hash` + UNIQUE included from the start | Drops every table in reverse FK order | **YES** — all rows lost. Only run on a deployment you intend to wipe. Operator runbook in M3.2 will warn explicitly. |
+| 0002 | Defensive `ADD COLUMN recommendations.state` (NOT NULL default `pending`) + CHECK — guarded by `IF NOT EXISTS`, so no-op on fresh v2.0 DBs (the column is already there from 0001) | **No-op on fresh DBs** (column owned by 0001). Older deployments where this rev added the column must drop it manually after a `pg_dump`. | NO on fresh DBs (downgrade is a documented no-op). YES on older deployments where this rev did the work — but `0002 downgrade` doesn't perform the drop automatically; operator action required. |
+| 0003 | Defensive `CREATE INDEX IF NOT EXISTS` for the dashboard hot paths + UNIQUE on workflow_usage — no-op on fresh v2.0 DBs | **No-op on fresh DBs** (indexes owned by 0001). | NO. Performance regression only on older deployments where downgrading manually drops these indexes. |
+| 0004 | Defensive `CREATE TABLE IF NOT EXISTS recommendation_transitions` — no-op on fresh v2.0 DBs | **No-op on fresh DBs** (table owned by 0001). Older deployments that created the table here must drop it manually after a snapshot. | NO on fresh DBs. YES on older deployments where this rev did the work — operator action required. |
+| 0005 | Existing-deployment-only `ADD COLUMN incidents.signature_hash` + backfill (md5-derived placeholder) + UNIQUE — no-op on fresh v2.0 DBs (column owned by 0001) | **No-op on fresh DBs** (column owned by 0001). Older deployments must drop the column manually after a snapshot — and re-establish in-memory dedup, which is gone in v2.0. | NO on fresh DBs. Reverts dedup invariant on older deployments — operator must script the manual drop with care. |
 
 **Application rollback (binary level)**: `git checkout v1.1.0` recovers the
 in-memory orchestrator. The DB can stay populated; the in-memory v1.1
@@ -374,9 +374,13 @@ runs upgrade → downgrade → upgrade for each rev, so any non-reversible
 migration fails the build before it can ship.
 
 **Backup discipline**: production deploys must take a `pg_dump` snapshot
-before running migrations 0001/0002/0004 (any rev with potential data
-loss on rollback). The deploy script in M4.0 wires this in; until then it
-is documented in `docs/operations.md` (M3.2).
+before running migration 0001 (the only rev with unavoidable data loss
+on rollback) and before any **manual** drops the operator performs to
+revert 0002, 0004, or 0005 on older deployments. Defensive
+revisions 0002–0005 do **not** drop objects they did not create on
+fresh DBs — their `downgrade()` callables are intentional no-ops. The
+deploy script in M4.0 wires the snapshot step in; until then it is
+documented in `docs/operations.md` (M3.2).
 
 ---
 
